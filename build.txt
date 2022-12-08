@@ -1,3 +1,5 @@
 displayName = Divergency Mangodev
-author = DarkMango
+author = Divergency Team
+version = 0.1
+modReferences = ParticleLibrary
 version = 0.1
