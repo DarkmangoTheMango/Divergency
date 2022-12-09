@@ -42,7 +42,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.width = Item.height = 90;
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 80;
+            Item.useTime = Item.useAnimation = 90;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -96,7 +96,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             Projectile.aiStyle = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 7;
+            Projectile.localNPCHitCooldown = 8;
             Projectile.ownerHitCheck = true;
         }
 
@@ -109,6 +109,8 @@ namespace Divergency.Content.Items.Weapons.Melee
         float maxTimeLeft;
         
         int pauseTimer;
+
+        int maxHits = 5;
         
         int oldTimeleft;
 
@@ -116,10 +118,12 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void AI()
         {
-            if (--pauseTimer > 0) { Projectile.timeLeft = oldTimeleft; }
+            if (--pauseTimer > 0 && maxHits > 0) { Projectile.timeLeft = oldTimeleft; }
 
             Player player = Main.player[Projectile.owner];
+
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
+            player.ChangeDir(Projectile.velocity.X > 0 ? 1 : -1);
 
             if (initialize)
             {
@@ -137,7 +141,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (pauseTimer <= 0) { Projectile.Center = player.Center + direction * 45; }
             if (pauseTimer <= 0) { Projectile.scale = 1f + (float)Math.Sin(EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.6f * 0.6f; }
 
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -2f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(3f * SwingDirection, -3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
 
             player.heldProj = Projectile.whoAmI;
 
@@ -153,11 +157,12 @@ namespace Divergency.Content.Items.Weapons.Melee
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
 
             oldTimeleft = Projectile.timeLeft;
-            pauseTimer = 7;
+            pauseTimer = 8;
+            maxHits--;
 
-            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/Sex")
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit")
             {
-                MaxInstances = -1,
+                MaxInstances = 5,
             }, player.Center);
         }
 
@@ -192,17 +197,6 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
 
-            texture = Request<Texture2D>("Divergency/Assets/Textures/LensFlare").Value;
-            sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
-            origin = sourceRectangle.Size() / 2f;
-            drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 120f - Main.screenPosition;
-
-            Color textureColor = Color.Transparent;
-
-            if (Projectile.timeLeft <= maxTimeLeft / 2f) { textureColor = Color.Lerp(new Color(255, 235, 235, 200), Color.Transparent, 1f - (Projectile.timeLeft / 20f)); }
-
-            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, textureColor, 0f, origin, Projectile.scale, drawFlipped, 0f);
-
             return false;
         }
 
@@ -211,7 +205,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Player player = Main.player[Projectile.owner];
             float collisionPoint = 0f;
 
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((96 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
+            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((96f * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
 
             return false;
         }

@@ -166,7 +166,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Player player = Main.player[Projectile.owner];
             Texture2D texture = Request<Texture2D>(Texture).Value;
 
-            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
+            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
             Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 60f - Main.screenPosition;
 
@@ -192,8 +192,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
 
-            texture = Request<Texture2D>("Divergency/Assets/Textures/LensFlare").Value;
-            sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
+            texture = Request<Texture2D>("Divergency/Assets/Textures/Sparkle").Value;
+            sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
             origin = sourceRectangle.Size() / 2f;
             drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 120f - Main.screenPosition;
 
