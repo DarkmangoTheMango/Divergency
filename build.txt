@@ -1,4 +1,4 @@
-displayName = Divergency Mangodev
+displayName = Divergency (THE ONE THAT WE ARE USING)
 author = Divergency Team
 version = 0.1
 modReferences = ParticleLibrary
