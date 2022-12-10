@@ -10,7 +10,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Items.Weapons.Ranged
+namespace Divergency.Content.Items.Weapons.Magic
 {
     public class Invocation : ModItem
     {
@@ -19,14 +19,14 @@ namespace Divergency.Content.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("(Work In Progress) Commandant's Guide To Invocation");
-            Tooltip.SetDefault("");
+            Tooltip.SetDefault("Hold <left> to charge");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.DamageType = DamageClass.Ranged;
+            Item.DamageType = DamageClass.Magic;
             Item.damage = 15;
             Item.crit = 3;
             Item.knockBack = 5f;
