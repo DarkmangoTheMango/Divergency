@@ -50,7 +50,6 @@ namespace Divergency.Content.Projectiles.Magic
 
             if (Projectile.alpha <= 0) { Projectile.alpha = 0; }
 
-
             if (Projectile.spriteDirection == -1) { Projectile.rotation += MathHelper.Pi; }
 
             if (++Projectile.frameCounter >= 4)
@@ -83,7 +82,7 @@ namespace Divergency.Content.Projectiles.Magic
             }
         }
 
-        public TrailRenderer trail;
+        public Trail trail;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -108,7 +107,7 @@ namespace Divergency.Content.Projectiles.Magic
             {
                 if (trail == null)
                 {
-                    trail = new TrailRenderer(trailTexture, TrailRenderer.DefaultPass, (p) => new Vector2(32f - k), (p) => Projectile.GetAlpha(new Color(220, 82, 255, 100)) * (float)Math.Pow(1f - p, 2f));
+                    trail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(32f - k), (p) => Projectile.GetAlpha(new Color(220, 82, 255, 100)) * (float)Math.Pow(1f - p, 2f));
                     trail.drawOffset = Projectile.Size / 2f;
                 }
 

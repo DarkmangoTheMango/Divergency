@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace Divergency.Common.Helpers
 {
-    public class TrailRenderer : IPrimRenderer, ILoadable
+    public class Trail : IPrimRenderer, ILoadable
     {
         public const string DefaultPass = "Texture";
 
@@ -42,11 +42,11 @@ namespace Divergency.Common.Helpers
             }
         }
 
-        public TrailRenderer()
+        public Trail()
         {
         }
 
-        public TrailRenderer(Texture2D texture, string pass, Func<float, Vector2> getWidth, Func<float, Color> getColor, bool obeyReversedGravity = true, bool worldTrail = true, Vector2 drawOffset = default(Vector2))
+        public Trail(Texture2D texture, string pass, Func<float, Vector2> getWidth, Func<float, Color> getColor, bool obeyReversedGravity = true, bool worldTrail = true, Vector2 drawOffset = default(Vector2))
         {
             Texture = texture;
             Pass = pass;
@@ -58,24 +58,24 @@ namespace Divergency.Common.Helpers
             vertices = null;
         }
 
-        public static TrailRenderer NewRenderer(int type, Func<float> width, Func<Color> color)
+        public static Trail NewRenderer(int type, Func<float> width, Func<Color> color)
         {
-            return new TrailRenderer(TextureCache.Trail[type].Value, DefaultPass, (p) => new Vector2(width() - width() * p), (p) => color() * (1f - p));
+            return new Trail(TextureCache.Trail[type].Value, DefaultPass, (p) => new Vector2(width() - width() * p), (p) => color() * (1f - p));
         }
-        public static TrailRenderer NewRenderer(int type, float width, Func<Color> color)
+        public static Trail NewRenderer(int type, float width, Func<Color> color)
         {
             return NewRenderer(type, () => width, color);
         }
-        public static TrailRenderer NewRenderer(int type, Func<float> width, Color color)
+        public static Trail NewRenderer(int type, Func<float> width, Color color)
         {
             return NewRenderer(type, width, () => color);
         }
-        public static TrailRenderer NewRenderer(int type, float width, Color color)
+        public static Trail NewRenderer(int type, float width, Color color)
         {
             return NewRenderer(type, () => width, color);
         }
 
-        public static TrailRenderer NewRenderer(Projectile projectile, int type, float width, Color color)
+        public static Trail NewRenderer(Projectile projectile, int type, float width, Color color)
         {
             var prim = NewRenderer(type, width, () => color * projectile.Opacity);
             prim.drawOffset = projectile.Size / 2f;
@@ -217,7 +217,7 @@ namespace Divergency.Common.Helpers
         {
             if (!Main.dedServ)
             {
-                shader = ModContent.Request<Effect>("Divergency/Common/Helpers/Trailshader");
+                shader = ModContent.Request<Effect>("Divergency/Content/Effects/Trailshader");
             }
         }
 
@@ -226,7 +226,7 @@ namespace Divergency.Common.Helpers
             shader = null;
         }
     }
-    public class SwordSlashPrimRenderer : TrailRenderer
+    public class SwordSlashPrimRenderer : Trail
     {
         public float coord1;
         public float coord2;

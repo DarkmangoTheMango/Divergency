@@ -247,12 +247,6 @@ namespace Divergency.Content.Items.Weapons.Melee
             {
                 Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40f, 90f), DustID.GemAmethyst, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 2f);
                 dust.noGravity = true;
-
-                if (Main.rand.NextBool(20))
-                {
-                    dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40f, 90f), DustType<Smoke>(), new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, Color.Magenta, 1.1f);
-                    dust.noGravity = true;
-                }
             }
 
             if (player.GetModPlayer<ComboSystem>().itemCombo == 2)

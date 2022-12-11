@@ -1,19 +1,21 @@
 ﻿using Divergency.Common.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 
 namespace Divergency.Content.Projectiles.Ranged
 {
-    public class CoreBuckshot : ModProjectile
+    public class ShortBullet : ModProjectile
     {
+        public override string Texture => "Divergency/Assets/Textures/Empty";
+
         public override void SetStaticDefaults()
         {
+            DisplayName.SetDefault("Living Shrapnel");
+
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
@@ -25,7 +27,7 @@ namespace Divergency.Content.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.width = Projectile.height = 4;
+            Projectile.width = Projectile.height = 8;
             Projectile.scale = 1f;
 
             Projectile.tileCollide = true;
@@ -33,8 +35,6 @@ namespace Divergency.Content.Projectiles.Ranged
 
             Projectile.aiStyle = -1;
             Projectile.extraUpdates = 5;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -46,6 +46,18 @@ namespace Divergency.Content.Projectiles.Ranged
             if (Projectile.velocity.Length() < 0.1f) { Projectile.Kill(); }
         }
 
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            for (int k = 0; k < 2; k++)
+            {
+                Vector2 perturbedSpeed = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30));
+                float scale = 1f - (Main.rand.NextFloat() * 0.9f);
+
+                Dust dust = Dust.NewDustPerfect(Projectile.position, DustID.Torch, (perturbedSpeed * scale) * -0.5f, 0, default, 3f);
+                dust.noGravity = true;
+            }
+        }
+
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
@@ -54,22 +66,19 @@ namespace Divergency.Content.Projectiles.Ranged
             return base.OnTileCollide(oldVelocity);
         }
 
-        public TrailRenderer trail;
+        public Trail trail;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            var trailTexture = Request<Texture2D>("Divergency/Assets/Textures/Trails/Default").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Stretched").Value;
 
-            for (int i = 0; i < 3; i++)
+            if (trail == null)
             {
-                if (trail == null)
-                {
-                    trail = new TrailRenderer(trailTexture, TrailRenderer.DefaultPass, (p) => new Vector2(8f), (p) => Projectile.GetAlpha(Color.LightYellow) * (float)Math.Pow(1f - p, 2f));
-                    trail.drawOffset = Projectile.Size / 2f;
-                }
-
-                trail.Draw(Projectile.oldPos);
+                trail = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(20f), (p) => Projectile.GetAlpha(Color.LightYellow));
+                trail.drawOffset = Projectile.Size / 2f;
             }
+
+            trail.Draw(Projectile.oldPos);
             
             return true;
         }

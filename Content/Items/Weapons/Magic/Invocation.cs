@@ -1,6 +1,7 @@
 ﻿using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Projectiles.Magic;
+using Divergency.Content.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -18,7 +19,7 @@ namespace Divergency.Content.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("(Work In Progress) Commandant's Guide To Invocation");
+            DisplayName.SetDefault("Commandant's Guide To Invocation");
             Tooltip.SetDefault("Hold <left> to charge");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
@@ -156,19 +157,19 @@ namespace Divergency.Content.Items.Weapons.Magic
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot"), player.Center);
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
 
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner, 0f, 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<SaraishiPlusSlash>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner, 0f, 1);
             }
             else
             {
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 12f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 12f, ModContent.ProjectileType<SaraishiPlusSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Sparkle").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
 
             Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
             Vector2 origin = sourceRectangle.Size() / 2f;

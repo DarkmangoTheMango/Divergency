@@ -24,7 +24,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sacrony");
+            DisplayName.SetDefault("(Work In Progress) Sacrony");
             Tooltip.SetDefault("");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;

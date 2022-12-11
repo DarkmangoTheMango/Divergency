@@ -31,19 +31,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kings\\.nuget\\packages\\": {}
+    "C:\\Users\\Tyler\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kings\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Divergency\\Divergency.csproj",
+      "projectUniqueName": "C:\\Users\\Tyler\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Divergency\\Divergency.csproj",
       "projectName": "Divergency",
-      "projectPath": "C:\\Users\\kings\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Divergency\\Divergency.csproj",
-      "packagesPath": "C:\\Users\\kings\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kings\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Divergency\\obj\\",
+      "projectPath": "C:\\Users\\Tyler\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Divergency\\Divergency.csproj",
+      "packagesPath": "C:\\Users\\Tyler\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Tyler\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Divergency\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\kings\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Tyler\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -80,8 +80,7 @@
           "net47",
           "net471",
           "net472",
-          "net48",
-          "net481"
+          "net48"
         ],
         "assetTargetFallback": true,
         "warn": true,
@@ -90,7 +89,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.302\\RuntimeIdentifierGraph.json"
       }
     }
   }
