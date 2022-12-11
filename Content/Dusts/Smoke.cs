@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.Dusts
 {
-    internal class Smoke : ModDust
+    public class Smoke : ModDust
     {
         public override void OnSpawn(Dust dust)
         {
@@ -16,7 +16,7 @@ namespace Divergency.Content.Dusts
 
         public override Color? GetAlpha(Dust dust, Color lightColor)
         {
-            Color gray = new(25, 25, 25);
+            Color gray = new(191, 45, 0);
             Color black = Color.Black;
             Color flatColor;
 

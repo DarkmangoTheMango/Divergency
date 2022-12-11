@@ -10,7 +10,6 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
@@ -36,7 +35,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.damage = 30;
             Item.knockBack = 4f;
 
-            Item.shoot = ProjectileType<LivingCoreSwordPro>();
+            Item.shoot = ModContent.ProjectileType<LivingCoreSwordPro>();
             Item.shootSpeed = 1f;
 
             Item.width = Item.height = 96;
@@ -82,7 +81,7 @@ namespace Divergency.Content.Items.Weapons.Melee
     {
         public override string Texture => "Divergency/Content/Items/Weapons/Melee/LivingCoreSword";
 
-        public override void SetStaticDefaults() { DisplayName.SetDefault("LivingCore Sword"); }
+        public override void SetStaticDefaults() => DisplayName.SetDefault("Living Core Sword");
 
         public override void SetDefaults()
         {
@@ -155,18 +154,21 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             oldRotation.Add(Projectile.rotation);
 
-            if (oldRotation.Count > 10) { oldRotation.RemoveAt(0); }
+            if (oldRotation.Count > 10)
+            {
+                oldRotation.RemoveAt(0);
+            }
 
-            Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f), DustID.PortalBolt, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, Color.Lime, 2f);
+            Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f), DustID.TerraBlade, new Vector2(0f, 5f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 1.5f);
             dust.noGravity = true;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
-            Texture2D texture = Request<Texture2D>(Texture).Value;
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
+            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
             Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 60f - Main.screenPosition;
 
@@ -179,7 +181,10 @@ namespace Divergency.Content.Items.Weapons.Melee
                 float progress = 1 - (float)(((float)(10 - k) / (float)10));
                 Color color = Color.Lerp(Color.Lime, Color.Transparent, 0f) * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
 
-                if (Projectile.timeLeft < 20) { color = Color.Lerp(color, Color.Transparent, 1f - (Projectile.timeLeft / 10f) * k); }
+                if (Projectile.timeLeft < 20)
+                {
+                    color = Color.Lerp(color, Color.Transparent, 1f - (Projectile.timeLeft / 10f) * k);
+                }
 
                 color.A = 0;
 
@@ -192,14 +197,17 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
 
-            texture = Request<Texture2D>("Divergency/Assets/Textures/LensFlare").Value;
-            sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
+            texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
+            sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
             origin = sourceRectangle.Size() / 2f;
             drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 120f - Main.screenPosition;
 
             Color textureColor = Color.Transparent;
 
-            if (Projectile.timeLeft <= maxTimeLeft / 2f) { textureColor = Color.Lerp(new Color(153, 255, 167, 50), Color.Transparent, 1f - (Projectile.timeLeft / 20f)); }
+            if (Projectile.timeLeft <= maxTimeLeft / 2f)
+            {
+                textureColor = Color.Lerp(new Color(153, 255, 167, 50), Color.Transparent, 1f - (Projectile.timeLeft / 20f));
+            }
 
             Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, textureColor, 0f, origin, Projectile.scale, drawFlipped, 0f);
 

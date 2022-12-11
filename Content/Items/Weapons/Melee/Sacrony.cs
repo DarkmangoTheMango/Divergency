@@ -24,7 +24,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sacrony");
+            DisplayName.SetDefault("(Work In Progress) Sacrony");
             Tooltip.SetDefault("");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
@@ -43,7 +43,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.width = Item.height = 96;
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 20;
+            Item.useTime = Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -73,10 +73,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 MaxInstances = -1,
             }, player.Center);
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo >= 5)
-            {
-                player.GetModPlayer<ComboSystem>().itemCombo = 0;
-            }
+            if (player.GetModPlayer<ComboSystem>().itemCombo >= 5) { player.GetModPlayer<ComboSystem>().itemCombo = 0; }
 
             player.GetModPlayer<ComboSystem>().itemCombo++;
             player.GetModPlayer<ComboSystem>().itemComboReset = 480;
