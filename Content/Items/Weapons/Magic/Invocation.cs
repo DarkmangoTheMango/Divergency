@@ -157,12 +157,12 @@ namespace Divergency.Content.Items.Weapons.Magic
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot"), player.Center);
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
 
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<SaraishiPlusSlash>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner, 0f, 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner, 0f, 1);
             }
             else
             {
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 12f, ModContent.ProjectileType<SaraishiPlusSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 12f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0);
             }
         }
 

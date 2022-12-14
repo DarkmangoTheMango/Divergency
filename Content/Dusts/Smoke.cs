@@ -16,15 +16,15 @@ namespace Divergency.Content.Dusts
 
         public override Color? GetAlpha(Dust dust, Color lightColor)
         {
-            Color gray = new(191, 45, 0);
+            Color gray = new(25, 25, 25);
             Color black = Color.Black;
-            Color flatColor;
+            Color color;
 
-            if (dust.alpha < 120) { flatColor = Color.Lerp(dust.color, gray, dust.alpha / 120f); }
-            else if (dust.alpha < 180) { flatColor = Color.Lerp(gray, black, (dust.alpha - 120) / 60f); }
-            else { flatColor = black; }
+            if (dust.alpha < 120) { color = Color.Lerp(dust.color, gray, dust.alpha / 120f); }
+            else if (dust.alpha < 180) { color = Color.Lerp(gray, black, (dust.alpha - 120) / 60f); }
+            else { color = black; }
 
-            return flatColor * ((255 - dust.alpha) / 255f);
+            return color * ((255 - dust.alpha) / 255f);
         }
 
         public override bool Update(Dust dust)

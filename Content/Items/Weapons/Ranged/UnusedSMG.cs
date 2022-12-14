@@ -22,7 +22,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Generic SMG");
+            DisplayName.SetDefault("(Unused) Generic SMG");
             Tooltip.SetDefault("Inflicts Shred");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
