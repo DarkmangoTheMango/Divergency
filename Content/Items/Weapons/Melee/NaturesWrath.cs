@@ -1,5 +1,6 @@
 ﻿using Divergency.Common.Helpers;
 using Divergency.Content.Dusts;
+using Divergency.Content.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -16,6 +17,8 @@ namespace Divergency.Content.Items.Weapons.Melee
     public class NaturesWrath : ModItem
     {
         public int attackDirection = 1;
+
+        public override bool AltFunctionUse(Player player) => true;
 
         public override void SetStaticDefaults()
         {
@@ -35,10 +38,10 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<NaturesWrathPro>();
             Item.shootSpeed = 5f;
 
-            Item.width = Item.height = 28;
+            Item.Size = new Vector2(28);
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 10;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
             Item.noUseGraphic = true;
@@ -49,11 +52,29 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.rare = ItemRarityID.Green;
         }
 
+        public override bool CanUseItem(Player Player)
+        {
+            if (Player.altFunctionUse == 2)
+            {
+                Item.shoot = ModContent.ProjectileType<LivingBranch>();
+
+                Item.useStyle = ItemUseStyleID.Swing;
+            }
+            else
+            {
+                Item.shoot = ModContent.ProjectileType<NaturesWrathPro>();
+
+                Item.useStyle = ItemUseStyleID.Shoot;
+            }
+
+            return true;
+        }
+
         public override void HoldItem(Player player)
         {
             if (player == Main.LocalPlayer)
             {
-                if (player.ItemAnimationActive)
+                if (player.ItemAnimationActive && player.altFunctionUse == 1)
                 {
                     if (attackDirection == 1)
                     {
@@ -78,14 +99,19 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int offsetFactor = Main.rand.Next(5, 10);
-            int offset = Main.rand.Next(-20, 20);
-            float rotation = position.DirectionTo(Main.MouseWorld).ToRotation();
-            Vector2 offsetV = new Vector2(Main.rand.Next(-offsetFactor, offsetFactor), offset);
+            if (player.altFunctionUse == 2)
+            {
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LivingBranch>(), damage, knockback, player.whoAmI);
+            }
+            else
+            {
+                int offsetFactor = Main.rand.Next(5, 10);
+                int offset = Main.rand.Next(-10, 10);
+                float rotation = position.DirectionTo(Main.MouseWorld).ToRotation();
+                Vector2 offsetV = new Vector2(Main.rand.Next(-offsetFactor, offsetFactor), offset);
 
-            Projectile.NewProjectileDirect(source, position + offsetV.RotatedBy(rotation), velocity, ModContent.ProjectileType<NaturesWrathPro>(), damage, knockback, player.whoAmI, 0f);
-
-            attackDirection = -attackDirection;
+                Projectile.NewProjectileDirect(source, position + offsetV.RotatedBy(rotation), velocity, ModContent.ProjectileType<NaturesWrathPro>(), damage, knockback, player.whoAmI, 0f);
+            }
 
             return false;
         }
@@ -104,8 +130,8 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.scale = 1f;
-            Projectile.width = Projectile.height = 16;
+            Projectile.scale = 2f;
+            Projectile.Size = new Vector2(16);
 
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
@@ -160,6 +186,8 @@ namespace Divergency.Content.Items.Weapons.Melee
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Leaf>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
                 dust.noGravity = true;
             }
+
+
 
             Projectile.ai[1] = 1;
         }

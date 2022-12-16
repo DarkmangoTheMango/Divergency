@@ -2,7 +2,7 @@
 
 namespace Divergency.Common.Players
 {
-    public class ComboSystem : ModPlayer
+    public class PlayerCombo : ModPlayer
     {
         public int itemCombo;
         public int itemComboReset;

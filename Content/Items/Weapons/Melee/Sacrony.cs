@@ -64,7 +64,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.GetModPlayer<ComboSystem>().itemCombo <= 2) { attackDirection = -attackDirection; }
+            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2) { attackDirection = -attackDirection; }
 
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
             
@@ -73,17 +73,17 @@ namespace Divergency.Content.Items.Weapons.Melee
                 MaxInstances = -1,
             }, player.Center);
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo >= 5) { player.GetModPlayer<ComboSystem>().itemCombo = 0; }
+            if (player.GetModPlayer<PlayerCombo>().itemCombo >= 5) { player.GetModPlayer<PlayerCombo>().itemCombo = 0; }
 
-            player.GetModPlayer<ComboSystem>().itemCombo++;
-            player.GetModPlayer<ComboSystem>().itemComboReset = 480;
+            player.GetModPlayer<PlayerCombo>().itemCombo++;
+            player.GetModPlayer<PlayerCombo>().itemComboReset = 480;
 
             return false;
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            if (player.GetModPlayer<ComboSystem>().itemCombo >= 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo >= 3)
             {
                 velocity = velocity.RotatedByRandom(MathHelper.ToRadians(15));
             }
@@ -197,7 +197,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo <= 2)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
             {
                 player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
             }
@@ -214,7 +214,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 direction = Projectile.velocity;
                 direction.Normalize();
 
-                if (player.GetModPlayer<ComboSystem>().itemCombo <= 2)
+                if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
                 {
                     Projectile.rotation = Utils.ToRotation(direction);
                     Projectile.netUpdate = true;
@@ -223,11 +223,11 @@ namespace Divergency.Content.Items.Weapons.Melee
                 initialize = false;
             }
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo <= 2)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
             {
                 Projectile.Center = player.Center + direction * 45;
 
-                if (player.GetModPlayer<ComboSystem>().itemCombo == 3)
+                if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
                 {
                     Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -8.3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
                 }
@@ -269,7 +269,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo <= 2)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
             {
                 Texture2D texture = Request<Texture2D>(Texture).Value;
 
@@ -319,7 +319,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo <= 2)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
             {
                 float collisionPoint = 0f;
 

@@ -67,6 +67,7 @@ namespace Divergency.Content.Projectiles.Ranged
         }
 
         public Trail trail;
+        public Trail whiteTrail;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -74,12 +75,16 @@ namespace Divergency.Content.Projectiles.Ranged
 
             if (trail == null)
             {
-                trail = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(20f), (p) => Projectile.GetAlpha(Color.LightYellow));
+                trail = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(20f), (p) => Projectile.GetAlpha(new Color(255, 108, 23, 100)));
                 trail.drawOffset = Projectile.Size / 2f;
+
+                whiteTrail = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(10f), (p) => Projectile.GetAlpha(new Color(255, 247, 179, 100)));
+                whiteTrail.drawOffset = Projectile.Size / 2f;
             }
 
             trail.Draw(Projectile.oldPos);
-            
+            whiteTrail.Draw(Projectile.oldPos);
+
             return true;
         }
     }

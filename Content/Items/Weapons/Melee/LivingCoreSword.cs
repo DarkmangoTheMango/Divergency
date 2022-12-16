@@ -65,13 +65,13 @@ namespace Divergency.Content.Items.Weapons.Melee
             attackDirection = -attackDirection;
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo >= 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo >= 3)
             {
-                player.GetModPlayer<ComboSystem>().itemCombo = 0;
+                player.GetModPlayer<PlayerCombo>().itemCombo = 0;
             }
 
-            player.GetModPlayer<ComboSystem>().itemCombo++;
-            player.GetModPlayer<ComboSystem>().itemComboReset = 480;
+            player.GetModPlayer<PlayerCombo>().itemCombo++;
+            player.GetModPlayer<PlayerCombo>().itemComboReset = 480;
 
             return false;
         }
@@ -125,7 +125,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 Projectile.rotation = Utils.ToRotation(direction);
                 Projectile.netUpdate = true;
 
-                if (player.GetModPlayer<ComboSystem>().itemCombo == 3)
+                if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
                 {
                     SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleFullRotation"), player.Center);
                 }
@@ -139,7 +139,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             Projectile.Center = player.Center + direction * 45;
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo == 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -8.3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
             }

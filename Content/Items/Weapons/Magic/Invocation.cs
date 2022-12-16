@@ -1,7 +1,6 @@
 ﻿using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Projectiles.Magic;
-using Divergency.Content.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -17,10 +16,12 @@ namespace Divergency.Content.Items.Weapons.Magic
     {
         public override Vector2? HoldoutOffset() => Vector2.Zero;
 
+        public override bool CanUseItem(Player player) => player.statMana >= 20;
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Commandant's Guide To Invocation");
-            Tooltip.SetDefault("Hold <left> to charge");
+            Tooltip.SetDefault("Uses 10 mana (20 when charged)\nHold <left> to charge");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -29,7 +30,6 @@ namespace Divergency.Content.Items.Weapons.Magic
         {
             Item.DamageType = DamageClass.Magic;
             Item.damage = 15;
-            Item.crit = 3;
             Item.knockBack = 5f;
             Item.noMelee = true;
 
@@ -51,10 +51,9 @@ namespace Divergency.Content.Items.Weapons.Magic
 
         public override void HoldItem(Player player)
         {
-            if (player == Main.LocalPlayer)
+            if (player.ItemAnimationActive)
             {
-                if (player.ItemAnimationActive) { player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation - MathHelper.PiOver2 * player.direction); }
-                else { player.SetCompositeArmFront(false, default, default); }
+                player.manaRegenDelay = 120;
             }
         }
     }
@@ -157,13 +156,17 @@ namespace Divergency.Content.Items.Weapons.Magic
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot"), player.Center);
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
 
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<SaraishiPlusSlash>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner, 0f, 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner, 0f, 1);
+                player.statMana -= 20;
             }
             else
             {
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 12f, ModContent.ProjectileType<SaraishiPlusSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 12f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0);
+                player.statMana -= 10;
             }
+
+            player.manaRegenDelay = 120;
         }
 
         public override bool PreDraw(ref Color lightColor)

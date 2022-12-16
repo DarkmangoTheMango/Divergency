@@ -21,7 +21,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aku Saraishi");
+            DisplayName.SetDefault("(Work In Progress) Aku Saraishi");
             Tooltip.SetDefault("Aw shit I forgot the tooltip :skull:");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;

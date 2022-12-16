@@ -63,13 +63,13 @@ namespace Divergency.Content.Items.Weapons.Melee
                 if (player.ItemAnimationActive) { player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation - MathHelper.PiOver2 * player.direction); }
                 else { player.SetCompositeArmFront(false, default, default); }
 
-                Item.useTime = Item.useAnimation = setItemTime - (player.GetModPlayer<ComboSystem>().itemCombo * 10);
+                Item.useTime = Item.useAnimation = setItemTime - (player.GetModPlayer<PlayerCombo>().itemCombo * 10);
             }
         }
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
         {
-            if (player.GetModPlayer<ComboSystem>().itemCombo == 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
                 Item.damage = 45;
             }
@@ -84,7 +84,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             attackDirection = -attackDirection;
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo == 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleInflamed")
                 {
@@ -230,7 +230,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 initialize = false;
             }
 
-            Projectile.frame = player.GetModPlayer<ComboSystem>().itemCombo;
+            Projectile.frame = player.GetModPlayer<PlayerCombo>().itemCombo;
 
             Projectile.Center = player.Center + direction * 45;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -2f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
@@ -243,13 +243,13 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             if (oldRotation.Count > 10) { oldRotation.RemoveAt(0); }
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo == 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
                 Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40f, 90f), DustID.GemAmethyst, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 2f);
                 dust.noGravity = true;
             }
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo == 2)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 2)
             {
                 if (Main.rand.NextBool(5))
                 {
@@ -263,9 +263,9 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo < 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo < 3)
             {
-                player.GetModPlayer<ComboSystem>().itemCombo += 1;
+                player.GetModPlayer<PlayerCombo>().itemCombo += 1;
                 SoundEngine.PlaySound(SoundID.AbigailUpgrade, target.Center);
 
                 for (int i = 0; i < 10; i++)
@@ -277,9 +277,9 @@ namespace Divergency.Content.Items.Weapons.Melee
                 }
             }
 
-            player.GetModPlayer<ComboSystem>().itemComboReset = 300;
+            player.GetModPlayer<PlayerCombo>().itemComboReset = 300;
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo == 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
                 target.AddBuff(BuffID.ShadowFlame, 300);
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, target.Center);
@@ -304,7 +304,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             float rotation = Projectile.rotation + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f);
 
-            if (player.GetModPlayer<ComboSystem>().itemCombo == 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
                 for (int k = 10; k > 0; k--)
                 {
