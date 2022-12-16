@@ -30,7 +30,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Shard Slayer");
+            DisplayName.SetDefault("Living Core Slayer");
             Tooltip.SetDefault("Overheats when used enough\n<right> to throw the gun when overheated, detonating it on impact");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
@@ -183,6 +183,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Projectile.localNPCHitCooldown = -1;
         }
 
+        float timer = 0f;
+
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
@@ -202,9 +204,9 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
                 Projectile.velocity.X *= 0.9f;
 
-                Projectile.ai[2]++;
+                timer++;
 
-                if (Projectile.ai[2] >= 40f)
+                if (timer >= 40f)
                 {
                     Projectile.Kill();
                 }
@@ -213,9 +215,9 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            if (Math.Abs(Projectile.velocity.X - oldVelocity.X) > float.Epsilon) { Projectile.velocity.X = -oldVelocity.X; }
+            if (Math.Abs(Projectile.velocity.X - oldVelocity.X) >= float.Epsilon) { Projectile.velocity.X = -oldVelocity.X; }
 
-            if (Math.Abs(Projectile.velocity.Y - oldVelocity.Y) > float.Epsilon) { Projectile.velocity.Y = -oldVelocity.Y * 0.2f; }
+            if (Math.Abs(Projectile.velocity.Y - oldVelocity.Y) >= float.Epsilon) { Projectile.velocity.Y = -oldVelocity.Y * 0.2f; }
 
             if (Projectile.ai[1] == 0)
             {
@@ -257,7 +259,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
             for (int k = 0; k < 20; k++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Smoke>(), Main.rand.NextVector2Circular(1f, 1f) * 10f, 0, new Color(255, 217, 0), 3f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SmokeIncendiary>(), new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, -1f)), 0, new Color(255, 217, 0), 3f);
                 dust.noGravity = true;
 
                 dust = Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 2f);
