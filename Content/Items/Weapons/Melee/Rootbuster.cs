@@ -1,5 +1,6 @@
 ﻿using Divergency.Common.Helpers;
-using Divergency.Content.Projectiles.Melee;
+using Divergency.Common.Players;
+using Divergency.Content.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -7,22 +8,24 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
-    public class SaraishiPlus : ModItem
+    public class Rootbuster : ModItem
     {
         public int attackDirection = 1;
+        int setItemTime;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("(Work In Progress) Aku Saraishi");
-            Tooltip.SetDefault("Aw shit I forgot the tooltip :skull:");
+            DisplayName.SetDefault("Rootbuster");
+            Tooltip.SetDefault("");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -31,16 +34,17 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 160;
-            Item.knockBack = 7f;
+            Item.damage = 30;
+            Item.knockBack = 5f;
 
-            Item.shoot = ModContent.ProjectileType<SaraishiPlusPro>();
-            Item.shootSpeed = 1.5f;
+            Item.shoot = ModContent.ProjectileType<RootbusterPro>();
+            Item.shootSpeed = 10f;
 
-            Item.width = Item.height = 146;
+            Item.Size = new Vector2(44, 42);
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 15;
+            Item.useTime = Item.useAnimation = 50;
+            setItemTime = Item.useTime;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -62,26 +66,25 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             attackDirection = -attackDirection;
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, player.altFunctionUse == 2 ? 1f : 0f);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
 
-            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleSaraishi")
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleHammer")
             {
                 MaxInstances = -1,
-                Volume = 0.8f,
-                Pitch = attackDirection == -1 ? 0f : 0.2f
+                Pitch = attackDirection == -1 ? 0f : 0.3f
             }, player.Center);
 
             return false;
         }
     }
 
-    public class SaraishiPlusPro : ModProjectile
+    public class RootbusterPro : ModProjectile
     {
+        public override string Texture => "Divergency/Content/Items/Weapons/Melee/Rootbuster";
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aku Saraishi");
-
-            Main.projFrames[Projectile.type] = 2;
+            DisplayName.SetDefault("Rootbuster");
         }
 
         public override void SetDefaults()
@@ -91,14 +94,13 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.scale = 0.9f;
-            Projectile.Size = new Vector2(146);
+            Projectile.scale = 3f;
+            Projectile.Size = new Vector2(32);
 
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
 
             Projectile.aiStyle = -1;
-            Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.ownerHitCheck = true;
@@ -112,46 +114,57 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         float maxTimeLeft;
 
-        public float SwingDirection => Projectile.ai[0] * Math.Sign(direction.X);
+        float SwingDirection => Projectile.ai[0] * Math.Sign(direction.X);
+
+        int pauseTimer;
+
+        int oldTimeleft;
 
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
-            player.heldProj = Projectile.whoAmI;
 
             if (initialize)
             {
                 float attackSpeed = player.GetTotalAttackSpeed(DamageClass.Melee) - 1f;
-                Projectile.timeLeft = (int)(player.HeldItem.useAnimation * (1f - attackSpeed)) * 2;
+
+                Projectile.timeLeft = (int)(player.HeldItem.useAnimation * (1f - attackSpeed));
                 maxTimeLeft = Projectile.timeLeft;
+
                 direction = Projectile.velocity;
                 direction.Normalize();
                 Projectile.rotation = Utils.ToRotation(direction);
                 Projectile.netUpdate = true;
 
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<SaraishiPlusSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, SwingDirection);
-
                 initialize = false;
             }
 
-            Projectile.Center = player.Center + direction * 45;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2.5f * SwingDirection, -2.5f * SwingDirection, EaseFunction.EaseCircularOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
-            Projectile.scale = 0.8f + (float)Math.Sin(EaseFunction.EaseCircularOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.7f * 0.7f;
+            if (--pauseTimer > 0) { Projectile.timeLeft = oldTimeleft; }
 
-            if (SwingDirection > 0) { Projectile.frame = 1; }
-            else { Projectile.frame = 0; }
+            Projectile.frame = player.GetModPlayer<PlayerCombo>().itemCombo;
+
+            if (pauseTimer <= 0) { Projectile.Center = player.Center + direction * 45; }
+            if (pauseTimer <= 0) { Projectile.scale = 2f + (float)Math.Sin(EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.6f * 0.6f; }
+
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(3f * SwingDirection, -3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
+
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
+
+            player.heldProj = Projectile.whoAmI;
 
             oldRotation.Add(Projectile.rotation);
 
             if (oldRotation.Count > 10) { oldRotation.RemoveAt(0); }
-
-            Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(50f, 146f), DustID.AmberBolt, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 1.5f).noGravity = true;
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, ModContent.ProjectileType<SaraishiStrike>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+            Player player = Main.player[Projectile.owner];
+
+            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 8;
+
+            oldTimeleft = Projectile.timeLeft;
+            pauseTimer = 8;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -159,28 +172,15 @@ namespace Divergency.Content.Items.Weapons.Melee
             Player player = Main.player[Projectile.owner];
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
+            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            Vector2 position = player.Center + Projectile.rotation.ToRotationVector2() * 80f - Main.screenPosition;
+            Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 60f - Main.screenPosition;
 
             SpriteEffects drawFlipped = player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
 
             float rotation = Projectile.rotation + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f);
 
-            for (int k = 10; k > 0; k--)
-            {
-                float progress = 1 - (float)(((float)(10 - k) / (float)10));
-                Color color = Color.Lerp(Color.Orange, Color.Transparent, 0f) * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
-
-                if (Projectile.timeLeft < 20) { color = Color.Lerp(color, Color.Transparent, 1f - (Projectile.timeLeft / 10f) * k); }
-
-                color.A = 0;
-
-                if (k > 0 && k < oldRotation.Count) { Main.spriteBatch.Draw(texture, position, sourceRectangle, color, oldRotation[k] + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f), origin, Projectile.scale * 1.2f, 
-                    drawFlipped, 0f); }
-            }
-
-            Main.spriteBatch.Draw(texture, position, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
+            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
 
             return false;
         }
@@ -190,9 +190,14 @@ namespace Divergency.Content.Items.Weapons.Melee
             Player player = Main.player[Projectile.owner];
             float collisionPoint = 0f;
 
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((146 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
+            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((44 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
 
             return false;
         }
+    }
+
+    public class RootbusterNPC : GlobalNPC
+    {
+
     }
 }

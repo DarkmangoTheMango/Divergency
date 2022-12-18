@@ -37,7 +37,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.damage = 30;
-            Item.knockBack = 5f;
+            Item.knockBack = 6.5f;
 
             Item.shoot = ProjectileType<ShadowbrandPro>();
             Item.shootSpeed = 1f;

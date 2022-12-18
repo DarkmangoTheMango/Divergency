@@ -30,7 +30,7 @@ namespace Divergency.Content.Items.Weapons.Magic
         {
             Item.DamageType = DamageClass.Magic;
             Item.damage = 15;
-            Item.knockBack = 5f;
+            Item.knockBack = 7f;
             Item.noMelee = true;
 
             Item.shoot = ModContent.ProjectileType<InvocationHoldout>();

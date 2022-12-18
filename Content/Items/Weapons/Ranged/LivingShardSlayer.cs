@@ -41,7 +41,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Item.DamageType = DamageClass.Ranged;
             Item.damage = 8;
             Item.crit = 3;
-            Item.knockBack = 5f;
+            Item.knockBack = 8f;
             Item.noMelee = true;
 
             Item.useAmmo = AmmoID.Bullet;
@@ -187,7 +187,6 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
 
             Projectile.rotation += Projectile.velocity.Length() * (Projectile.direction * 0.04f);
 
@@ -210,6 +209,10 @@ namespace Divergency.Content.Items.Weapons.Ranged
                 {
                     Projectile.Kill();
                 }
+            }
+            else
+            {
+                Projectile.velocity.X *= 0.98f;
             }
         }
 
