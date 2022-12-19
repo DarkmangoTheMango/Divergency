@@ -64,8 +64,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2) { attackDirection = -attackDirection; }
-
+            attackDirection = -attackDirection;
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
             
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleSacrony")
@@ -73,20 +72,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 MaxInstances = -1,
             }, player.Center);
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo >= 5) { player.GetModPlayer<PlayerCombo>().itemCombo = 0; }
-
-            player.GetModPlayer<PlayerCombo>().itemCombo++;
-            player.GetModPlayer<PlayerCombo>().itemComboReset = 480;
-
             return false;
-        }
-
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        {
-            if (player.GetModPlayer<PlayerCombo>().itemCombo >= 3)
-            {
-                velocity = velocity.RotatedByRandom(MathHelper.ToRadians(15));
-            }
         }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
@@ -197,14 +183,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
-            {
-                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
-            }
-            else
-            {
-                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.velocity.ToRotation() - MathHelper.PiOver2);
-            }
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
 
             if (initialize)
             {
@@ -222,115 +201,64 @@ namespace Divergency.Content.Items.Weapons.Melee
 
                 initialize = false;
             }
+            Projectile.Center = player.Center + direction * 45;
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
-            {
-                Projectile.Center = player.Center + direction * 45;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -2f * SwingDirection, EaseFunction.EaseCircularOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
 
-                if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
-                {
-                    Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -8.3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
-                }
-                else
-                {
-                    Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -2f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
-                }
+            Projectile.scale = 0.8f + (float)Math.Sin(EaseFunction.EaseCircularOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.6f * 0.6f;
 
-                Projectile.scale = 0.8f + (float)Math.Sin(EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.6f * 0.6f;
+            player.heldProj = Projectile.whoAmI;
 
-                player.heldProj = Projectile.whoAmI;
+            oldRotation.Add(Projectile.rotation);
 
-                oldRotation.Add(Projectile.rotation);
+            if (oldRotation.Count > 10) { oldRotation.RemoveAt(0); }
 
-                if (oldRotation.Count > 10) { oldRotation.RemoveAt(0); }
-
-                Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f), DustID.PortalBolt, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, Color.BlueViolet, 2f);
-                dust.noGravity = true;
-            }
-            else
-            {
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
-
-                if (Projectile.timeLeft < maxTimeLeft / 2)
-                {
-                    Projectile.Center = player.MountedCenter + Vector2.Lerp(Projectile.velocity * 80, Projectile.velocity * 20, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
-                }
-                else
-                {
-                    Projectile.Center = player.MountedCenter + Vector2.Lerp(Projectile.velocity * 20, Projectile.velocity * 80, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
-                }
-
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10f, 10f), DustID.PortalBolt, Projectile.velocity * 2f, 0, Color.BlueViolet, 2f);
-                dust.noGravity = true;
-            }
+            Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f), DustID.PortalBolt, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, Color.BlueViolet, 2f);
+            dust.noGravity = true;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
+            Texture2D texture = Request<Texture2D>(Texture).Value;
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
+            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 60f - Main.screenPosition;
+
+            SpriteEffects drawFlipped = player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
+
+            float rotation = Projectile.rotation + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f);
+
+            for (int k = 10; k > 0; k--)
             {
-                Texture2D texture = Request<Texture2D>(Texture).Value;
+                float progress = 1 - (float)(((float)(10 - k) / (float)10));
+                Color color = Color.Lerp(Color.Magenta, Color.Transparent, 0f) * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
 
-                Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
-                Vector2 origin = sourceRectangle.Size() / 2f;
-                Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 60f - Main.screenPosition;
+                if (Projectile.timeLeft < 20) { color = Color.Lerp(color, Color.Transparent, 1f - (Projectile.timeLeft / 10f) * k); }
 
-                SpriteEffects drawFlipped = player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
+                color.A = 0;
 
-                float rotation = Projectile.rotation + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f);
-
-                for (int k = 10; k > 0; k--)
+                if (k > 0 && k < oldRotation.Count)
                 {
-                    float progress = 1 - (float)(((float)(10 - k) / (float)10));
-                    Color color = Color.Lerp(Color.Magenta, Color.Transparent, 0f) * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
-
-                    if (Projectile.timeLeft < 20) { color = Color.Lerp(color, Color.Transparent, 1f - (Projectile.timeLeft / 10f) * k); }
-
-                    color.A = 0;
-
-                    if (k > 0 && k < oldRotation.Count)
-                    {
-                        Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, color, oldRotation[k] + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f), origin, Projectile.scale, drawFlipped,
-                        0f);
-                    }
+                    Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, color, oldRotation[k] + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f), origin, Projectile.scale, drawFlipped,
+                    0f);
                 }
-
-                Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
-
-                return false;
             }
-            else
-            {
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
-                Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
-                Vector2 origin = sourceRectangle.Size() / 2f;
 
-                Color drawColor = Projectile.GetAlpha(lightColor);
-                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), sourceRectangle, drawColor, Projectile.rotation, origin, 1, spriteEffects, 0f);
+            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
 
-                return false;
-            }
+            return false;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             Player player = Main.player[Projectile.owner];
+            float collisionPoint = 0f;
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo <= 2)
-            {
-                float collisionPoint = 0f;
+            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((114 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
 
-                if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((114 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
-
-                return false;
-            }
-            else
-            {
-                return base.Colliding(projHitbox, targetHitbox);
-            }
+            return false;
         }
     }
 }
