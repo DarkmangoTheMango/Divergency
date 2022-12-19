@@ -143,7 +143,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -6f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -8.3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
             }
             else
             {
@@ -160,9 +160,10 @@ namespace Divergency.Content.Items.Weapons.Melee
             {
                 oldRotation.RemoveAt(0);
             }
+
             if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
-                ParticleManager.NewParticle(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f), new Vector2(0f, 5f).RotatedBy(Projectile.rotation) * -SwingDirection, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2.55f, 0.5f, 0), 1.5f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
+                ParticleManager.NewParticle(player.Center + (Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f)), new Vector2(0f, Main.rand.NextFloat(1, 5)).RotatedBy(Projectile.rotation) * -SwingDirection, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.5f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
 
             }
         }
