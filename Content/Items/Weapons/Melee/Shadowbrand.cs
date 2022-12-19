@@ -36,7 +36,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 30;
+            Item.damage = 20;
             Item.knockBack = 5f;
 
             Item.shoot = ProjectileType<ShadowbrandPro>();
@@ -263,7 +263,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo < 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo < 8)
             {
                 player.GetModPlayer<PlayerCombo>().itemCombo += 1;
                 SoundEngine.PlaySound(SoundID.AbigailUpgrade, target.Center);
@@ -279,7 +279,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             player.GetModPlayer<PlayerCombo>().itemComboReset = 300;
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 8)
             {
                 target.AddBuff(BuffID.ShadowFlame, 300);
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, target.Center);

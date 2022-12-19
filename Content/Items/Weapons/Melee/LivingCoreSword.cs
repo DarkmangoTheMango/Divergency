@@ -1,7 +1,9 @@
+using Divergency.Assets.Particles;
 using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ParticleLibrary;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -141,7 +143,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -8.3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -6f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
             }
             else
             {
@@ -158,11 +160,21 @@ namespace Divergency.Content.Items.Weapons.Melee
             {
                 oldRotation.RemoveAt(0);
             }
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
+            {
+                ParticleManager.NewParticle(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f), new Vector2(0f, 5f).RotatedBy(Projectile.rotation) * -SwingDirection, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2.55f, 0.5f, 0), 1.5f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
 
-            Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f), DustID.TerraBlade, new Vector2(0f, 5f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 1.5f);
-            dust.noGravity = true;
+            }
         }
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            Player player = Main.player[Projectile.owner];
 
+            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
+            {
+                player.Heal(2);
+            }
+        }
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
@@ -194,6 +206,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                     0f);
                 }
             }
+            
 
             Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
 
