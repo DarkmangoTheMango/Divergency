@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\Textures\ParticleTextures\" />
-    <Folder Include="Content\Buffs\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ParticleLibrary">

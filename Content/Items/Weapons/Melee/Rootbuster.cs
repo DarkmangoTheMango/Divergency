@@ -24,7 +24,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rootbuster");
+            DisplayName.SetDefault("(Rework Pending) Rootbuster");
             Tooltip.SetDefault("");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;

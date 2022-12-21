@@ -90,6 +90,7 @@ namespace Divergency.Content.Items.Weapons.Magic
             if (initilize)
             {
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationCharge"), player.Center);
+                Projectile.damage = 0;
                 initilize = false;
             }
 

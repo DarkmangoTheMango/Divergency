@@ -15,7 +15,7 @@ namespace Divergency.Content.Items.Weapons.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("(Work In Progress) Ripsaw");
+            DisplayName.SetDefault("(Rework Pending) Ripsaw");
             Tooltip.SetDefault("'These filthy trees will shat themselves!'"
             +"\nPenetrates 3 enemy defense");
 
