@@ -16,6 +16,7 @@ namespace Divergency.Content.Items.Weapons.Melee
     public class Saraishi : ModItem
     {
         public int attackDirection = 1;
+        private int attackcounter;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
 
@@ -31,7 +32,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 60;
+            Item.damage = 20;
             Item.knockBack = 7f;
 
             Item.shoot = ModContent.ProjectileType<SaraishiPro>();
@@ -40,7 +41,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.width = Item.height = 16;
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 17;
+            Item.useTime = Item.useAnimation = 28;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -61,8 +62,14 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            attackcounter++;
             attackDirection = -attackDirection;
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, player.altFunctionUse == 2 ? 1f : 0f);
+            if (attackcounter == 5)
+            {
+                Projectile.NewProjectile(Item.GetSource_FromAI(), position, velocity * 20f, ModContent.ProjectileType<SaraishiSlash>(), damage, knockback, player.whoAmI, 0f);
+                attackcounter = 0;
+            }
 
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleSaraishi")
             {
@@ -128,7 +135,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 Projectile.rotation = Utils.ToRotation(direction);
                 Projectile.netUpdate = true;
 
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<SaraishiSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, SwingDirection);
+              
 
                 initialize = false;
             }
@@ -143,7 +150,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             if (oldRotation.Count > 10) { oldRotation.RemoveAt(0); }
 
-            Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(20f, 100f), DustID.AmberBolt, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 1f).noGravity = true;
+           // Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(20f, 100f), DustID.AmberBolt, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 1f).noGravity = true;
         }
 
         public override bool PreDraw(ref Color lightColor)

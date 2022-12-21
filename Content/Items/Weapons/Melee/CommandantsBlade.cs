@@ -33,7 +33,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 23;
+            Item.damage = 28;
             Item.knockBack = 10f;
 
             Item.shoot = ProjectileType<CommandantsBladePro>();
@@ -121,7 +121,8 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (--pauseTimer > 0 && maxHits > 0) { Projectile.timeLeft = oldTimeleft; }
 
             Player player = Main.player[Projectile.owner];
-
+            player.statDefense += 10;
+      
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
             player.ChangeDir(Projectile.velocity.X > 0 ? 1 : -1);
 
@@ -134,6 +135,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 direction.Normalize();
                 Projectile.rotation = Utils.ToRotation(direction);
                 Projectile.netUpdate = true;
+                player.velocity = new Vector2(0,0);
 
                 initialize = false;
             }
@@ -153,7 +155,6 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             Player player = Main.player[Projectile.owner];
-
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
 
             oldTimeleft = Projectile.timeLeft;
@@ -208,6 +209,11 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((96f * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
 
             return false;
+        }
+        public override void Kill(int timeLeft)
+        {
+            Player player = Main.player[Projectile.owner];
+
         }
     }
 }
