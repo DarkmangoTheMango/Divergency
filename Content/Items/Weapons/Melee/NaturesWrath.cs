@@ -1,4 +1,5 @@
 ﻿using Divergency.Common.Helpers;
+using Divergency.Common.Players;
 using Divergency.Content.Dusts;
 using Divergency.Content.Projectiles.Melee;
 using Microsoft.Xna.Framework;
@@ -16,14 +17,12 @@ namespace Divergency.Content.Items.Weapons.Melee
 {
     public class NaturesWrath : ModItem
     {
-        public int attackDirection = 1;
-
         public override bool AltFunctionUse(Player player) => true;
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Nature's Wrath");
-            Tooltip.SetDefault("");
+            Tooltip.SetDefault("<right> to throw a branch \nhitting branches with your fists amplifies your damage");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -32,16 +31,16 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 10;
+            Item.damage = 8;
             Item.knockBack = 3.25f;
 
             Item.shoot = ModContent.ProjectileType<NaturesWrathPro>();
             Item.shootSpeed = 5f;
 
-            Item.Size = new Vector2(28);
+            Item.Size = new Vector2(26, 28);
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 30;
+            Item.useTime = Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item1;
             Item.noUseGraphic = true;
@@ -57,12 +56,14 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (Player.altFunctionUse == 2)
             {
                 Item.shoot = ModContent.ProjectileType<LivingBranch>();
+                Item.shootSpeed = 10f;
 
                 Item.useStyle = ItemUseStyleID.Swing;
             }
             else
             {
                 Item.shoot = ModContent.ProjectileType<NaturesWrathPro>();
+                Item.shootSpeed = 5f;
 
                 Item.useStyle = ItemUseStyleID.Shoot;
             }
@@ -70,38 +71,11 @@ namespace Divergency.Content.Items.Weapons.Melee
             return true;
         }
 
-        public override void HoldItem(Player player)
-        {
-            if (player == Main.LocalPlayer)
-            {
-                if (player.ItemAnimationActive && player.altFunctionUse == 1)
-                {
-                    if (attackDirection == 1)
-                    {
-                        if (player.itemAnimation < player.itemAnimationMax / 3) { player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation - MathHelper.PiOver2 * player.direction); }
-                        else if (player.itemAnimation < player.itemAnimationMax / 1.5f) { player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.ThreeQuarters, player.itemRotation - MathHelper.PiOver2 * player.direction); }
-                        else { player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Quarter, player.itemRotation - MathHelper.PiOver2 * player.direction); }
-                    }
-                    else
-                    {
-                        if (player.itemAnimation < player.itemAnimationMax / 3) { player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, player.itemRotation - MathHelper.PiOver2 * player.direction); }
-                        else if (player.itemAnimation < player.itemAnimationMax / 1.5f) { player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.ThreeQuarters, player.itemRotation - MathHelper.PiOver2 * player.direction); }
-                        else { player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Quarter, player.itemRotation - MathHelper.PiOver2 * player.direction); }
-                    }
-                }
-                else
-                {
-                    player.SetCompositeArmFront(false, default, default);
-                    player.SetCompositeArmBack(false, default, default);
-                }
-            }
-        }
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LivingBranch>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LivingBranch>(), damage / 2, knockback, player.whoAmI);
             }
             else
             {
@@ -130,7 +104,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.scale = 2f;
+            Projectile.scale = 1f;
             Projectile.Size = new Vector2(16);
 
             Projectile.tileCollide = false;
@@ -150,6 +124,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void AI()
         {
+            Player player = Main.player[Projectile.owner];
+
             if (initilize)
             {
                 maxTimeLeft = Projectile.timeLeft;
@@ -175,6 +151,19 @@ namespace Divergency.Content.Items.Weapons.Melee
             {
                 Projectile.Kill();
             }
+
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile projectile = Main.projectile[i];
+
+                if (projectile.type == ModContent.ProjectileType<LivingBranch>() && projectile.active && Projectile.Hitbox.Intersects(projectile.Hitbox) && projectile.friendly)
+                {
+                    projectile.Kill();
+                    player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 5;
+
+                    SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.position);
+                }
+            }
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
@@ -186,8 +175,6 @@ namespace Divergency.Content.Items.Weapons.Melee
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Leaf>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
                 dust.noGravity = true;
             }
-
-
 
             Projectile.ai[1] = 1;
         }

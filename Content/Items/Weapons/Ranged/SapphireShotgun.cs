@@ -22,7 +22,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("(Work In Progress) Sapphire Shotgun");
+            DisplayName.SetDefault("(Unused) Sapphire Shotgun");
             Tooltip.SetDefault("");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
