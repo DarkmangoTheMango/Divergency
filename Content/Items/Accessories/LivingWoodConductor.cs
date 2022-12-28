@@ -111,7 +111,7 @@ namespace Divergency.Content.Items.Accessories
         }
         public override void AI()
         {
-            Projectile.velocity.Y += 0.1f;
+            Projectile.velocity.Y += 0.2f;
             Projectile.velocity.X *= 0.99f;
             for (int i = 0; i < Main.maxNetPlayers; i++)
             {
@@ -127,13 +127,12 @@ namespace Divergency.Content.Items.Accessories
             Projectile.rotation += Projectile.velocity.Length() * (Projectile.direction * 0.04f);
 
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
-         
-             
-            
-
+            fallThrough = false;
+            return true;
         }
+
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             if (Math.Abs(Projectile.velocity.X - oldVelocity.X) >= float.Epsilon) { Projectile.velocity.X = -oldVelocity.X * 1f; }

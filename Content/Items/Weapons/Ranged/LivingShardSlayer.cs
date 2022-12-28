@@ -231,6 +231,11 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
             return false;
         }
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
