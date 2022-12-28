@@ -60,7 +60,7 @@ namespace Divergency.Content.Items.Accessories
         {
             Projectile.damage = 30;
             Projectile.penetrate = -1;
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.DamageType = DamageClass.Generic;
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.hide = true;
