@@ -16,7 +16,7 @@ namespace Divergency.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Critical strikes inflict Shred \n7% increased critical strike chance");
+            Tooltip.SetDefault($"Critical strikes inflict Shred [i:{ModContent.ItemType<ShredIcon>()}] \n7% increased critical strike chance");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }

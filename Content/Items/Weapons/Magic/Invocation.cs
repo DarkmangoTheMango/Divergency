@@ -51,10 +51,7 @@ namespace Divergency.Content.Items.Weapons.Magic
 
         public override void HoldItem(Player player)
         {
-            if (player.ItemAnimationActive)
-            {
-                player.manaRegenDelay = 120;
-            }
+            if (player.ItemAnimationActive) { player.manaRegenDelay = 120; }
         }
     }
 
@@ -68,7 +65,7 @@ namespace Divergency.Content.Items.Weapons.Magic
         {
             Projectile.penetrate = -1;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.friendly = true;
+            Projectile.friendly = false;
             Projectile.hostile = false;
 
             Projectile.scale = 1f;
@@ -90,7 +87,6 @@ namespace Divergency.Content.Items.Weapons.Magic
             if (initilize)
             {
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationCharge"), player.Center);
-                Projectile.damage = 0;
                 initilize = false;
             }
 
@@ -111,10 +107,7 @@ namespace Divergency.Content.Items.Weapons.Magic
             Projectile.timeLeft = 2;
             Projectile.Center = player.MountedCenter;
 
-            if (!player.channel)
-            {
-                Projectile.Kill();
-            }
+            if (!player.channel) { Projectile.Kill(); }
 
             AbstractAI();
         }

@@ -7,13 +7,12 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.Items.Weapons.Magic
 {
-    public class LivingLeafStorm : ModItem
+    public class LivingBolt : ModItem
     {
         public override Vector2? HoldoutOffset() => Vector2.Zero;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Bolt");
             Tooltip.SetDefault("Casts a living core that bounces off tiles");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
@@ -24,7 +23,7 @@ namespace Divergency.Content.Items.Weapons.Magic
             Item.DamageType = DamageClass.Magic;
             Item.damage = 20;
             Item.mana = 15;
-            Item.knockBack = 5f;
+            Item.knockBack = 3f;
             Item.noMelee = true;
 
             Item.shoot = ModContent.ProjectileType<LivingLeaf>();
