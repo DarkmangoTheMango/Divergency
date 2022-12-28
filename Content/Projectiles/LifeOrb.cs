@@ -46,6 +46,8 @@ namespace Divergency.Content.Projectiles
             {
                 player.Heal(2);
                 Projectile.Kill();
+                SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact with { Volume = 0.8f, MaxInstances = 3 });
+
                 for (int i = 0; i < 10; i++)
                 {
                     Vector2 dir = Main.rand.NextVector2Unit() * 0.1f;
