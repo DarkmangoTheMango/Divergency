@@ -22,7 +22,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("(Work In Progress) Saraishi");
+            DisplayName.SetDefault("Shinohi");
             Tooltip.SetDefault("Aw shit I forgot the tooltip :skull:");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
@@ -67,7 +67,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, player.altFunctionUse == 2 ? 1f : 0f);
             if (attackcounter == 5)
             {
-                Projectile.NewProjectile(Item.GetSource_FromAI(), position, velocity * 20f, ModContent.ProjectileType<SaraishiSlash>(), damage, knockback, player.whoAmI, 0f);
+                Projectile.NewProjectile(Item.GetSource_FromAI(), position, velocity * 20f, ModContent.ProjectileType<SaraishiSlash>(), damage / 2, knockback * 0, player.whoAmI, 0f);
                 attackcounter = 0;
             }
 

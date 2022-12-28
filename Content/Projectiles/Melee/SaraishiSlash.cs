@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace Divergency.Content.Projectiles.Melee
@@ -19,7 +21,7 @@ namespace Divergency.Content.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.scale = 2f;
+            Projectile.scale = 1.4f;
             Projectile.Size = new Vector2(34);
             Projectile.alpha = 255;
 
@@ -33,6 +35,10 @@ namespace Divergency.Content.Projectiles.Melee
 
         public override void AI()
         {
+            Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
+
+            Dust.NewDustPerfect(Projectile.Center, DustID.GemTopaz, speed * 3, 0, Color.Orange, 0.8f);
+
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.direction = Projectile.spriteDirection = (Projectile.velocity.X >= 0f) ? 1 : -1;
 
@@ -57,6 +63,16 @@ namespace Divergency.Content.Projectiles.Melee
         {
             Projectile.ai[0] = 15;
             Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, ModContent.ProjectileType<SaraishiStrike>(), Projectile.damage, 0f, Projectile.owner);
+            for (int i = 0; i < 20; i++)
+            {
+                Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
+                SoundEngine.PlaySound(SoundID.DD2_KoboldExplosion with { Volume = 0.8f, MaxInstances = 1 });
+                Dust.NewDustPerfect(Projectile.Center, DustID.GemTopaz, speed * 3, 0, Color.OrangeRed, 1f);
+            }
+        }
+        public override void Kill(int timeLeft)
+        {
+          
         }
 
         public override bool PreDraw(ref Color lightColor)
