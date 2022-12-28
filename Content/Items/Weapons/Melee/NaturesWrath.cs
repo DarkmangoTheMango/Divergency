@@ -56,7 +56,8 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (Player.altFunctionUse == 2)
             {
                 Item.shoot = ModContent.ProjectileType<LivingBranch>();
-                Item.shootSpeed = 10f;
+                Item.shootSpeed = 60f;
+                
 
                 Item.useStyle = ItemUseStyleID.Swing;
             }

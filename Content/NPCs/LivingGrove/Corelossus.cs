@@ -15,15 +15,13 @@ namespace Divergency.Content.NPCs.LivingGrove
 {
     [AutoloadBossHead]
 
-    public class Guardian : ModNPC
+    public class Corelossus : ModNPC
     {
         int startingFrame;
 
         int endingFrame;
 
         int framerate;
-
-        int combatFrame = 6;
 
         float maxSpeed = 2f;
 
@@ -39,24 +37,27 @@ namespace Divergency.Content.NPCs.LivingGrove
             moving
         }
 
-        State state = State.moving;
+        State state = 0;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 11;
+            Main.npcFrameCount[NPC.type] = 4;
+
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0) { Velocity = 0f };
+            NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
         }
 
         public override void SetDefaults()
         {
-            NPC.lifeMax = 100;
-            NPC.damage = 30;
-            NPC.defense = 20;
-            NPC.knockBackResist = 0.2f;
+            NPC.lifeMax = 200;
+            NPC.damage = 40;
+            NPC.defense = 25;
+            NPC.knockBackResist = 0.1f;
 
             NPC.noTileCollide = true;
 
             NPC.scale = 1f;
-            NPC.Size = new Vector2(44f, 54f);
+            NPC.Size = new Vector2(82f, 86f);
 
             NPC.HitSound = SoundID.DD2_WitherBeastHurt;
             NPC.DeathSound = SoundID.DD2_WitherBeastDeath;
@@ -71,7 +72,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
-                new FlavorTextBestiaryInfoElement("The most common creature in The Living Grove. Protecting it from weak adventurers and taking care of the tree itself. They have been observed displaying behavior similar to bees...")
+                new FlavorTextBestiaryInfoElement("A trio of Guardians, fuesed by the roots from which they emerged...")
             });
         }
 
@@ -81,12 +82,24 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             NPC.TargetClosest(true);
 
-            NPC.spriteDirection = NPC.direction;
             NPC.rotation = NPC.velocity.X * 0.1f;
 
             Lighting.AddLight(NPC.Center, new Color(79, 214, 126).ToVector3());
 
-            if (NPC.ai[0] >= 240f)
+            if (NPC.ai[0] >= 360f)
+            {
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 0.5f }, NPC.Center);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, (NPC.DirectionTo(target.Center) * 10f).RotatedByRandom(0.3f), ModContent.ProjectileType<GuardianBeam>(), NPC.damage, 3f, 0);
+                }
+
+                NPC.velocity -= NPC.DirectionTo(target.Center) * 3f;
+
+                NPC.ai[0] = 0f;
+            }
+            else if (NPC.ai[0] >= 240f)
             {
                 state = State.attacking;
 
@@ -96,26 +109,16 @@ namespace Divergency.Content.NPCs.LivingGrove
                 dust.noGravity = true;
 
                 NPC.velocity *= 0.98f;
-
-                if (attacking)
-                {
-                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(target.Center) * 10f, ModContent.ProjectileType<GuardianBeam>(), NPC.damage, 3f, 0);
-
-                    NPC.velocity -= NPC.DirectionTo(target.Center) * 3f;
-
-                    attacking = false;
-                }
             }
             else
             {
+                state = State.moving;
+
                 if (NPC.Distance(target.Center) >= 400f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
                 else if (NPC.Distance(target.Center) <= 200f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
                 else { NPC.velocity *= 0.98f; }
 
-                if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 0.1f; }
-
-                state = State.moving;
+                if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 1f; }
             }
 
             if (NPC.velocity.X >= maxSpeed) { NPC.velocity.X = maxSpeed; }
@@ -134,55 +137,29 @@ namespace Divergency.Content.NPCs.LivingGrove
                 Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 2f);
             }
 
-            if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); }
+            if (Main.netMode != NetmodeID.Server) { for (int i = 0; i < 3; i++) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); } }
         }
 
         public override void FindFrame(int frameHeight)
         {
-            if (state == State.moving)
+            startingFrame = 0;
+            endingFrame = 3;
+            framerate = 5;
+
+            NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
+
+            if (NPC.frameCounter >= framerate)
             {
-                startingFrame = 0;
-                endingFrame = 3;
-                framerate = 5;
+                NPC.frameCounter = 0;
+                NPC.frame.Y += frameHeight;
 
-                NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
-
-                if (NPC.frameCounter >= framerate)
-                {
-                    NPC.frameCounter = 0;
-                    NPC.frame.Y += frameHeight;
-
-                    if (NPC.frame.Y > endingFrame * frameHeight) { NPC.frame.Y = startingFrame * frameHeight; }
-                }
-            }
-
-            if (state == State.attacking)
-            {
-                startingFrame = 5;
-                endingFrame = 10;
-                framerate = 5;
-
-                NPC.frameCounter++;
-
-                if (NPC.frameCounter >= framerate)
-                {
-                    NPC.frameCounter = 0;
-                    NPC.frame.Y += frameHeight;
-
-                    if (NPC.frame.Y == combatFrame * frameHeight) { attacking = true; }
-
-                    if (NPC.frame.Y > endingFrame * frameHeight)
-                    {
-                        NPC.frame.Y = endingFrame * frameHeight;
-                        NPC.ai[0] = 0f;
-                    }
-                }
+                if (NPC.frame.Y > endingFrame * frameHeight) { NPC.frame.Y = startingFrame * frameHeight; }
             }
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Guardian_Glow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/GuardianCluster_Glow").Value;
 
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
             Color color = Color.White;
@@ -193,14 +170,14 @@ namespace Divergency.Content.NPCs.LivingGrove
         }
     }
 
-    public class GuardianSpawner : ModItem
+    public class CorelossusSpawner : ModItem
     {
         public override bool AltFunctionUse(Player player) => true;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Guardian");
-            Tooltip.SetDefault("Summons a Guardian");
+            DisplayName.SetDefault("Guardian Cluster");
+            Tooltip.SetDefault("Summons a Guardian Cluster");
         }
 
         public override void SetDefaults()
@@ -225,10 +202,10 @@ namespace Divergency.Content.NPCs.LivingGrove
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC npc = Main.npc[k];
-                    if (npc.type == ModContent.NPCType<Guardian>()) { npc.active = false; }
+                    if (npc.type == ModContent.NPCType<Coreling>()) { npc.active = false; }
                 }
             }
-            else { if (player.whoAmI == Main.myPlayer && Main.netMode != NetmodeID.Server) { NPC.NewNPC(Terraria.Entity.GetSource_NaturalSpawn(), (int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<Guardian>()); } }
+            else { if (player.whoAmI == Main.myPlayer && Main.netMode != NetmodeID.Server) { NPC.NewNPC(Terraria.Entity.GetSource_NaturalSpawn(), (int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<Corelossus>()); } }
 
             return true;
         }

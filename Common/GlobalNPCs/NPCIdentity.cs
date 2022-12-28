@@ -13,7 +13,7 @@ namespace Divergency.Common.GlobalNPCs
     {
         public override bool InstancePerEntity => true;
 
-        public bool livingGroveFauna(NPC npc) => (npc.type == ModContent.NPCType<Guardian>() || npc.type == ModContent.NPCType<GuardianCluster>());
+        public bool livingGroveFauna(NPC npc) => (npc.type == ModContent.NPCType<Guardian>() || npc.type == ModContent.NPCType<Corelossus>());
 
         float debuffSoundTimer;
 

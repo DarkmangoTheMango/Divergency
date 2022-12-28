@@ -29,7 +29,7 @@ namespace Divergency.Content.Items.Weapons.Magic
         public override void SetDefaults()
         {
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 15;
+            Item.damage = 30;
             Item.knockBack = 7f;
             Item.noMelee = true;
 
@@ -150,7 +150,7 @@ namespace Divergency.Content.Items.Weapons.Magic
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot"), player.Center);
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
 
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner, 0f, 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage * 3, Projectile.knockBack, Projectile.owner, 0f, 1);
                 player.statMana -= 20;
             }
             else
