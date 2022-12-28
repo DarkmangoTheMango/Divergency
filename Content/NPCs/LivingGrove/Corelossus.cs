@@ -159,7 +159,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/GuardianCluster_Glow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/´Corelossus_Glow").Value;
 
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
             Color color = Color.White;

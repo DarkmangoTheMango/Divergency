@@ -95,7 +95,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC npc = Main.npc[k];
-                    if (npc.type == ModContent.NPCType<Guardian>()) { npc.active = false; }
+                    if (npc.type == ModContent.NPCType<Coreling>()) { npc.active = false; }
                 }
             }
             else { if (player.whoAmI == Main.myPlayer && Main.netMode != NetmodeID.Server) { NPC.NewNPC(Terraria.Entity.GetSource_NaturalSpawn(), (int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<LivingCoreSlime>()); } }

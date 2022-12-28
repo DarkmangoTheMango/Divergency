@@ -182,7 +182,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Guardian_Glow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Coreling_Glow").Value;
 
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
             Color color = Color.White;
@@ -193,7 +193,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         }
     }
 
-    public class GuardianSpawner : ModItem
+    public class CorelingSpawner : ModItem
     {
         public override bool AltFunctionUse(Player player) => true;
 
