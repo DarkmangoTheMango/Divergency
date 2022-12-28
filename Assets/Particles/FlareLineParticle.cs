@@ -24,7 +24,6 @@ namespace Divergency.Assets.Particles
 
 			velocity *= 0.96f;
 
-			Scale = ai[0] == 0f ? 1f : ai[0];
 		}
 
 		public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
@@ -55,7 +54,6 @@ namespace Divergency.Assets.Particles
         {
             rotation = velocity.ToRotation();
 
-            Scale = ai[0] == 0f ? 1f : ai[0];
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)

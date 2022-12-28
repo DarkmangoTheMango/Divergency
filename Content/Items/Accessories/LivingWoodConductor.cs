@@ -13,7 +13,7 @@ namespace Divergency.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("guh");
+            Tooltip.SetDefault("Magic attacks summon healing Acorns upon striking enemies");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -69,7 +69,7 @@ namespace Divergency.Content.Items.Accessories
         {
 
             
-            if (Player.HeldItem.DamageType == DamageClass.Magic && Acorns && proj.type != ModContent.ProjectileType<AcornProj>())
+            if (proj.DamageType == DamageClass.Magic && Acorns && proj.type != ModContent.ProjectileType<AcornProj>())
             {
 
                 for (int i = 0; i < Main.rand.Next(0, 2); i++)
@@ -119,6 +119,7 @@ namespace Divergency.Content.Items.Accessories
                 if (Projectile.active && Projectile.Hitbox.Intersects(player.Hitbox) && !player.dead && Projectile.Distance(Projectile.Center) < 15)
                 {
                     player.Heal(1);
+                    player.AddBuff(BuffID.WellFed2,360);
                     SoundEngine.PlaySound(SoundID.Item2 with { Volume = 0.8f, MaxInstances = 3 });
                     Projectile.Kill();
                 }

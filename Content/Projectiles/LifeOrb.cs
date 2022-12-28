@@ -48,11 +48,11 @@ namespace Divergency.Content.Projectiles
                 Projectile.Kill();
                 SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact with { Volume = 0.8f, MaxInstances = 3 });
 
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     Vector2 dir = Main.rand.NextVector2Unit() * 0.1f;
 
-                    ParticleManager.NewParticle(Projectile.Center, dir * 20, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.4f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
+                    ParticleManager.NewParticle(Projectile.Center, dir * Main.rand.NextFloat(10, 25), ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.3f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
 
                 }
 
@@ -61,7 +61,7 @@ namespace Divergency.Content.Projectiles
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    //ParticleManager.NewParticle(player.Center + (Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f)), new Vector2(0f, Main.rand.NextFloat(1, 5)).RotatedBy(Projectile.rotation), ParticleManager.NewInstance<BloomParticleProjectile>(), new Color(0.50f, 2f, 0.5f, 0), 0.2f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
+                    ParticleManager.NewParticle(Projectile.Center, new Vector2(0,0), ParticleManager.NewInstance<BloomParticleProjectile>(), new Color(0.50f, 2f, 0.5f, 0), 0.03f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
 
                 }
                 Particlespawned = true;
@@ -88,7 +88,7 @@ namespace Divergency.Content.Projectiles
             }
             if (trail2 == null)
             {
-                trail2 = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(6f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 100)));
+                trail2 = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(10f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 100)));
                 trail2.drawOffset = Projectile.Size / 2f;
             }
 
