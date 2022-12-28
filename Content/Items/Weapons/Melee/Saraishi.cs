@@ -22,7 +22,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("(Work In Progress) Saraishi");
+            DisplayName.SetDefault("Shinohi");
             Tooltip.SetDefault("Aw shit I forgot the tooltip :skull:");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
