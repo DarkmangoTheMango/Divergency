@@ -67,7 +67,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, player.altFunctionUse == 2 ? 1f : 0f);
             if (attackcounter == 5)
             {
-                Projectile.NewProjectile(Item.GetSource_FromAI(), position, velocity * 20f, ModContent.ProjectileType<SaraishiSlash>(), damage / 2, knockback / 0, player.whoAmI, 0f);
+                Projectile.NewProjectile(Item.GetSource_FromAI(), position, velocity * 20f, ModContent.ProjectileType<SaraishiSlash>(), damage / 2, knockback * 0, player.whoAmI, 0f);
                 attackcounter = 0;
             }
 

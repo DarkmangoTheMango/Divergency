@@ -1,5 +1,4 @@
 using Divergency.Common.Players;
-using Divergency.Common.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -8,7 +7,6 @@ using Terraria.Audio;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Divergency.Content.Projectiles.Magic;
 using Divergency.Content.Projectiles;
 using Divergency.Assets.Particles;
 using ParticleLibrary;
@@ -20,7 +18,7 @@ namespace Divergency.Content.Items.Accessories
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Core Drain");
-            Tooltip.SetDefault("Increases defense by 1 and summons Core Crystals when struck");
+            Tooltip.SetDefault("Summons Core Crystals when struck \\n Increases defense by 2");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -43,7 +41,7 @@ namespace Divergency.Content.Items.Accessories
             
 
 
-            player.statDefense += 1;
+            player.statDefense += 2;
         }
 
 
