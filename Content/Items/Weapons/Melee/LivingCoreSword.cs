@@ -164,7 +164,6 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
                 ParticleManager.NewParticle(player.Center + (Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f)), new Vector2(0f, Main.rand.NextFloat(1, 5)).RotatedBy(Projectile.rotation) * -SwingDirection, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.5f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
-
             }
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)

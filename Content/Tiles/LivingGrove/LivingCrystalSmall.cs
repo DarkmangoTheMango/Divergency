@@ -8,7 +8,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace Divergency.Content.Tiles.LivingCore
+namespace Divergency.Content.Tiles.LivingGrove
 {
     public class LivingCrystalSmall1 : ModTile
     {

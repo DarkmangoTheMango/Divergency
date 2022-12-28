@@ -20,9 +20,6 @@ namespace Divergency.Assets.Particles
 
         public override void AI()
         {
-
-            rotation = velocity.ToRotation();
-
             velocity *= 0.96f;
 
             Scale /= 1.1f;

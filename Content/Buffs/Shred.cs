@@ -70,4 +70,9 @@ namespace Divergency.Content.Buffs
 			}
 		}
     }
+
+	public class ShredIcon : ModItem
+    {
+		public override string Texture => "Divergency/Content/Buffs/Shred";
+	}
 }
