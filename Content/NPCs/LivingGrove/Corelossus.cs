@@ -159,14 +159,14 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/´Corelossus_Glow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Corelossus").Value;
 
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
-            Color color = Color.White;
+            //Color color = Color.White;
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
         }
     }
 

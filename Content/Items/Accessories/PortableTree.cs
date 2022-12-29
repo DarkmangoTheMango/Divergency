@@ -7,9 +7,9 @@ using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Divergency.Common.Players;
 
-namespace DivergencyMod.Items.Accs.Forest
+namespace Divergency.Content.Items.Accessories
 {
-	public class PortableTree : ModItem
+    public class PortableTree : ModItem
 	{
 
 		public override void SetStaticDefaults()
@@ -65,7 +65,7 @@ namespace DivergencyMod.Items.Accs.Forest
 
                 Color color = drawPlayer.GetImmuneAlphaPure(drawInfo.colorArmorBody, drawInfo.shadow);
 
-                Texture2D texture = (Texture2D)ModContent.Request<Texture2D>("DivergencyMod/Items/Accs/Forest/PortableTree_Back").Value;
+                Texture2D texture = (Texture2D)ModContent.Request<Texture2D>("Divergency/Content/Accessories/PortableTree_Back").Value;
                 Vector2 Position = drawInfo.Position;
                 Vector2 origin = new(texture.Width * 0.5f, texture.Height * 0.5f);
                 Vector2 drawPos = new Vector2((int)(Position.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2), (int)(Position.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 20f)) + drawPlayer.bodyPosition + new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2);
