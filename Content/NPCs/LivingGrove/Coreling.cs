@@ -43,7 +43,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 11;
+            Main.npcFrameCount[NPC.type] = 10;
         }
 
         public override void SetDefaults()
@@ -159,7 +159,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             if (state == State.attacking)
             {
                 startingFrame = 5;
-                endingFrame = 10;
+                endingFrame = 9;
                 framerate = 5;
 
                 NPC.frameCounter++;
@@ -180,7 +180,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Coreling").Value;
 
@@ -189,7 +189,8 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            // spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            return true;
         }
     }
 
