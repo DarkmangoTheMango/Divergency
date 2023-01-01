@@ -13,7 +13,7 @@ namespace Divergency.Common.GlobalNPCs
     {
         public override bool InstancePerEntity => true;
 
-        public bool livingGroveFauna(NPC npc) => (npc.type == ModContent.NPCType<Guardian>() || npc.type == ModContent.NPCType<GuardianCluster>());
+        public bool livingGroveFauna(NPC npc) => (npc.type == ModContent.NPCType<Coreling>() || npc.type == ModContent.NPCType<Corelossus>());
 
         float debuffSoundTimer;
 
@@ -55,7 +55,7 @@ namespace Divergency.Common.GlobalNPCs
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    if (Main.npc[i].type == ModContent.NPCType<Guardian>() && Main.npc[i].active)
+                    if (Main.npc[i].type == ModContent.NPCType<Coreling>() && Main.npc[i].active)
                     {
                         music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/LivingGroveBattle1");
                         return true;

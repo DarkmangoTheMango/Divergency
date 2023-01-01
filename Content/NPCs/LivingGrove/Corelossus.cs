@@ -15,7 +15,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 {
     [AutoloadBossHead]
 
-    public class GuardianCluster : ModNPC
+    public class Corelossus : ModNPC
     {
         int startingFrame;
 
@@ -157,16 +157,58 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/GuardianCluster_Glow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Corelossus").Value;
 
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
             Color color = Color.White;
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            return true;
+        }
+    }
+
+    public class CorelossusSpawner : ModItem
+    {
+        public override bool AltFunctionUse(Player player) => true;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Guardian Cluster");
+            Tooltip.SetDefault("Summons a Guardian Cluster");
+        }
+
+        public override void SetDefaults()
+        {
+            Item.width = Item.height = 16;
+            Item.scale = 1f;
+
+            Item.useTime = Item.useAnimation = 50;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.UseSound = new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleNotYippee");
+            Item.autoReuse = true;
+            Item.useTurn = false;
+
+            Item.value = Item.sellPrice(0, 0, 0, 0);
+            Item.rare = ItemRarityID.Blue;
+        }
+
+        public override bool? UseItem(Player player)
+        {
+            if (player.altFunctionUse == 2)
+            {
+                for (int k = 0; k < Main.maxNPCs; k++)
+                {
+                    NPC npc = Main.npc[k];
+                    if (npc.type == ModContent.NPCType<Coreling>()) { npc.active = false; }
+                }
+            }
+            else { if (player.whoAmI == Main.myPlayer && Main.netMode != NetmodeID.Server) { NPC.NewNPC(Terraria.Entity.GetSource_NaturalSpawn(), (int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<Corelossus>()); } }
+
+            return true;
         }
     }
 }

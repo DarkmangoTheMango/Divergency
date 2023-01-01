@@ -21,8 +21,8 @@ namespace Divergency.Content.Items.Weapons.Magic
         public override void SetDefaults()
         {
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 20;
-            Item.mana = 15;
+            Item.damage = 25;
+            Item.mana = 10;
             Item.knockBack = 3f;
             Item.noMelee = true;
 

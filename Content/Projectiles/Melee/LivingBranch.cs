@@ -64,7 +64,7 @@ namespace Divergency.Content.Projectiles.Melee
 			NPC npc = Main.npc[targetIdentity];
 			Player player = Main.player[Projectile.owner];
 
-			npc.StrikeNPC(player.GetWeaponDamage(player.HeldItem, false), 4.5f, 0, true, false, false);
+			npc.StrikeNPC(player.GetWeaponDamage(player.HeldItem, false) * 3, 4.5f, 0, true, false, false);
 
 			SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
 

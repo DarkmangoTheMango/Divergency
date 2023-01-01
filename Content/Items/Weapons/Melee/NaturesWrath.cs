@@ -56,15 +56,20 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (Player.altFunctionUse == 2)
             {
                 Item.shoot = ModContent.ProjectileType<LivingBranch>();
+                Item.useAnimation = 60;
+                Item.useTime = 60;
                 Item.shootSpeed = 10f;
+                Item.useAnimation = 60;
 
                 Item.useStyle = ItemUseStyleID.Swing;
             }
             else
             {
                 Item.shoot = ModContent.ProjectileType<NaturesWrathPro>();
-                Item.shootSpeed = 5f;
-
+                Item.shootSpeed = 3f;
+                Item.useAnimation = 60;
+                Item.useTime = 10;
+                Item.useAnimation = 10;
                 Item.useStyle = ItemUseStyleID.Shoot;
             }
 

@@ -1,7 +1,9 @@
-﻿using Divergency.Common.Helpers;
+﻿using Divergency.Assets.Particles;
+using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ParticleLibrary;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -36,7 +38,21 @@ namespace Divergency.Content.Projectiles.Magic
             Projectile.aiStyle = -1;
         }
 
-        public override void AI() { Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, new Vector2(Main.rand.NextFloat(-0.4f, 0.4f)), 0, default, 1.2f).noGravity = true; }
+        public override void AI()
+        {
+            if (!Particlespawned)
+            {
+                ParticleManager.NewParticle(Projectile.Center, new Vector2(0, 0), ParticleManager.NewInstance<BloomParticleProjectile>(), new Color(0.50f, 2f, 0.5f, 0), 0.1f, Projectile.whoAmI, Layer: Particle.Layer.BeforeProjectiles);
+                Particlespawned = true;
+            }
+            Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, new Vector2(Main.rand.NextFloat(-0.4f, 0.4f)), 0, default, 1.2f).noGravity = true;
+         
+                Vector2 dir = Main.rand.NextVector2Unit() * 0.1f;
+
+                ParticleManager.NewParticle(Projectile.Center, dir * 10, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.3f, Projectile.whoAmI);
+
+            
+        }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -75,6 +91,8 @@ namespace Divergency.Content.Projectiles.Magic
 
         public Trail trail;
         public Trail whiteTrail;
+
+        public bool Particlespawned { get; private set; }
 
         public override bool PreDraw(ref Color lightColor)
         {

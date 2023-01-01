@@ -24,7 +24,6 @@ namespace Divergency.Assets.Particles
 
 			velocity *= 0.96f;
 
-			Scale = ai[0] == 0f ? 1f : ai[0];
 		}
 
 		public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
@@ -65,7 +64,6 @@ namespace Divergency.Assets.Particles
                active = false;
             }
            
-            Scale = ai[0] == 0f ? 1f : ai[0];
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
@@ -107,7 +105,6 @@ namespace Divergency.Assets.Particles
                 active = false;
             }
 
-            Scale = ai[0] == 0f ? 1f : ai[0];
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
@@ -116,7 +113,7 @@ namespace Divergency.Assets.Particles
 
             float alpha = timeLeft <= 20 ? 1f - 1f / 20f * (20 - timeLeft) : 1f;
             if (alpha < 0f) alpha = 0f;
-            spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color * alpha, rotation, texture.Size() * 0.5f, Scale * new Vector2(0.1f, 0.005f), SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), color, velocity.ToRotation(), new Vector2(texture.Width / 2f, texture.Height / 2f), 1f * Scale, SpriteEffects.None, 0f);
 
             return false;
         }
