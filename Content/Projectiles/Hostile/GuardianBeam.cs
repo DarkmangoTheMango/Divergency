@@ -50,7 +50,7 @@ namespace Divergency.Content.Projectiles.Hostile
             Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            Color color = Projectile.GetAlpha(new Color(109, 223, 94, 25));
+            Color color = Projectile.GetAlpha(new Color(79, 214, 126, 25));
 
             Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 

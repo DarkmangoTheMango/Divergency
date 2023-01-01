@@ -109,11 +109,11 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
             else
             {
-                if (NPC.Distance(target.Center) >= 400f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
-                else if (NPC.Distance(target.Center) <= 200f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
+                if (NPC.Distance(target.Center) >= 300f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
+                else if (NPC.Distance(target.Center) <= 100f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
                 else { NPC.velocity *= 0.98f; }
 
-                if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 0.1f; }
+                if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 0.05f; }
 
                 state = State.moving;
             }
@@ -130,8 +130,8 @@ namespace Divergency.Content.NPCs.LivingGrove
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 2f);
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 2f);
+                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
+                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
             }
 
             if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); }
@@ -190,47 +190,6 @@ namespace Divergency.Content.NPCs.LivingGrove
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
-        }
-    }
-
-    public class GuardianSpawner : ModItem
-    {
-        public override bool AltFunctionUse(Player player) => true;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Guardian");
-            Tooltip.SetDefault("Summons a Guardian");
-        }
-
-        public override void SetDefaults()
-        {
-            Item.width = Item.height = 16;
-            Item.scale = 1f;
-
-            Item.useTime = Item.useAnimation = 50;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.UseSound = new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleNotYippee");
-            Item.autoReuse = true;
-            Item.useTurn = false;
-
-            Item.value = Item.sellPrice(0, 0, 0, 0);
-            Item.rare = ItemRarityID.Blue;
-        }
-
-        public override bool? UseItem(Player player)
-        {
-            if (player.altFunctionUse == 2)
-            {
-                for (int k = 0; k < Main.maxNPCs; k++)
-                {
-                    NPC npc = Main.npc[k];
-                    if (npc.type == ModContent.NPCType<Guardian>()) { npc.active = false; }
-                }
-            }
-            else { if (player.whoAmI == Main.myPlayer && Main.netMode != NetmodeID.Server) { NPC.NewNPC(Terraria.Entity.GetSource_NaturalSpawn(), (int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<Guardian>()); } }
-
-            return true;
         }
     }
 }

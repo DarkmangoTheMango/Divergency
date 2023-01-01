@@ -169,45 +169,4 @@ namespace Divergency.Content.NPCs.LivingGrove
             spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
         }
     }
-
-    public class GuardianClusterSpawner : ModItem
-    {
-        public override bool AltFunctionUse(Player player) => true;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Guardian Cluster");
-            Tooltip.SetDefault("Summons a Guardian Cluster");
-        }
-
-        public override void SetDefaults()
-        {
-            Item.width = Item.height = 16;
-            Item.scale = 1f;
-
-            Item.useTime = Item.useAnimation = 50;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.UseSound = new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleNotYippee");
-            Item.autoReuse = true;
-            Item.useTurn = false;
-
-            Item.value = Item.sellPrice(0, 0, 0, 0);
-            Item.rare = ItemRarityID.Blue;
-        }
-
-        public override bool? UseItem(Player player)
-        {
-            if (player.altFunctionUse == 2)
-            {
-                for (int k = 0; k < Main.maxNPCs; k++)
-                {
-                    NPC npc = Main.npc[k];
-                    if (npc.type == ModContent.NPCType<Guardian>()) { npc.active = false; }
-                }
-            }
-            else { if (player.whoAmI == Main.myPlayer && Main.netMode != NetmodeID.Server) { NPC.NewNPC(Terraria.Entity.GetSource_NaturalSpawn(), (int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<GuardianCluster>()); } }
-
-            return true;
-        }
-    }
 }
