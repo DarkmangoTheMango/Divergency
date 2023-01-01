@@ -26,6 +26,9 @@ namespace Divergency.Content.NPCs.Forest
         int endingFrame;
 
         int framerate;
+        private bool spawned;
+
+       
 
         enum State
         {
@@ -69,40 +72,82 @@ namespace Divergency.Content.NPCs.Forest
 
         public override void AI()
         {
-            NPC.TargetClosest(true);
-
-            float direction = NPC.direction * 0.1f;
-
-            if (NPC.velocity.X >= 2f) { NPC.velocity.X = 2f; }
-            if (NPC.velocity.X <= -2f) { NPC.velocity.X = -2f; }
-
-            NPC.spriteDirection = NPC.direction;
-            NPC.rotation = NPC.velocity.X * 0.05f;
-
-            if (NPC.ai[0] >= aiEvent + aiInterval)
+            if (spawned)
             {
-                state = (int)State.attacking;
-                NPC.ai[0] = 0f;
-            }
-            else if (NPC.ai[0] == aiEvent) { state = (int)State.screaming; }
-            else if (NPC.ai[0] >= aiEvent - aiInterval)
-            {
-                state = (int)State.screaming;
-                NPC.velocity.X *= 0.9f;
+
+                NPC.TargetClosest(true);
+
+                float direction = NPC.direction * 0.1f;
+
+                if (NPC.velocity.X >= 2f) { NPC.velocity.X = 2f; }
+                if (NPC.velocity.X <= -2f) { NPC.velocity.X = -2f; }
+
+                NPC.spriteDirection = NPC.direction;
+                NPC.rotation = NPC.velocity.X * 0.05f;
+
+                if (NPC.ai[0] >= aiEvent + aiInterval)
+                {
+                    state = (int)State.attacking;
+                    NPC.ai[0] = 0f;
+                    NPC.netUpdate = true;
+
+                }
+                else if (NPC.ai[0] == aiEvent) { state = (int)State.screaming; }
+                else if (NPC.ai[0] >= aiEvent - aiInterval)
+                {
+                    state = (int)State.screaming;
+                    NPC.velocity.X *= 0.9f;
+
+                }
+                else
+                {
+                    state = (int)State.attacking;
+
+                    NPC.velocity.X += direction;
+                    if (NPC.Center.Distance(Main.player[NPC.target].Center) <= 100f && Collision.SolidTiles(NPC.position, NPC.width, NPC.height)) { NPC.velocity.Y -= 5f; }
+                }
+
+                NPC.ai[0]++;
             }
             else
             {
-                state = (int)State.attacking;
+                for (int i = 0; i < 30; i++)
+                {
+                    if (Main.netMode != NetmodeID.Server)
+                    {
+                        Vector2 perturbedSpeed = NPC.velocity.RotatedByRandom(MathHelper.ToRadians(20));
 
-                NPC.velocity.X += direction;
-                if (NPC.Center.Distance(Main.player[NPC.target].Center) <= 100f && Collision.SolidTiles(NPC.position, NPC.width, NPC.height)) { NPC.velocity.Y -= 5f; }
+                        float scale = 1f - (Main.rand.NextFloat() * 0.75f);
+                        perturbedSpeed *= scale;
+
+                        Dust dust = Dust.NewDustDirect(NPC.position - NPC.velocity, NPC.width, NPC.height, DustID.WoodFurniture, 0, 0, 100, default, 2f);
+                        dust.noGravity = true;
+                        dust.velocity *= 2f;
+                        dust = Dust.NewDustDirect(NPC.position - NPC.velocity, NPC.width, NPC.height, DustID.WoodFurniture, 0f, 0f, 1000, default, 2f);
+                        Gore.NewGore(null, NPC.Center, NPC.velocity, GoreID.TreeLeaf_Normal, 1.1f);
+                    }
+                }
+                
+                NPC.velocity.Y -= 10;
+                spawned = true;
+                NPC.netUpdate = true;
             }
 
-            NPC.ai[0]++;
         }
 
-        public override void OnKill() { if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("Acorn").Type, 1f); } }
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            if (Main.netMode == NetmodeID.Server)
+            {
+                return;
+            }
+            NPC.netUpdate = true;
 
+            if (NPC.life <= 0)
+            {
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("Acorn").Type, 1f);
+            }
+        }
         public override void FindFrame(int frameHeight)
         {
             if (state == (int)State.attacking)
@@ -137,37 +182,13 @@ namespace Divergency.Content.NPCs.Forest
 
                     if (NPC.frame.Y == 14 * frameHeight)
                     {
-                        Vector2 pos = NPC.position;
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            for (int i = 0; i < 2; i++)
-                            {
-                                for (i = -5; i <= 5; i++)
-                                {
-                                    bool success = TryFindTreeTop(pos + new Vector2(i * 16f, 0f), out Vector2 result);
-                                    NPC.NewNPC(null, (int)(result.X + Main.rand.NextFloat(-32f, 33f)), (int)(result.Y + Main.rand.NextFloat(-64f, 1f)), ModContent.NPCType<Acrid>());
-                                    SoundEngine.PlaySound(SoundID.NPCHit2 with { Volume = 0.75f, Pitch = 1.3f }, NPC.Center);
 
-                                    for (int i2 = 0; i2 < 10; i2++)
-                                    {
-                                        if (Main.netMode != NetmodeID.Server)
-                                        {
-                                            Vector2 perturbedSpeed = NPC.velocity.RotatedByRandom(MathHelper.ToRadians(20));
 
-                                            float scale = 1f - (Main.rand.NextFloat() * 0.75f);
-                                            perturbedSpeed *= scale;
+                        CallAcorns();
 
-                                            Dust dust = Dust.NewDustDirect(pos + new Vector2(i * 16f, 0f), NPC.width, NPC.height, DustID.WoodFurniture, 0, 0, 100, default, 2f);
-                                            dust.noGravity = true;
-                                            dust.velocity *= 2f;
-                                            dust = Dust.NewDustDirect(new Vector2(result.X + Main.rand.NextFloat(-32f, 33f), (result.Y + Main.rand.NextFloat(-64f, 1f))), NPC.width, NPC.height, DustID.WoodFurniture, 0f, 0f, 1000, default, 2f);
-                                        }
-                                    }
+                        
 
-                                }
-                                NPC.netUpdate = true;
-                            }
-                        }
+                        
                         SoundEngine.PlaySound(SoundID.DeerclopsScream with { Volume = 0.75f, Pitch = 1.3f }, NPC.Center); 
                     }
                     
@@ -175,10 +196,47 @@ namespace Divergency.Content.NPCs.Forest
                 }
             }
         }
-        public bool TryFindTreeTop(Vector2 position, out Vector2 result)
+        private void CallAcorns()
         {
-            if (Main.netMode != NetmodeID.Server)
+            Vector2 pos = NPC.position;
+
+        
+
+
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
+                return;
+            }
+            for (int i = -5; i <= 5; i++)
+            {
+
+                bool success = TryFindTreeTop(pos + new Vector2(i * 16f, 0f), out Vector2 result);
+                SoundEngine.PlaySound(SoundID.NPCHit2 with { Volume = 0.75f, Pitch = 1.3f }, NPC.Center);
+                int index = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(result.X + Main.rand.NextFloat(-32f, 33f)), (int)(result.Y + Main.rand.NextFloat(-64f, 1f)), ModContent.NPCType<Acrid>(), NPC.whoAmI);
+
+                NPC acorn = Main.npc[index];
+
+
+
+                // Now that the minion is spawned, we need to prepare it with data that is necessary for it to work
+                // This is not required usually if you simply spawn NPCs, but because the minion is tied to the body, we need to pass this information to it
+
+                if (acorn.ModNPC is Acrid acrid)
+                {
+                    // This checks if our spawned NPC is indeed the minion, and casts it so we can access its variables
+                }
+
+                // Finally, syncing, only sync on server and if the NPC actually exists (Main.maxNPCs is the index of a dummy NPC, there is no point syncing it)
+                if (Main.netMode == NetmodeID.Server && index < Main.maxNPCs)
+                {
+                    NetMessage.SendData(MessageID.SyncNPC, number: index);
+                }
+            }
+            
+        }
+        private bool TryFindTreeTop(Vector2 position, out Vector2 result)
+        {
+     
                 if (Main.tile[(int)position.X / 16, (int)position.Y / 16].TileType == TileID.Trees)
                 {
                     // Origin position, in tile format.
@@ -216,12 +274,13 @@ namespace Divergency.Content.NPCs.Forest
                         }
                     }
                 }
-            }
+            
 
             result = default;
             return false;
             
         }
+      
     }
 }
 

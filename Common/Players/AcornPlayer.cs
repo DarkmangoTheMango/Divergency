@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Drawing;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,6 +13,7 @@ namespace Divergency.Common.Players
         public bool checkTree = true;
         public int Spawned = 120;
 
+        public bool AcornsCalled { get; private set; }
 
         public bool TryFindTreeTop(Vector2 position, out Vector2 result)
         {
@@ -75,16 +77,54 @@ namespace Divergency.Common.Players
             {
                 if (TryFindTreeTop(Player.Center, out Vector2 result))
                 {
-                    NPC.NewNPC(null, (int)(result.X + Main.rand.NextFloat(-32f, 33f)), (int)(result.Y + Main.rand.NextFloat(-64f, 1f)), ModContent.NPCType<Acrid>());
+                    CallAcorns();
                     Spawned = 1200;
+
                 }
             }
-            else if (Main.rand.NextBool(10) && Main.dayTime && (Main.IsItAHappyWindyDay || Main.IsItStorming) && Spawned == 0 && checkTree)
+            else if (Main.rand.NextBool(10) && (Main.IsItAHappyWindyDay || Main.IsItStorming) && Spawned == 0 && checkTree)
             {
                 if (TryFindTreeTop(Player.Center, out Vector2 result))
                 {
-                    NPC.NewNPC(null, (int)(result.X + Main.rand.NextFloat(-32f, 33f)), (int)(result.Y + Main.rand.NextFloat(-64f, 1f)), ModContent.NPCType<Acrid>());
+                    CallAcorns();
                     Spawned = 1200;
+
+                }
+            }
+
+        }
+        private void CallAcorns()
+        {
+            Vector2 pos = Player.position;
+
+          
+
+
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                return;
+            }
+            for (int i = -3; i <= 3; i++)
+            {
+
+                bool success = TryFindTreeTop(pos + new Vector2(i * 16f, 0f), out Vector2 result);
+                SoundEngine.PlaySound(SoundID.NPCHit2 with { Volume = 0.75f, Pitch = 1.3f }, Player.Center);
+                int index = NPC.NewNPC(Player.GetSource_FromThis(), (int)(result.X + Main.rand.NextFloat(-32f, 33f)), (int)(result.Y + Main.rand.NextFloat(-64f, 1f)), ModContent.NPCType<Acrid>(), Player.whoAmI);
+
+                NPC acorn = Main.npc[index];
+
+
+
+
+                if (acorn.ModNPC is Acrid acrid)
+                {
+
+                }
+
+                // Finally, syncing, only sync on server and if the NPC actually exists (Main.maxNPCs is the index of a dummy NPC, there is no point syncing it)
+                if (Main.netMode == NetmodeID.Server && index < Main.maxNPCs)
+                {
+                    NetMessage.SendData(MessageID.SyncNPC, number: index);
                 }
             }
 
