@@ -18,7 +18,6 @@ namespace Divergency.Content.Tiles.LivingGrove
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileFrameImportant[Type] = true;
-            TileID.Sets.DisableSmartCursor[Type] = true;
 
             DustType = ModContent.DustType<LivingShard>();
             HitSound = SoundID.DD2_WitherBeastCrystalImpact;

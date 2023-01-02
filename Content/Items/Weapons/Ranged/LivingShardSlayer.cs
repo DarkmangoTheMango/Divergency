@@ -128,13 +128,15 @@ namespace Divergency.Content.Items.Weapons.Ranged
                     Dust.NewDustPerfect(position, ModContent.DustType<Smoke>(), (perturbedSpeed * scale) * 0.5f, 0, new Color(255, 217, 0), 1f);
                 }
 
-                for (int k = 0; k < 3; k++)
+                for (int k = 0; k < 2; k++)
                 {
                     Vector2 newVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(20));
                     newVelocity *= 1f - Main.rand.NextFloat(0.5f);
 
                     Projectile.NewProjectile(source, position, newVelocity, type, damage, knockback, player.whoAmI);
                 }
+
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
 
                 Gore.NewGore(source, player.Center, new Vector2(player.direction * -1, -0.5f) * 2, Mod.Find<ModGore>("ShotgunShell").Type, 1f);
 

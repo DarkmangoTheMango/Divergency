@@ -109,11 +109,11 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
             else
             {
-                if (NPC.Distance(target.Center) >= 400f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
-                else if (NPC.Distance(target.Center) <= 200f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
+                if (NPC.Distance(target.Center) >= 300f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
+                else if (NPC.Distance(target.Center) <= 100f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
                 else { NPC.velocity *= 0.98f; }
 
-                if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 0.1f; }
+                if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 0.05f; }
 
                 state = State.moving;
             }
@@ -130,8 +130,8 @@ namespace Divergency.Content.NPCs.LivingGrove
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 2f);
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 2f);
+                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
+                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
             }
 
             if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); }
@@ -185,11 +185,11 @@ namespace Divergency.Content.NPCs.LivingGrove
             Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Coreling").Value;
 
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
-            //Color color = Color.White;
+            Color color = Color.White;
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            // spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
             return true;
         }
     }
