@@ -75,7 +75,7 @@ namespace Divergency.Content.NPCs.Forest
             if (spawned)
             {
 
-                NPC.TargetClosest(true);
+                 NPC.TargetClosest(true);
 
                 float direction = NPC.direction * 0.1f;
 
@@ -89,25 +89,26 @@ namespace Divergency.Content.NPCs.Forest
                 {
                     state = (int)State.attacking;
                     NPC.ai[0] = 0f;
-                    NPC.netUpdate = true;
 
                 }
                 else if (NPC.ai[0] == aiEvent) { state = (int)State.screaming; }
                 else if (NPC.ai[0] >= aiEvent - aiInterval)
                 {
                     state = (int)State.screaming;
-                    NPC.velocity.X *= 0.9f;
+                    NPC.velocity.X *= 0.7f;
 
                 }
                 else
                 {
                     state = (int)State.attacking;
 
-                    NPC.velocity.X += direction;
-                    if (NPC.Center.Distance(Main.player[NPC.target].Center) <= 100f && Collision.SolidTiles(NPC.position, NPC.width, NPC.height)) { NPC.velocity.Y -= 5f; }
+                    NPC.aiStyle = 3;
+                    AIType = NPCID.DesertGhoul;
                 }
 
                 NPC.ai[0]++;
+                NPC.velocity.Y += 0.2f;
+                
             }
             else
             {
@@ -127,10 +128,12 @@ namespace Divergency.Content.NPCs.Forest
                         Gore.NewGore(null, NPC.Center, NPC.velocity, GoreID.TreeLeaf_Normal, 1.1f);
                     }
                 }
+             
+                    NPC.velocity.Y -= 5;
+                    spawned = true;
+                    NPC.netUpdate = true;
                 
-                NPC.velocity.Y -= 10;
-                spawned = true;
-                NPC.netUpdate = true;
+                  
             }
 
         }
@@ -141,7 +144,7 @@ namespace Divergency.Content.NPCs.Forest
             {
                 return;
             }
-            NPC.netUpdate = true;
+
 
             if (NPC.life <= 0)
             {
@@ -183,12 +186,15 @@ namespace Divergency.Content.NPCs.Forest
                     if (NPC.frame.Y == 14 * frameHeight)
                     {
 
+                        if (Main.rand.NextBool(3))
+                        {
+                            CallAcorns();
 
-                        CallAcorns();
+                        }
 
-                        
 
-                        
+
+
                         SoundEngine.PlaySound(SoundID.DeerclopsScream with { Volume = 0.75f, Pitch = 1.3f }, NPC.Center); 
                     }
                     
@@ -207,7 +213,7 @@ namespace Divergency.Content.NPCs.Forest
             {
                 return;
             }
-            for (int i = -5; i <= 5; i++)
+            for (int i = -3; i <= 3; i++)
             {
 
                 bool success = TryFindTreeTop(pos + new Vector2(i * 16f, 0f), out Vector2 result);
