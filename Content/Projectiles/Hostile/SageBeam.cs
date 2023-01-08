@@ -12,61 +12,64 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.Projectiles.Hostile
 {
-    public class GuardianBeam : ModProjectile
+    internal class SageBeam : ModProjectile
     {
-        public override void Kill(int timeLeft) => SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
-
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            DisplayName.SetDefault("Sage Beam");
+            Main.projFrames[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25; // in SetStaticDefaults()
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
+       // private int Counter { get { return (int)Projectile.ai[1]; } set { Projectile.ai[1] = value; } }
+        //private bool FistPhase { get { return (int)Projectile.ai[1] >= 0; } }
+        private int Timer;
+        private Vector2 unmodifiedVelocity;
+
 
         public override void SetDefaults()
         {
-            Projectile.penetrate = 1;
+            Projectile.width = 20;
+            Projectile.height = 20;
+
             Projectile.friendly = false;
             Projectile.hostile = true;
-
-            Projectile.width = Projectile.height = 16;
-            Projectile.scale = 1f;
-
-            Projectile.tileCollide = false;
+            Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
-
-            Projectile.aiStyle = -1;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.maxAI = 5;
         }
-
-        private bool Particlespawned;
 
         public override void AI()
         {
             Timer++;
+            Projectile.rotation += Projectile.velocity.Length() * (Projectile.direction * 0.01f);
+
+            if (Timer == 1)
+            {
+                ParticleManager.NewParticle(Projectile.Center, new Vector2(0, 0), ParticleManager.NewInstance<BloomParticleProjectile>(), new Color(0.50f, 2f, 0.5f, 0), 0.1f, Projectile.whoAmI, Layer: Particle.Layer.BeforeProjectiles);
+
+            }
             if (Timer == 1)
             {
                 unmodifiedVelocity = Projectile.velocity;
             }
 
+            Projectile.velocity *= 1.001f;
             Projectile.velocity = unmodifiedVelocity.RotatedBy(Math.Sin((Timer) * 0.2f) * 0.2f);
-            if (!Particlespawned)
-            {
-                ParticleManager.NewParticle(Projectile.Center, new Vector2(0, 0), ParticleManager.NewInstance<BloomParticleProjectile>(), new Color(0.50f, 2f, 0.5f, 0), 0.1f, Projectile.whoAmI, Layer: Particle.Layer.BeforeProjectiles);
-                Particlespawned = true;
-            }
-       
-                Vector2 dir = Main.rand.NextVector2Unit() * 0.1f;
 
-                ParticleManager.NewParticle(Projectile.Center, dir * 10,ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.3f, Projectile.whoAmI);
+            Vector2 speed = Main.rand.NextVector2Unit() * 0.1f;
 
-            
-            Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, new Vector2(Main.rand.NextFloat(-0.4f, 0.4f), Main.rand.NextFloat(-0.4f, 0.4f)), 0, default, 1.2f).noGravity = true; 
+            ParticleManager.NewParticle(Projectile.Center, speed * 10, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.3f, Projectile.whoAmI);
+            NPC owner = Main.npc[(int)Projectile.ai[4]];
+
+    
+
         }
 
         public Trail trail;
         public Trail whiteTrail;
-        private Vector2 unmodifiedVelocity;
-
-        public int Timer { get; private set; }
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -82,21 +85,23 @@ namespace Divergency.Content.Projectiles.Hostile
 
             Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
-            Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Stretched").Value;
+            Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/MotionTrail").Value;
 
             if (trail == null)
             {
                 trail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(25f), (p) => Projectile.GetAlpha(new Color(79, 214, 126, 100)));
                 trail.drawOffset = Projectile.Size / 2f;
 
-                whiteTrail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(15f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 100)));
+                whiteTrail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(10f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 100)));
                 whiteTrail.drawOffset = Projectile.Size / 2f;
             }
 
-            trail.Draw(Projectile.oldPos);
+           // trail.Draw(Projectile.oldPos);
             whiteTrail.Draw(Projectile.oldPos);
 
             return false;
         }
     }
+
+
 }
