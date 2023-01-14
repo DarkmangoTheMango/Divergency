@@ -1,5 +1,6 @@
 using Divergency.Assets.Particles;
 using Divergency.Content.Projectiles.Hostile;
+using Divergency.Content.Projectiles.Summoner.Minions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
@@ -59,6 +60,17 @@ namespace Divergency.Content.NPCs.LivingGrove
                 new FlavorTextBestiaryInfoElement("A powerful warlock that can focus the energy radiating from living crystals in powerful magic.")
             });
         }
+        private enum ActionState
+        {
+            Teleport,
+            TeleportBack,
+            FloatingBalls,
+            DirectionalAttack,
+            SageBeam
+            
+
+          
+        }
         private int teleport;
 
         public bool TpBack { get; private set; }
@@ -78,165 +90,222 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
             else
             {
-                NPC.TargetClosest();
                 Player player = Main.player[NPC.target];
+
+                if (NPC.HasValidTarget && !player.dead)
+                {
+
+                    NPC.TargetClosest();
+                }
+         
                 NPC.velocity *= 0.85f;
 
                 switch (Phase)
                 {
                     case 0:
-                        teleport++;
-
-                        if (teleport >= 260)
-                        {
-                         
-
-                            if (!TpBack)
-                            {
-                                Vector2 targetPointDiff = player.Center - NPC.Center;
-                                NPC.velocity += targetPointDiff * 5f;
-                                NPC.velocity.Normalize();
-                                NPC.velocity *= 70;
-
-                            }
-                            else
-                            {
-                                Vector2 targetPointDiff = player.Center - NPC.Center;
-                                NPC.velocity += targetPointDiff * 5f;
-                                NPC.velocity.Normalize();
-                                NPC.velocity *= -70;
-
-
-                            }
-
-                            Phase = Main.rand.Next(4);
-                            NPC.netUpdate = true;
-                        }
+                        Teleport();
 
                         break;
 
                     case 1:
-
-                        if (teleport < -100)
-                        {
-                            for (int i = 0; i < 90; i++)
-                            {
-                                //var dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 87, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, DustID.TerraBlade, default, 2f);
-                                //dust.noGravity = true;
-                                //dust.velocity /= 1f;
-                            }
-
-                            int dir1 = Main.rand.Next(4);
-                            int dir2 = Main.rand.Next(4);
-                            int dir3 = Main.rand.Next(4);
-                            int dir4 = Main.rand.Next(4);
-
-                            while (dir1 == dir2)
-                                dir2 = Main.rand.Next(4);
-
-                            while (dir1 == dir3 || dir2 == dir3)
-                                dir3 = Main.rand.Next(4);
-
-                            while (dir1 == dir4 || dir2 == dir4 || dir3 == dir4)
-                                dir4 = Main.rand.Next(4);
-
-                            int id1 = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), NPC.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack>(), 80, 10);
-                            int id2 = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), NPC.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack>(), 80, 10);
-                            int id3 = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), NPC.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack2>(), 80, 10);
-                            int id4 = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), NPC.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack2>(), 80, 10);
-
-                            Main.projectile[id1].ai[0] = NPC.target;
-                            Main.projectile[id1].ai[1] = dir1;
-
-                            Main.projectile[id2].ai[0] = NPC.target;
-                            Main.projectile[id2].ai[1] = dir2;
-
-                            Main.projectile[id3].ai[0] = NPC.target;
-                            Main.projectile[id3].ai[1] = dir3;
-
-                            Main.projectile[id4].ai[0] = NPC.target;
-                            Main.projectile[id4].ai[1] = dir4;
-
-                            Phase = 0;
-                            NPC.alpha = 0;
-                            NPC.dontTakeDamage = false;
-                        }
-                        else
-                        {
-                            NPC.alpha = 0;
-                            teleport -= 10;
-                            NPC.dontTakeDamage = true;
-                        }
-                        NPC.netUpdate = true;
-
+                        FloatingBalls();
 
                         break;
 
 
                     case 2:
 
-                        if (teleport < -100)
-                        {
-                            for (int i = 0; i < 90; i++)
-                            {
-                                //var dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 87, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, DustID.TerraBlade, default, 2f);
-                                //dust.noGravity = true;
-                                //dust.velocity /= 1f;
-                            }
-
-                            for (int i = 0; i < 8; i++)
-                            {
-                                int id = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), NPC.Center, new Vector2(0, 0), ModContent.ProjectileType<FloatingBalls>(), 40, 10);
-                                Main.projectile[id].ai[3] = NPC.target;
-                                Main.projectile[id].ai[4] = NPC.whoAmI;
-                            }
-
-                            Phase = 0;
-                            NPC.alpha = 0;
-                            NPC.dontTakeDamage = false;
-                        }
-                        else
-                        {
-                            teleport -= 10;
-                            NPC.dontTakeDamage = true;
-                        }
-                        NPC.netUpdate = true;
+                        DirectionalAttack();
 
                         break;
 
                     case 3:
-
-                        if (teleport < -100)
-                        {
-                            for (int i = 0; i < 90; i++)
-                            {
-                                //var dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 87, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, DustID.TerraBlade, default, 2f);
-                                //dust.noGravity = true;
-                                //dust.velocity /= 1f;
-                            }
-
-                            for (int i = 0; i < 5; i++)
-                            {
-                                int id = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), NPC.Top, NPC.DirectionTo(player.Center).RotateRandom(1) * 5, ModContent.ProjectileType<SageBeam>(), 30, 10);
-                                Main.projectile[id].ai[3] = NPC.target;
-                                Main.projectile[id].ai[4] = NPC.whoAmI;
-                            }
-
-                            Phase = 0;
-                            NPC.alpha = 0;
-                            NPC.dontTakeDamage = false;
-                        }
-                        else
-                        {
-                            teleport -= 10;
-                            NPC.dontTakeDamage = true;
-                        }
-                        NPC.netUpdate = true;
+                        SageBeam();
+                       
                         break;
                 }
 
                 NPC.TargetClosest(true);
             }
+
+        }
+        private void Teleport()
+        {
+            Player player = Main.player[NPC.target];
+
+            teleport++;
+
+            if (teleport >= 260 && Main.netMode != NetmodeID.MultiplayerClient)
+            {
+
+
+                if (!TpBack)
+                {
+                    Vector2 targetPointDiff = player.Center - NPC.Center;
+                    NPC.velocity += targetPointDiff * 5f;
+                    NPC.velocity.Normalize();
+                    NPC.velocity *= 70;
+
+                }
+                else
+                {
+                    Vector2 targetPointDiff = player.Center - NPC.Center;
+                    NPC.velocity += targetPointDiff * 5f;
+                    NPC.velocity.Normalize();
+                    NPC.velocity *= -70;
+
+
+                }
+
+                Phase = Main.rand.Next(4);
+                NPC.netUpdate = true;
+            }
+        }
+        private void DirectionalAttack()
+        {
+            Player player = Main.player[NPC.target];
+            if (teleport < -100 && Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                for (int i = 0; i < 90; i++)
+                {
+                    //var dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 87, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, DustID.TerraBlade, default, 2f);
+                    //dust.noGravity = true;
+                    //dust.velocity /= 1f;
+                }
+
+                int dir1 = Main.rand.Next(4);
+                int dir2 = Main.rand.Next(4);
+                int dir3 = Main.rand.Next(4);
+                int dir4 = Main.rand.Next(4);
+
+                while (dir1 == dir2)
+                    dir2 = 1;
+
+                while (dir1 == dir3 || dir2 == dir3)
+                    dir3 = 2;
+
+                while (dir1 == dir4 || dir2 == dir4 || dir3 == dir4)
+                    dir4 = Main.rand.Next(3);
+
+
+                //int id1 = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack>(), 80, 10f, NPC.whoAmI);
+                //int id2 = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack>(), 80, 10f, NPC.whoAmI);
+                //int id3 =  Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack2>(), 80, 10f, NPC.whoAmI);
+                //int id4 = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack2>(), 80, 10f, NPC.whoAmI);
+
+                //Main.projectile[id1].ai[0] = NPC.target;
+                //Main.projectile[id1].ai[1] = dir1;
+
+                //Main.projectile[id2].ai[0] = NPC.target;
+                //Main.projectile[id2].ai[1] = dir2;
+
+                //Main.projectile[id3].ai[0] = NPC.target;
+                //Main.projectile[id3].ai[1] = dir3;
+
+                //Main.projectile[id4].ai[0] = NPC.target;
+                //Main.projectile[id4].ai[1] = dir4;
+
+                var proj = Projectile.NewProjectileDirect(NPC.GetBossSpawnSource(NPC.target), 
+                    player.Center,
+                    new Vector2(0, 0), 
+                    ModContent.ProjectileType<DirectionalAttack>(), 80, 10f, 0  , NPC.target, dir1);
+
+                var proj1 = Projectile.NewProjectileDirect(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack>(), 80, 10, Main.myPlayer, 0,1);
+                var proj2 = Projectile.NewProjectileDirect(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack2>(), 80, 10f, Main.myPlayer,0, 1);
+                var proj3 = Projectile.NewProjectileDirect(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack2>(), 80, 10f, Main.myPlayer,0, 1);
+
+                proj.ai[0] = NPC.target;
+                proj.ai[1] = dir1;
+                proj.netUpdate = true;
+
+                proj1.ai[0] = NPC.target;
+                proj1.ai[1] = dir2;
+                proj1.netUpdate = true;
+
+                proj2.ai[0] = NPC.target;       
+                proj2.ai[1] = dir3;
+                proj2.netUpdate = true;
+
+                proj3.ai[0] = NPC.target;
+                proj3.ai[1] = dir4;
+                proj3.netUpdate = true;
+
+                Phase = 0;
+                NPC.alpha = 0;
+                NPC.dontTakeDamage = false;
+            }
+            else
+            {
+                NPC.alpha = 0;
+                teleport -= 10; 
+                NPC.dontTakeDamage = true;
+            }
+            NPC.netUpdate = true;
+
+
+        }
+        private void FloatingBalls()
+        {
+            Player player = Main.player[NPC.target];
+
+            if (teleport < -100 && Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                for (int i = 0; i < 90; i++)
+                {
+                    //var dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 87, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, DustID.TerraBlade, default, 2f);
+                    //dust.noGravity = true;
+                    //dust.velocity /= 1f;
+                }
+
+                for (int i = 0; i < 8; i++)
+                {
+                    int id = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), NPC.Center, new Vector2(0, 0), ModContent.ProjectileType<FloatingBalls>(), 40, 10);
+                    Main.projectile[id].ai[3] = NPC.target;
+                    Main.projectile[id].ai[4] = NPC.whoAmI;
+                }
+
+                Phase = 0;
+                NPC.alpha = 0;
+                NPC.dontTakeDamage = false;
+            }
+            else
+            {
+                teleport -= 10;
+                NPC.dontTakeDamage = true;
+            }
+            NPC.netUpdate = true;
+        }
+        private void SageBeam()
+        {
+            Player player = Main.player[NPC.target];
+
+            if (teleport < -100)
+            {
+                for (int i = 0; i < 90; i++)
+                {
+                    //var dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 87, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, DustID.TerraBlade, default, 2f);
+                    //dust.noGravity = true;
+                    //dust.velocity /= 1f;
+                }
+
+                for (int i = 0; i < 5; i++)
+                {
+                    int id = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), NPC.Top, NPC.DirectionTo(player.Center).RotateRandom(1) * 5, ModContent.ProjectileType<SageBeam>(), 30, 10);
+                    Main.projectile[id].ai[3] = NPC.target;
+                    Main.projectile[id].ai[4] = NPC.whoAmI;
+                }
+
+                Phase = 0;
+                NPC.alpha = 0;
+                NPC.dontTakeDamage = false;
+            }
+            else
+            {
+                teleport -= 10;
+                NPC.dontTakeDamage = true;
+            }
+
+            NPC.netUpdate = true;
 
         }
 
@@ -352,6 +421,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 }
             }
         }
+
 
         
     }
