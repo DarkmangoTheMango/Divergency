@@ -179,13 +179,13 @@ namespace Divergency.Content.NPCs.LivingGrove
                 int dir4 = Main.rand.Next(4);
 
                 while (dir1 == dir2)
-                    dir2 = 1;
+                    dir2 = Main.rand.Next(4);
 
                 while (dir1 == dir3 || dir2 == dir3)
-                    dir3 = 2;
+                    dir3 = Main.rand.Next(4);
 
                 while (dir1 == dir4 || dir2 == dir4 || dir3 == dir4)
-                    dir4 = Main.rand.Next(3);
+                    dir4 = Main.rand.Next(4);
 
 
                 //int id1 = Projectile.NewProjectile(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack>(), 80, 10f, NPC.whoAmI);
@@ -209,7 +209,6 @@ namespace Divergency.Content.NPCs.LivingGrove
                     player.Center,
                     new Vector2(0, 0), 
                     ModContent.ProjectileType<DirectionalAttack>(), 80, 10f, 0  , NPC.target, dir1);
-
                 var proj1 = Projectile.NewProjectileDirect(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack>(), 80, 10, Main.myPlayer, 0,1);
                 var proj2 = Projectile.NewProjectileDirect(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack2>(), 80, 10f, Main.myPlayer,0, 1);
                 var proj3 = Projectile.NewProjectileDirect(NPC.GetBossSpawnSource(NPC.target), player.Center, new Vector2(0, 0), ModContent.ProjectileType<DirectionalAttack2>(), 80, 10f, Main.myPlayer,0, 1);
