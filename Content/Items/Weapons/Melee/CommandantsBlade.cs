@@ -33,7 +33,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 48;
+            Item.damage = 35;
             Item.knockBack = 5f;
 
             Item.shoot = ModContent.ProjectileType<CommandantsBladePro>();

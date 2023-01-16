@@ -1,6 +1,7 @@
 using Divergency.Assets.Particles;
 using Divergency.Common.Helpers;
 using Divergency.Common.Players;
+using Divergency.Content.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
@@ -19,8 +20,15 @@ namespace Divergency.Content.Items.Weapons.Melee
     {
         public int attackDirection = 1;
         public int AttackCounter = 1;
+        public override bool AltFunctionUse(Player player) => true;
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
+        public override bool CanUseItem(Player player)
+        {
+      
+            return player.ownedProjectileCounts[Item.shoot] < 1;
+        }
+
+
 
         public override void SetStaticDefaults()
         {
@@ -34,7 +42,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 30;
+            Item.damage = 50;
             Item.knockBack = 4f;
 
             Item.shoot = ModContent.ProjectileType<EnforcerPro>();
@@ -43,7 +51,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.width = Item.height = 96;
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 60;
+            Item.useTime = Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -61,11 +69,29 @@ namespace Divergency.Content.Items.Weapons.Melee
                 else { player.SetCompositeArmFront(false, default, default); }
             }
         }
+        
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            attackDirection = -attackDirection;
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
+            if (player.altFunctionUse == 2)
+            {
+                Projectile.NewProjectile(source, position, velocity, ProjectileID.None, damage, knockback, player.whoAmI, attackDirection, 0f);
+                for (int k = 0; k < 30 ; k++)
+                {
+                    Vector2 vel = Main.rand.NextVector2Circular(1f, 1f);
+
+                    Dust dust = Dust.NewDustPerfect(player.Center + (vel * 100f), DustID.GemEmerald, vel * -5f, 0, default, Main.rand.NextFloat(0.5f, 1f));
+                    dust.noGravity = true;
+                }
+            }
+            else
+            {
+                attackDirection = -attackDirection;
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<EnforcerPro>(), damage, knockback, player.whoAmI, attackDirection, 0f);
+
+            }
+
+
 
             return false;
         }
@@ -91,7 +117,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.aiStyle = -1;
             Projectile.ownerHitCheck = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
+            Projectile.localNPCHitCooldown = 60;
         }
 
         List<float> oldRotation = new List<float>();
@@ -139,7 +165,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), target.Center, Projectile.velocity.RotatedBy(6) * 10, ModContent.ProjectileType<EnforcerOrb>(), 20, 0, Projectile.owner);
+            Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), target.Center, Projectile.velocity.RotateRandom(3) * Main.rand.NextFloat(7,10), ModContent.ProjectileType<EnforcerOrb>(), 20, 0, Projectile.owner);
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -149,10 +175,13 @@ namespace Divergency.Content.Items.Weapons.Melee
             Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
             Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 80f - Main.screenPosition;
+            float rotation = Projectile.rotation + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f);
+
 
             SpriteEffects drawFlipped = player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
+            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
 
-            float rotation = Projectile.rotation + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f);
+
 
             for (int k = 10; k > 0; k--)
             {
@@ -174,7 +203,6 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
             
 
-            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
 
             texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
             sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
@@ -191,6 +219,22 @@ namespace Divergency.Content.Items.Weapons.Melee
             Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, textureColor, 0f, origin, Projectile.scale, drawFlipped, 0f);
 
             return false;
+            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+
+            bool flip = false;
+            SpriteEffects effects = SpriteEffects.None;
+
+            Vector2 scaleVec = Vector2.One;
+
+            for (int k = 16; k > 0; k--)
+            {
+
+                float progress = 1 - (float)((16 - k) / (float)16);
+                Color color = lightColor * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
+                if (k > 0 && k < oldRotation.Count)
+                    Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, color, oldRotation[k] + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f), origin, Projectile.scale, drawFlipped, 0f);
+            }
+
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -210,7 +254,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             DisplayName.SetDefault("Life Orb");
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
@@ -225,8 +269,10 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.penetrate = 1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = false;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 1600;
             Projectile.aiStyle = -1;
+            Projectile.extraUpdates = 2;
+            Projectile.penetrate = 3;
 
 
 
@@ -234,10 +280,9 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void AI()
         {
-            Projectile.velocity *= 0.95f;
+            Projectile.velocity *= 0.98f;
             if (!initialzed)
             {
-                initialDamage = Projectile.damage;
 
                 Projectile.damage = 0;
             }
@@ -248,14 +293,20 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (Main.mouseRight && Main.mouseRightRelease && player.HeldItem.type == ModContent.ItemType<Enforcer>())
             {
                 initialzed = true;
-                Projectile.damage = initialDamage;
+                Projectile.velocity += Projectile.Center.DirectionTo(player.Center) * 3;
+
 
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            
-            if (Projectile.active && Projectile.Hitbox.Intersects(player.Hitbox) && !player.dead && initialzed)
+            if (initialzed)
             {
-                Projectile.Move(player.Center, 30);
+                // Projectile.Move(player.Center, 50);
+                Projectile.damage = player.statLife / 5;
+
+
+            }
+            if (Projectile.active && Projectile.Hitbox.Intersects(player.Hitbox) && !player.dead)
+            {
 
                 player.Heal(2);
                 Projectile.Kill();
