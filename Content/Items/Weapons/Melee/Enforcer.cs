@@ -186,7 +186,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             for (int k = 10; k > 0; k--)
             {
                 float progress = 1 - (float)(((float)(10 - k) / (float)10));
-                Color color = Color.Lerp(new Color(79, 214, 126), Color.Transparent, 0f) * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
+                Color color = lightColor * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
 
                 if (Projectile.timeLeft < 20)
                 {
@@ -269,10 +269,10 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.penetrate = 1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = false;
-            Projectile.timeLeft = 1600;
+            Projectile.timeLeft = 2000;
             Projectile.aiStyle = -1;
             Projectile.extraUpdates = 2;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 5;
 
 
 
@@ -288,7 +288,6 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
 
             Player player = Main.player[Projectile.owner];
-            Main.NewText(initialzed);
 
             if (Main.mouseRight && Main.mouseRightRelease && player.HeldItem.type == ModContent.ItemType<Enforcer>())
             {
