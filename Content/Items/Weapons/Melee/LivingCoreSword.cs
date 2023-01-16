@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Creative;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,11 +18,6 @@ namespace Divergency.Content.Items.Weapons.Melee
 {
     public class LivingCoreSword : ModItem
     {
-        public int attackDirection = 1;
-        public int AttackCounter = 1;
-
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
-
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Living Core Sword");
@@ -30,211 +26,293 @@ namespace Divergency.Content.Items.Weapons.Melee
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
 
-        public override void SetDefaults()
-        {
-            Item.DamageType = DamageClass.Melee;
-            Item.noMelee = true;
-            Item.damage = 30;
-            Item.knockBack = 4f;
-
-            Item.shoot = ModContent.ProjectileType<LivingCoreSwordPro>();
-            Item.shootSpeed = 1f;
-
-            Item.width = Item.height = 96;
-            Item.scale = 1f;
-
-            Item.useTime = Item.useAnimation = 60;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noUseGraphic = true;
-            Item.autoReuse = true;
-            Item.useTurn = false;
-
-            Item.value = Item.sellPrice(0, 4, 0, 0);
-            Item.rare = ItemRarityID.Green;
-        }
-
-        public override void HoldItem(Player player)
-        {
-            if (player == Main.LocalPlayer)
-            {
-                if (player.ItemAnimationActive) { player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation - MathHelper.PiOver2 * player.direction); }
-                else { player.SetCompositeArmFront(false, default, default); }
-            }
-        }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            attackDirection = -attackDirection;
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
-
-            if (player.GetModPlayer<PlayerCombo>().itemCombo >= 3)
-            {
-                player.GetModPlayer<PlayerCombo>().itemCombo = 0;
-            }
-
-            player.GetModPlayer<PlayerCombo>().itemCombo++;
-            player.GetModPlayer<PlayerCombo>().itemComboReset = 480;
-
-            return false;
-        }
-    }
+		public override void SetDefaults()
+		{
+			Item.damage = 12;
+			Item.DamageType = DamageClass.Melee;
+			Item.width = 36;
+			Item.height = 44;
+			Item.useTime = 12;
+			Item.useAnimation = 12;
+			Item.reuseDelay = 20;
+			Item.channel = true;
+			Item.useStyle = ItemUseStyleID.Shoot;
+			Item.knockBack = 6.5f;
+			Item.crit = 9;
+			Item.shootSpeed = 14f;
+			Item.autoReuse = false;
+			Item.shoot = ModContent.ProjectileType<LivingCoreSwordPro>();
+			Item.noUseGraphic = true;
+			Item.noMelee = true;
+			Item.autoReuse = false;
+			Item.value = Item.sellPrice(0, 0, 20, 0);
+			Item.rare = ItemRarityID.Blue;
+		}
+	}
 
     public class LivingCoreSwordPro : ModProjectile
     {
         public override string Texture => "Divergency/Content/Items/Weapons/Melee/LivingCoreSword";
 
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Living Core Sword");
+		enum AttackDirection : int
+		{
+			Down = 0,
+			Up = 1,
+			Reset = 2
+		}
 
-        public override void SetDefaults()
-        {
-            Projectile.penetrate = -1;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.friendly = true;
-            Projectile.hostile = false;
+		private AttackDirection attackDirection = AttackDirection.Down;
 
-            Projectile.scale = 1f;
-            Projectile.Size = new Vector2(90);
+		private bool initialized = false;
 
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
+		private int attackDuration = 0;
 
-            Projectile.aiStyle = -1;
-            Projectile.ownerHitCheck = true;
-        }
+		private float startRotation = 0f;
 
-        List<float> oldRotation = new List<float>();
+		private float endRotation = 0f;
 
-        Vector2 direction;
+		private bool facingRight;
 
-        bool initialize = true;
+		private float zRotation = 0;
 
-        float maxTimeLeft;
+		private float rotVel = 0f;
 
-        public float SwingDirection => Projectile.ai[0] * Math.Sign(direction.X);
+		private int growCounter = 0;
 
-        public override void AI()
-        {
-            Player player = Main.player[Projectile.owner];
-            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
+		private List<Vector2> cache;
 
-            if (initialize)
-            {
-                float attackSpeed = player.GetTotalAttackSpeed(DamageClass.Melee) - 1f;
-                Projectile.timeLeft = (int)(player.HeldItem.useAnimation * (1f - attackSpeed));
-                maxTimeLeft = Projectile.timeLeft;
-                direction = Projectile.velocity;
-                direction.Normalize();
-                Projectile.rotation = Utils.ToRotation(direction);
-                Projectile.netUpdate = true;
+		private List<float> oldRotation = new();
+		private List<Vector2> oldPosition = new();
 
-                if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
-                {
-                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleFullRotation"), player.Center);
-                }
-                else
-                {
-                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleHeavy"), player.Center);
-                }
+		private List<NPC> hit = new();
 
-                initialize = false;
-            }
+		Player Owner => Main.player[Projectile.owner];
 
-            Projectile.Center = player.Center + direction * 45;
+		private bool FirstTickOfSwing => Projectile.ai[0] == 0;
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
-            {
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -8.3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
-            }
-            else
-            {
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -2f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
-            }
+		public override void SetStaticDefaults()
+		{
+			DisplayName.SetDefault("Frying Pan");
+			ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+			ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+			Main.projFrames[Projectile.type] = 1;
+		}
 
-            Projectile.scale = 1f + (float)Math.Sin(EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.6f * 0.6f;
+		public override void SetDefaults()
+		{
+			Projectile.friendly = true;
+			Projectile.DamageType = DamageClass.Melee;
+			Projectile.tileCollide = false;
+			Projectile.Size = new Vector2(96);
+			Projectile.penetrate = -1;
+			Projectile.ownerHitCheck = true;
+			Projectile.extraUpdates = 3;
+		}
 
-            player.heldProj = Projectile.whoAmI;
+		public override void AI()
+		{
+			Projectile.velocity = Vector2.Zero;
+			Projectile.Center = Main.GetPlayerArmPosition(Projectile);
 
-            oldRotation.Add(Projectile.rotation);
+			Owner.heldProj = Projectile.whoAmI;
 
-            if (oldRotation.Count > 10)
-            {
-                oldRotation.RemoveAt(0);
-            }
+			if (FirstTickOfSwing)
+			{
+				hit = new List<NPC>();
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
-            {
-                ParticleManager.NewParticle(player.Center + (Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f)), new Vector2(0f, Main.rand.NextFloat(1, 5)).RotatedBy(Projectile.rotation) * -SwingDirection, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.5f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
-            }
-        }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            Player player = Main.player[Projectile.owner];
+				if (Owner.DirectionTo(Main.MouseWorld).X > 0)
+					facingRight = true;
+				else
+					facingRight = false;
 
-            if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
-            {
-                player.Heal(2);
-            }
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Player player = Main.player[Projectile.owner];
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+				float rot = Owner.DirectionTo(Main.MouseWorld).ToRotation();
 
-            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
-            Vector2 origin = sourceRectangle.Size() / 2f;
-            Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 60f - Main.screenPosition;
+				SoundEngine.PlaySound(SoundID.Item1 with { Pitch = -1.0f }, Projectile.Center);
 
-            SpriteEffects drawFlipped = player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
+				if (!initialized)
+				{
+					initialized = true;
+					endRotation = rot - 1f * Owner.direction;
 
-            float rotation = Projectile.rotation + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f);
+					oldRotation = new List<float>();
+					oldPosition = new List<Vector2>();
+				}
+				else
+				{
+                    if (attackDirection == AttackDirection.Down)
+                    {
+						attackDirection = AttackDirection.Up;
+					}
+					else
+                    {
+						attackDirection = AttackDirection.Down;
+					}
+				}
 
-            for (int k = 10; k > 0; k--)
-            {
-                float progress = 1 - (float)(((float)(10 - k) / (float)10));
-                Color color = Color.Lerp(Color.Lime, Color.Transparent, 0f) * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
+				startRotation = endRotation;
 
-                if (Projectile.timeLeft < 20)
-                {
-                    color = Color.Lerp(color, Color.Transparent, 1f - (Projectile.timeLeft / 10f) * k);
-                }
+				switch (attackDirection)
+				{
+					case AttackDirection.Down:
+						endRotation = rot + 2f * Owner.direction;
+						attackDuration = 120;
+						break;
 
-                color.A = 0;
+					case AttackDirection.Up:
+						endRotation = rot - 2f * Owner.direction;
+						attackDuration = 120;
+						break;
+				}
 
-                if (k > 0 && k < oldRotation.Count)
-                {
-                    Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, color, oldRotation[k] + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f), origin, Projectile.scale, drawFlipped,
-                    0f);
-                }
-            }
-            
+				Projectile.ai[0] += 30f / attackDuration;
+			}
 
-            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
+			if (Projectile.ai[0] < 1)
+			{
+				Projectile.timeLeft = 50;
+				Projectile.ai[0] += 1f / attackDuration;
+				rotVel = Math.Abs(EaseProgress(Projectile.ai[0]) - EaseProgress(Projectile.ai[0] - 1f / attackDuration)) * 2;
+			}
+			else
+			{
+				rotVel = 0f;
+				if (Main.mouseLeft)
+				{
+					Projectile.ai[0] = 0;
+					return;
+				}
+			}
 
-            texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
-            sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
-            origin = sourceRectangle.Size() / 2f;
-            drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 120f - Main.screenPosition;
+			float progress = EaseProgress(Projectile.ai[0]);
 
-            Color textureColor = Color.Transparent;
+			Projectile.scale = MathHelper.Min(MathHelper.Min(growCounter++ / 30f, 1 + rotVel * 4), 1.3f);
 
-            if (Projectile.timeLeft <= maxTimeLeft / 2f)
-            {
-                textureColor = Color.Lerp(new Color(153, 255, 167, 50), Color.Transparent, 1f - (Projectile.timeLeft / 20f));
-            }
+			Projectile.rotation = MathHelper.Lerp(startRotation, endRotation, progress);
 
-            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, textureColor, 0f, origin, Projectile.scale, drawFlipped, 0f);
+			Owner.ChangeDir(facingRight ? 1 : -1);
 
-            return false;
-        }
+			float wrappedRotation = MathHelper.WrapAngle(Projectile.rotation);
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            Player player = Main.player[Projectile.owner];
-            float collisionPoint = 0f;
+			Owner.itemRotation = Projectile.rotation;
+			Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation - (facingRight ? 0 : MathHelper.Pi));
 
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((96 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
+			Owner.itemAnimation = Owner.itemTime = 2;
 
-            return false;
-        }
-    }
+			float throwingAngle = MathHelper.WrapAngle(Owner.DirectionTo(Main.MouseWorld).ToRotation());
+
+			if (Main.netMode != NetmodeID.Server)
+			{
+				ManageCaches();
+			}
+
+			oldRotation.Add(Projectile.rotation);
+			oldPosition.Add(Projectile.Center);
+
+			if (oldRotation.Count > 16)
+				oldRotation.RemoveAt(0);
+			if (oldPosition.Count > 16)
+				oldPosition.RemoveAt(0);
+		}
+
+		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+		{
+			if (rotVel < 0.005f)
+				return false;
+
+			float collisionPoint = 0f;
+
+			if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + 42 * Projectile.rotation.ToRotationVector2(), 20, ref collisionPoint))
+				return true;
+
+			return false;
+		}
+
+		public override bool? CanHitNPC(NPC target)
+		{
+			if (hit.Contains(target))
+				return false;
+
+			return base.CanHitNPC(target);
+		}
+
+		public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+		{
+			hitDirection = Math.Sign(target.Center.X - Owner.Center.X);
+		}
+
+		public Trail trail;
+		public Trail whiteTrail;
+
+		public override bool PreDraw(ref Color lightColor)
+		{
+			Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+
+			bool flip = false;
+			SpriteEffects effects = SpriteEffects.None;
+
+			var origin = new Vector2(0, tex.Height);
+
+			Vector2 scaleVec = Vector2.One;
+
+			for (int k = 16; k > 0; k--)
+			{
+
+				float progress = 1 - (float)((16 - k) / (float)16);
+				Color color = lightColor * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
+				if (k > 0 && k < oldRotation.Count)
+					Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, color, oldRotation[k] + 0.78f, origin, Projectile.scale * scaleVec, effects, 0f);
+			}
+
+			Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation + 0.78f, origin, Projectile.scale * scaleVec, effects, 0f);
+
+			Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Stretched").Value;
+
+			if (trail == null)
+			{
+				trail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(25f), (p) => Projectile.GetAlpha(new Color(79, 214, 126, 100)));
+				trail.drawOffset = Projectile.Size / 2f;
+
+				whiteTrail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(15f), (p) => Projectile.GetAlpha(new Color(158, 249, 255, 100)));
+				whiteTrail.drawOffset = Projectile.Size / 2f;
+			}
+
+			trail.Draw(Projectile.oldPos);
+			whiteTrail.Draw(Projectile.oldPos);
+
+			return false;
+		}
+
+		private void ManageCaches()
+		{
+			Vector2 off = Projectile.rotation.ToRotationVector2() * 35;
+			off.X *= (float)Math.Cos(zRotation);
+
+			if (cache == null)
+			{
+				cache = new List<Vector2>();
+
+				for (int i = 0; i < 60; i++)
+				{
+					cache.Add(Projectile.Center + off);
+				}
+			}
+
+			cache.Add(Projectile.Center + off);
+
+			while (cache.Count > 60)
+			{
+				cache.RemoveAt(0);
+			}
+		}
+
+		private float EaseProgress(float input)
+		{
+			return attackDirection switch
+			{
+				AttackDirection.Down => EaseFunction.EaseCircularInOut.Ease(input),
+				AttackDirection.Up => EaseFunction.EaseCircularInOut.Ease(input),
+				_ => input,
+			};
+		}
+	}
 }

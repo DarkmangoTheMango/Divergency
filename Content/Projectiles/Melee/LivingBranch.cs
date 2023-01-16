@@ -1,4 +1,5 @@
-﻿using Divergency.Content.Dusts;
+﻿using Divergency.Common.Helpers;
+using Divergency.Content.Dusts;
 using Divergency.Content.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +13,12 @@ namespace Divergency.Content.Projectiles.Melee
 {
     public class LivingBranch : ModProjectile
     {
+        public override void SetStaticDefaults()
+		{
+			ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
+			ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+		}
+
         public override void SetDefaults()
         {
             Projectile.penetrate = -1;

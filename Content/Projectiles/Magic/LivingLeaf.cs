@@ -38,30 +38,11 @@ namespace Divergency.Content.Projectiles.Magic
             Projectile.aiStyle = -1;
         }
 
-        public override void AI()
-        {
-            if (!Particlespawned)
-            {
-                ParticleManager.NewParticle(Projectile.Center, new Vector2(0, 0), ParticleManager.NewInstance<BloomParticleProjectile>(), new Color(0.50f, 2f, 0.5f, 0), 0.1f, Projectile.whoAmI, Layer: Particle.Layer.BeforeProjectiles);
-                Particlespawned = true;
-            }
-            Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, new Vector2(Main.rand.NextFloat(-0.4f, 0.4f)), 0, default, 1.2f).noGravity = true;
-         
-                Vector2 dir = Main.rand.NextVector2Unit() * 0.1f;
-
-                ParticleManager.NewParticle(Projectile.Center, dir * 10, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.3f, Projectile.whoAmI);
-
-            
-        }
-
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Projectile.ai[0]++;
 
-            if (Projectile.ai[0] >= 5)
-            {
-                Projectile.Kill();
-            }
+            if (Projectile.ai[0] >= 5) { Projectile.Kill(); }
             else
             {
                 SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
@@ -72,10 +53,7 @@ namespace Divergency.Content.Projectiles.Magic
                 int numberOfDusts = 20;
                 float radius = 2;
 
-                for (int i = 0; i < numberOfDusts; i++)
-                {
-                    Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, default, 1.2f).noGravity = true;
-                }
+                for (int i = 0; i < numberOfDusts; i++) { Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, default, 1.2f).noGravity = true; }
             }
 
             return false;
