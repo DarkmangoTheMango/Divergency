@@ -110,7 +110,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.hostile = false;
 
             Projectile.scale = 1f;
-            Projectile.Size = new Vector2(90);
+            Projectile.Size = new Vector2(130);
 
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
@@ -247,7 +247,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Player player = Main.player[Projectile.owner];
             float collisionPoint = 0f;
 
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((96 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
+            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((130 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
 
             return false;
         }
