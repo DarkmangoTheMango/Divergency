@@ -32,8 +32,9 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("(Unused) Enforcer");
-            Tooltip.SetDefault("");
+            DisplayName.SetDefault("Life Enforcer");
+            Tooltip.SetDefault("Direct hits deploy orbs, right click in order to call them back to the player" +
+                "Orb daamage scales with your current health stat (not maximum)");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -165,7 +166,11 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), target.Center, Projectile.velocity.RotateRandom(3) * Main.rand.NextFloat(7,10), ModContent.ProjectileType<EnforcerOrb>(), 20, 0, Projectile.owner);
+            for (int i = 0; i < 2; i++)
+            {
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), target.Center, Projectile.velocity.RotateRandom(3) * Main.rand.NextFloat(7, 10), ModContent.ProjectileType<EnforcerOrb>(), 20, 0, Projectile.owner);
+
+            }
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -272,7 +277,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.timeLeft = 2000;
             Projectile.aiStyle = -1;
             Projectile.extraUpdates = 2;
-            Projectile.penetrate = 5;
+            Projectile.penetrate = 4;
 
 
 
@@ -300,14 +305,14 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (initialzed)
             {
                 // Projectile.Move(player.Center, 50);
-                Projectile.damage = player.statLife / 5;
+                Projectile.damage = player.statLife / 8;
 
 
             }
             if (Projectile.active && Projectile.Hitbox.Intersects(player.Hitbox) && !player.dead)
             {
 
-                player.Heal(2);
+                player.Heal(1);
                 Projectile.Kill();
                 SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact with { Volume = 0.8f, MaxInstances = 3 });
 

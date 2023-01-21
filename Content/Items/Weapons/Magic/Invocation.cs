@@ -21,7 +21,7 @@ namespace Divergency.Content.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Commandant's Guide To Invocation");
-            Tooltip.SetDefault("Uses 10 mana (20 when charged)\nHold <left> to charge");
+            Tooltip.SetDefault("Chargable");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -29,7 +29,7 @@ namespace Divergency.Content.Items.Weapons.Magic
         public override void SetDefaults()
         {
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 30;
+            Item.damage = 25;
             Item.knockBack = 7f;
             Item.noMelee = true;
 
@@ -44,7 +44,7 @@ namespace Divergency.Content.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = false;
             Item.useTurn = false;
-
+            Item.mana = 10;
             Item.value = Item.sellPrice(0, 5, 0, 0);
             Item.rare = ItemRarityID.Green;
         }
@@ -150,14 +150,13 @@ namespace Divergency.Content.Items.Weapons.Magic
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot"), player.Center);
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
 
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage * 3, Projectile.knockBack, Projectile.owner, 0f, 1);
-                player.statMana -= 20;
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 20f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage * 4, Projectile.knockBack, Projectile.owner, 0f, 1);
+                player.statMana -= player.GetManaCost(player.HeldItem);
             }
             else
             {
                 SoundEngine.PlaySound(SoundID.DD2_PhantomPhoenixShot, player.Center);
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 12f, ModContent.ProjectileType<ShadowflameEffigy>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0);
-                player.statMana -= 10;
             }
 
             player.manaRegenDelay = 120;
