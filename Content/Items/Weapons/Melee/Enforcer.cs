@@ -52,7 +52,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.width = Item.height = 96;
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 40;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -152,7 +152,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
 
             Projectile.Center = player.Center + direction * 45;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(3f * SwingDirection, -3f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -2f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
             Projectile.scale = 1.5f + (float)Math.Sin(EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.6f * 0.6f;
 
             player.heldProj = Projectile.whoAmI;
@@ -247,7 +247,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Player player = Main.player[Projectile.owner];
             float collisionPoint = 0f;
 
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((130 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
+            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((110 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
 
             return false;
         }
