@@ -171,9 +171,15 @@ namespace Divergency.Content.Items.Weapons.Magic
             Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 drawPosition = player.Center + ((Projectile.rotation.ToRotationVector2() * 30f) * Projectile.direction) - Main.screenPosition;
 
-            Color textureColor = new Color(241, 150, 255, 100);
+            Color textureColor = new Color(241, 150, 255);
 
-            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, textureColor, 0f, origin, Projectile.scale * (Projectile.ai[0] * 0.02f), SpriteEffects.None, 0f);
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(default, BlendState.Additive);
+
+            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, textureColor, Projectile.ai[0] * 0.02f, origin, Projectile.scale * (Projectile.ai[0] * 0.02f), SpriteEffects.None, 0f);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(default, default);
 
             return false;
         }
