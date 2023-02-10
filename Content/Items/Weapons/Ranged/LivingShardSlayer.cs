@@ -61,9 +61,9 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Item.rare = ItemRarityID.Green;
         }
 
-        public override bool CanUseItem(Player Player)
+        public override bool CanUseItem(Player player)
         {
-            if (overheat >= 5 && Player.altFunctionUse == 2)
+            if (overheat >= 5 && player.altFunctionUse == 2)
             {
                 Item.shoot = ModContent.ProjectileType<LivingShardSlayerPro>();
                 Item.shootSpeed = 7f;
@@ -82,7 +82,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
                 Item.noUseGraphic = false;
             }
 
-            return Player.ownedProjectileCounts[ModContent.ProjectileType<LivingShardSlayerPro>()] < 1;
+            return player.ownedProjectileCounts[ModContent.ProjectileType<LivingShardSlayerPro>()] < 1;
         }
 
         float overheat = 0;
