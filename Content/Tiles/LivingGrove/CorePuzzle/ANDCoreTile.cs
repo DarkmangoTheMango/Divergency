@@ -1,21 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.Audio;
-using Terraria.GameContent.Creative;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Divergency.Content.Dusts;
-using Microsoft.Xna.Framework.Graphics;
-using ParticleLibrary;
-using Terraria.ObjectData;
-using Terraria.DataStructures;
-using Terraria.Localization;
-using Divergency.Assets.Particles;
-using Divergency.Common.Helpers;
-using Divergency.Common.Players;
+﻿    using Microsoft.Xna.Framework;
+    using Terraria;
+    using Terraria.Audio;
+    using Terraria.GameContent.Creative;
+    using Terraria.ID;
+    using Terraria.ModLoader;
+    using Divergency.Content.Dusts;
+    using Microsoft.Xna.Framework.Graphics;
+    using ParticleLibrary;
+    using Terraria.ObjectData;
+    using Terraria.DataStructures;
+    using Terraria.Localization;
+    using Divergency.Assets.Particles;
+    using Divergency.Common.Helpers;
+    using Divergency.Common.Players;
 
-namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
-{
+    namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
+    {
     public class ANDCoreTile : ModTile
     {
 

@@ -196,7 +196,7 @@ namespace Divergency.Common.Helpers
             {
                 Glow = true;
                 Projectile.alpha = 255;
-                Main.LocalPlayer.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 10;
+                Main.LocalPlayer.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3;
                 if (!noDust)
                 {
                     for (int i = 0; i < 15; i++)
