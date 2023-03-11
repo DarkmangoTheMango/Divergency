@@ -1,18 +1,18 @@
-﻿using Divergency.Common.Helpers;
+﻿using Divergency.Assets.Particles;
+using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ParticleLibrary;
 using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
@@ -39,7 +39,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.damage = 30;
             Item.knockBack = 5f;
 
-            Item.shoot = ProjectileType<ShadowbrandPro>();
+            Item.shoot = ModContent.ProjectileType<ShadowbrandPro>();
             Item.shootSpeed = 1f;
 
             Item.width = Item.height = 82;
@@ -83,6 +83,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             attackDirection = -attackDirection;
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
+            Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<ShadowbrandArc>(), (int)(damage * 0.85f), knockback, player.whoAmI);
 
             if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
@@ -105,74 +106,36 @@ namespace Divergency.Content.Items.Weapons.Melee
             return false;
         }
 
+        float timer;
+
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            if (Main.rand.NextBool(4))
-            {
-                Dust dust = Dust.NewDustDirect(Item.position, Item.width, Item.height, DustID.GemAmethyst, Main.rand.NextFloat(1f, 3f), Main.rand.NextFloat(-1f, -3f), 0, default, 1.5f);
-                dust.noGravity = true;
-            }
-
-            Texture2D texture = TextureAssets.Item[Item.type].Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/Items/Weapons/Melee/ShadowbrandGlow").Value;
             Rectangle frame;
 
             if (Main.itemAnimations[Item.type] != null) { frame = Main.itemAnimations[Item.type].GetFrame(texture, Main.itemFrameCounter[whoAmI]); }
             else { frame = texture.Frame(); }
 
-            Vector2 frameOrigin = frame.Size() / 2f;
-            Vector2 offset = new Vector2(Item.width / 2 - frameOrigin.X, Item.height - frame.Height);
-            Vector2 drawPos = Item.position - Main.screenPosition + frameOrigin + offset;
+            Vector2 origin = frame.Size() / 2f;
+            Vector2 offset = new Vector2(Item.width / 2 - origin.X, Item.height - frame.Height);
+            Vector2 position = Item.position - Main.screenPosition + origin + offset;
 
-            float time = Main.GlobalTimeWrappedHourly;
-            float timer = Item.timeSinceItemSpawned / 240f + time * 0.04f;
+            if (timer >= MathHelper.TwoPi) { timer = 0f; }
+            timer += 0.02f;
 
-            time %= 4f;
-            time /= 2f;
-
-            if (time >= 1f) { time = 2f - time; }
-
-            time = time * 0.5f + 0.5f;
-
-            for (float i = 0f; i < 1f; i += 0.25f)
-            {
-                float radians = (i + timer) * MathHelper.TwoPi;
-                spriteBatch.Draw(texture, drawPos + new Vector2(0f, 8f).RotatedBy(radians) * time, frame, new Color(174, 0, 255, 50), rotation, frameOrigin, scale, SpriteEffects.None, 0);
-            }
-
-            for (float i = 0f; i < 1f; i += 0.34f)
-            {
-                float radians = (i + timer) * MathHelper.TwoPi;
-                spriteBatch.Draw(texture, drawPos + new Vector2(0f, 4f).RotatedBy(radians) * time, frame, new Color(140, 120, 255, 77), rotation, frameOrigin, scale, SpriteEffects.None, 0);
-            }
+            for (int i = 0; i < 3; i++) { spriteBatch.Draw(texture, position + Vector2.One.RotatedBy(timer + ((2 * i))) * 2f, frame, new Color(174, 0, 255, 100), rotation, origin, scale, SpriteEffects.None, 0f); }
 
             return true;
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            Texture2D texture = TextureAssets.Item[Item.type].Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/Items/Weapons/Melee/ShadowbrandGlow").Value;
 
-            float time = Main.GlobalTimeWrappedHourly;
-            float timer = Item.timeSinceItemSpawned / 240f + time * 0.04f;
+            if (timer >= MathHelper.TwoPi) { timer = 0f; }
+            timer += 0.01f;
 
-            time %= 4f;
-            time /= 2f;
-
-            if (time >= 1f) { time = 2f - time; }
-
-            time = time * 0.5f + 0.5f;
-
-            for (float i = 0f; i < 1f; i += 0.25f)
-            {
-                float radians = (i + timer) * MathHelper.TwoPi;
-                spriteBatch.Draw(texture, position + new Vector2(0f, 8f).RotatedBy(radians) * time, frame, new Color(174, 0, 255, 50), 0f, origin, scale, SpriteEffects.None, 0);
-            }
-
-            for (float i = 0f; i < 1f; i += 0.34f)
-            {
-                float radians = (i + timer) * MathHelper.TwoPi;
-                spriteBatch.Draw(texture, position + new Vector2(0f, 4f).RotatedBy(radians) * time, frame, new Color(140, 120, 255, 77), 0f, origin, scale, SpriteEffects.None, 0);
-            }
+            for (int i = 0; i < 3; i++) { spriteBatch.Draw(texture, position + Vector2.One.RotatedBy(timer + ((2 * i))), frame, new Color(174, 0, 255, 100), 0f, origin, scale, SpriteEffects.None, 0f); }
 
             return true;
         }
@@ -232,6 +195,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             Projectile.frame = player.GetModPlayer<PlayerCombo>().itemCombo;
 
+            player.itemRotation = Projectile.rotation + MathHelper.PiOver2;
+
             Projectile.Center = player.Center + direction * 45;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -2f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
             Projectile.scale = 1f + (float)Math.Sin(EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.6f * 0.6f;
@@ -245,23 +210,15 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             if (player.GetModPlayer<PlayerCombo>().itemCombo == 3)
             {
-                Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40f, 90f), DustID.GemAmethyst, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 2f);
-                dust.noGravity = true;
-            }
-
-            if (player.GetModPlayer<PlayerCombo>().itemCombo == 2)
-            {
-                if (Main.rand.NextBool(5))
-                {
-                    Dust dust = Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40f, 90f), DustID.GemAmethyst, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 1.5f);
-                    dust.noGravity = true;
-                }
+                Dust.NewDustPerfect(player.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(40f, 90f), DustID.GemAmethyst, new Vector2(0f, 3f).RotatedBy(Projectile.rotation) * -SwingDirection, 0, default, 2f).noGravity = true;
             }
         }
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             Player player = Main.player[Projectile.owner];
+
+            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center + (Main.rand.NextVector2Circular(1f, 1f) * target.width), Vector2.Zero, ModContent.ProjectileType<ShadowbrandFlash>(), 0, 0f, Projectile.owner);
 
             if (player.GetModPlayer<PlayerCombo>().itemCombo < 3)
             {
@@ -271,9 +228,8 @@ namespace Divergency.Content.Items.Weapons.Melee
                 for (int i = 0; i < 10; i++)
                 {
                     Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
-
-                    Dust dust = Dust.NewDustPerfect(player.Center + (speed * 100f), DustID.GemAmethyst, speed * -5f, 0, default, 2f);
-                    dust.noGravity = true;
+                    
+                    Dust.NewDustPerfect(player.Center + (speed * 100f), DustID.GemAmethyst, speed * -5f, 0, default, 1f).noGravity = true;
                 }
             }
 
@@ -294,7 +250,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
-            Texture2D texture = Request<Texture2D>(Texture).Value;
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
             Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
             Vector2 origin = sourceRectangle.Size() / 2f;
@@ -309,7 +265,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 for (int k = 10; k > 0; k--)
                 {
                     float progress = 1 - (float)(((float)(10 - k) / (float)10));
-                    Color color = Color.Lerp(Color.Magenta, Color.Transparent, 0f) * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
+                    Color color = Color.Lerp(new Color(174, 0, 255), Color.Transparent, 0f) * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
 
                     if (Projectile.timeLeft < 20) { color = Color.Lerp(color, Color.Transparent, 1f - (Projectile.timeLeft / 10f) * k); }
 
@@ -334,6 +290,217 @@ namespace Divergency.Content.Items.Weapons.Melee
             float collisionPoint = 0f;
 
             if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((82 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
+
+            return false;
+        }
+    }
+
+    public class ShadowbrandArc : ModProjectile
+    {
+        Color[] colorList = { new Color(191, 74, 165, 100), new Color(118, 62, 130, 100), new Color(255, 255, 255, 100) };
+
+        float radius;
+
+        public override string Texture => "Divergency/Assets/Textures/Empty";
+
+        public override bool ShouldUpdatePosition() => false;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Shadowbrand");
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+
+            Projectile.Size = new Vector2(170f);
+            Projectile.scale = 1.5f;
+            Projectile.alpha = 255;
+
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
+
+            Projectile.aiStyle = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+        }
+
+        public override void AI()
+        {
+            Player player = Main.player[Projectile.owner];
+
+            Projectile.Center = player.MountedCenter;
+
+            if (player.direction > 0)
+            {
+                Projectile.rotation = player.itemRotation - MathHelper.PiOver2;
+
+                Dust.NewDustPerfect(Projectile.Center + ((player.itemRotation - MathHelper.PiOver2).ToRotationVector2() * Main.rand.NextFloat(30f, radius)), DustID.GemAmethyst, Vector2.One.RotatedBy(player.itemRotation), 0, default, 1f).noGravity = true;
+            }
+            else
+            {
+                Projectile.rotation = player.itemRotation + MathHelper.PiOver2;
+
+                Dust.NewDustPerfect(Projectile.Center + ((player.itemRotation - MathHelper.PiOver2).ToRotationVector2() * Main.rand.NextFloat(30f, radius)), DustID.GemAmethyst, new Vector2(-1f, 1f).RotatedBy(player.itemRotation), 0, default, 
+                    1f).noGravity = true;
+            }
+
+            Projectile.spriteDirection = player.direction;
+            Projectile.scale = 1.5f + MathHelper.Lerp(1.5f, 0f, (float)(player.itemAnimation) / player.itemAnimationMax);
+
+            Projectile.Size += new Vector2(10f);
+
+            radius = 80f * Projectile.scale;
+
+            if (player.itemAnimation > player.itemAnimationMax / 2f)
+            {
+                Projectile.alpha = (int)MathHelper.Lerp(0f, 255f, (float)(player.itemAnimation) / player.itemAnimationMax);
+            }
+            else
+            {
+                Projectile.alpha = (int)MathHelper.Lerp(255, 0f, (float)(player.itemAnimation) / player.itemAnimationMax);
+            }
+
+            if (player.ItemAnimationEndingOrEnded) { Projectile.Kill(); }
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
+
+            //Projectile.NewProjectile(Projectile.GetSource_OnHit(target), position, Vector2.Zero, ModContent.ProjectileType<CactusEdgeDamage>(), 0, 0f, Projectile.owner);
+
+            /*for (int k = 0; k < 5; k++)
+            {
+                float speed = Main.rand.NextFloat(0.2f, 2f);
+
+                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(speed), 0, default, 1.2f).noGravity = true;
+
+                speed = Main.rand.NextFloat(0.2f, 2f);
+                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(-speed), 0, default, 1.2f).noGravity = true;
+
+                speed = Main.rand.NextFloat(0.2f, 2f);
+                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(-speed, speed), 0, default, 1.2f).noGravity = true;
+
+                speed = Main.rand.NextFloat(0.2f, 2f);
+                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(speed, -speed), 0, default, 1.2f).noGravity = true;
+            }*/
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Player player = Main.player[Projectile.owner];
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/MeleeArc0").Value;
+
+            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameY = frameHeight * Projectile.frame;
+
+            Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            SpriteEffects spriteEffects = SpriteEffects.None;
+
+            if (player.direction < 0)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, colorList[1] * Projectile.Opacity, Projectile.rotation + 0.2f, origin, Projectile.scale, spriteEffects, 0); //Front
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, colorList[1] * Projectile.Opacity, Projectile.rotation - 0.2f, origin, Projectile.scale, spriteEffects, 0); //Back
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, colorList[0] * Projectile.Opacity, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0); //Top
+
+            texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/MeleeArc3").Value;
+
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, colorList[2] * Projectile.Opacity, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, colorList[2] * Projectile.Opacity, Projectile.rotation, origin, Projectile.scale * 0.75f, spriteEffects, 0);
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, colorList[2] * Projectile.Opacity, Projectile.rotation, origin, Projectile.scale * 0.5f, spriteEffects, 0);
+
+            texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
+
+            frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            frameY = frameHeight * Projectile.frame;
+
+            sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+            origin = sourceRectangle.Size() / 2f;
+
+            if (player.direction < 0)
+            {
+                position = Projectile.Center + ((player.itemRotation - MathHelper.PiOver4) - MathHelper.PiOver2).ToRotationVector2() * radius - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            }
+            else
+            {
+                position = Projectile.Center + (player.itemRotation - MathHelper.PiOver4).ToRotationVector2() * radius - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            }
+
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, colorList[2] * Projectile.Opacity, MathHelper.PiOver4, origin, 3f, spriteEffects, 0);
+
+            return false;
+        }
+    }
+
+    public class ShadowbrandFlash : ModProjectile
+    {
+        public override string Texture => "Divergency/Assets/Textures/FadedLine";
+
+        public override bool ShouldUpdatePosition() => false;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Shadowbrand");
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.friendly = false;
+            Projectile.hostile = false;
+
+            Projectile.scale = 1f;
+            Projectile.Size = new Vector2(16);
+            Projectile.alpha = 0;
+
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = false;
+
+            Projectile.aiStyle = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+        }
+
+        bool initilize = true;
+
+        public override void AI()
+        {
+            if (initilize)
+            {
+                Projectile.rotation = Main.rand.NextFloat(0f, 360f);
+                initilize = false;
+            }
+
+            Projectile.scale *= 0.9f;
+
+            Projectile.alpha += 20;
+            if (Projectile.alpha >= 255) { Projectile.Kill(); }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+
+            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameY = frameHeight * Projectile.frame;
+
+            Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            Color color = Projectile.GetAlpha(new Color(174, 0, 255, 0));
+
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
             return false;
         }

@@ -1,20 +1,18 @@
-﻿using Divergency.Common.Helpers;
+﻿using Divergency.Assets.Particles;
+using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Buffs;
 using Divergency.Content.Dusts;
 using Divergency.Content.Items.Weapons.LivingCore;
-using Divergency.Content.NPCs.LivingGrove;
-using Divergency.Content.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ParticleLibrary;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.PlayerDrawLayer;
 
 namespace Divergency.Content.Items.Weapons.Ranged
 {
@@ -63,6 +61,16 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Item.value = Item.sellPrice(0, 5, 0, 0);
             Item.rare = ItemRarityID.Green;
         }
+
+        public override void HoldItem(Player player)
+        {
+            if (player == Main.LocalPlayer)
+            {
+                if (player.ItemAnimationActive) { player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation - MathHelper.PiOver2 * player.direction); }
+                else { player.SetCompositeArmFront(false, default, default); }
+            }
+        }
+
         public override bool CanUseItem(Player player)
         {
             if (player.altFunctionUse == 2)
@@ -78,11 +86,12 @@ namespace Divergency.Content.Items.Weapons.Ranged
             }
             return true;
         }
+
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             if (shotsLeft > 0)
             {
-                type = ModContent.ProjectileType<BlueRoseBullet>();
+                type = ModContent.ProjectileType<HighShot>();
             }
             if (noBullets)
             {
@@ -92,42 +101,30 @@ namespace Divergency.Content.Items.Weapons.Ranged
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Vector2 offset = Vector2.Normalize(velocity) * 52f;
-            if (player.altFunctionUse != 2)
-            {
-                if (shotsLeft > 0)
-                {
-                    shotsLeft--;
-                }
-            }
+            float rotation = velocity.ToRotation();
+
+            Vector2 offset = new Vector2(0.8f, 0).RotatedBy(rotation);
+
+            if (player.altFunctionUse != 2) { if (shotsLeft > 0) { shotsLeft--; } }
 
             if (!noBullets)
             {
-                for (int k = 0; k < 5; k++)
+                for (int k = 0; k < 15; k++)
                 {
-                    Vector2 perturbedSpeed = velocity.RotatedByRandom(MathHelper.ToRadians(10));
-                    float scale = 1f - (Main.rand.NextFloat() * 0.9f);
-
-                    Dust dust = Dust.NewDustPerfect(position + offset - new Vector2(0, 13), DustID.Torch, (perturbedSpeed * scale) * 0.5f, 0, default, 3f);
-                    dust.noGravity = true;
+                    Vector2 direction = offset.RotatedByRandom(0.4f);
+                    Dust.NewDustPerfect(position + offset * 70, ModContent.DustType<Glow>(), direction * Main.rand.NextFloat(8), 125, new Color(255, 108, 23), Main.rand.NextFloat(0.2f, 0.5f));
                 }
 
-                for (int k = 0; k < 10; k++)
-                {
-
-                    Vector2 perturbedSpeed = velocity.RotatedByRandom(MathHelper.ToRadians(30));
-                    float scale = 1f - (Main.rand.NextFloat() * 0.9f);
-
-                    Dust.NewDustPerfect(position + offset, ModContent.DustType<Smoke>(), (perturbedSpeed * scale) * 0.5f, 0, new Color(255, 217, 0), 0.4f);
-                }
-
-                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/BlueRoseColorShot") { PitchVariance = 0.1f }, player.Center);
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/BlueRoseShot") { PitchVariance = 0.1f }, player.Center);
             }
-            Projectile.NewProjectile(source, position - new Vector2(0, 10), velocity, type, damage, knockback, player.whoAmI);
-            Projectile.NewProjectile(source, position + new Vector2(0, 0), velocity, type, damage, knockback, player.whoAmI);
+
+            if (shotsLeft > 0)
+            {
+                SoundEngine.PlaySound(SoundID.Item60, player.Center);
+            }
+
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             Projectile.NewProjectile(source, position, velocity, Item.shoot, 0, 0f, player.whoAmI);
-
-
 
             return false;
         }
@@ -167,7 +164,6 @@ namespace Divergency.Content.Items.Weapons.Ranged
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
 
             if (initialize)
@@ -179,7 +175,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             }
 
             Projectile.Center = player.Center;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(-1f * player.direction, 0f, EaseFunction.EaseQuinticOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(-0.5f * player.direction, 0f, EaseFunction.EaseQuinticOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
 
             player.heldProj = Projectile.whoAmI;
         }
@@ -200,110 +196,14 @@ namespace Divergency.Content.Items.Weapons.Ranged
             return false;
         }
     }
-    public class ColorUpProj : ModProjectile
-    {
-        public override string Texture => "Divergency/Assets/Textures/Empty";
 
-        private float timer;
-
-        public override void SetDefaults()
-        {
-            Projectile.friendly = true;
-            Projectile.hostile = false;
-
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 60;
-            Projectile.aiStyle = -1;
-            Projectile.scale = 0.1f;
-
-          
-        }
-        public override void AI()
-        {
-            timer--;
-            if (timer <= 0f)
-            {
-                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + (Main.rand.NextVector2Circular(1f, 1f) * 30f), Vector2.Zero, ModContent.ProjectileType<ColorUpExplosion>(), 20, 0f, 0, Main.rand.NextFloat(0f, 360f), 0f);
-                for (int k = 0; k < 10; k++)
-                {
-
-                    Vector2 perturbedSpeed = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(360));
-                    float scale = 1f - (Main.rand.NextFloat() * 0.9f);
-
-                    Dust.NewDustPerfect(Projectile.position + (Main.rand.NextVector2Circular(1f, 1f) * 30f), DustID.Torch, (perturbedSpeed * scale) * 30f, 0, new Color(255, 217, 0), 1.3f);
-                    DivergencyDraw.SpawnExplosion(Projectile.position + (Main.rand.NextVector2Circular(1f, 1f) * 30f),  Color.Orange, DustID.Torch, shakeAmount: -1f,1,1,0.05f,true);
-                    
-                }
-                timer = 10f;
-            }
-        }
-    }
-    public class ColorUpExplosion : ModProjectile
-    {
-        public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, 100);
-
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Projectile.type] = 7;
-        }
-
-        public override void SetDefaults()
-        {
-            Projectile.friendly = true;
-            Projectile.hostile = false;
-            Projectile.damage = 10;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.scale = 0.05f;
-            Projectile.Size = new Vector2(100, 100);
-            Projectile.aiStyle = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-        }
-
-        public override void AI()
-        {
-            Projectile.rotation = Projectile.ai[0];
-            Projectile.scale += 0.01f;
-
-            if (++Projectile.frameCounter >= 5)
-            {
-                Projectile.frameCounter = 0;
-
-                if (++Projectile.frame >= 5)
-                {
-                    Projectile.frame = 0;
-                    Projectile.Kill();
-                }
-            }
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
-            int frameY = frameHeight * Projectile.frame;
-
-            Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
-            Vector2 origin = sourceRectangle.Size() / 2f;
-            Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            Color color = Projectile.GetAlpha(lightColor);
-
-            Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
-
-            return false;
-        }
-    }
-    public class BlueRoseBullet : ModProjectile
+    public class HighShot : ModProjectile
     {
         public override string Texture => "Divergency/Assets/Textures/Empty";
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Dead weight");
+            DisplayName.SetDefault("Blue Rose");
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
@@ -326,26 +226,21 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Projectile.extraUpdates = 5;
         }
 
-        public override void AI()
-        {
-            Projectile.ai[0] += 1f;
-
-            if (Projectile.ai[0] >= 15f) { Projectile.velocity *= 0.97f; }
-
-            if (Projectile.velocity.Length() < 0.1f) { Projectile.Kill(); }
-        }
-
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            for (int k = 0; k < 2; k++)
+            Player player = Main.player[Projectile.owner];
+
+            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
+
+            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center + (Main.rand.NextVector2Circular(1f, 1f) * target.width), Vector2.Zero, ModContent.ProjectileType<BlueRoseFlash>(), 0, 0f, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center + (Main.rand.NextVector2Circular(1f, 1f) * target.width), Vector2.Zero, ModContent.ProjectileType<BlueRoseFlash2>(), 0, 0f, Projectile.owner);
+
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
+
+            for (int k = 0; k < 5; k++)
             {
-                Vector2 perturbedSpeed = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30));
-                float scale = 1f - (Main.rand.NextFloat() * 0.9f);
-
-                Dust dust = Dust.NewDustPerfect(Projectile.position, DustID.Torch, (perturbedSpeed * scale) * -0.5f, 0, default, 3f);
-                dust.noGravity = true;
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ColorUpProj>(), 0, 0f, 0, Main.rand.NextFloat(0f, 360f), 0f);
-
+                Dust.NewDust(target.position, target.width, target.height, DustID.Blood, target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 5f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, default, 2f);
+                Dust.NewDustPerfect(Projectile.position, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10f, 0, new Color(255, 108, 23), Main.rand.NextFloat(0.2f, 0.5f));
             }
         }
 
@@ -380,6 +275,128 @@ namespace Divergency.Content.Items.Weapons.Ranged
         }
     }
 
+    public class BlueRoseFlash : ModProjectile
+    {
+        public override string Texture => "Divergency/Assets/Textures/Star";
+
+        public override bool ShouldUpdatePosition() => false;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Blue Rose");
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+
+            Projectile.scale = 2f;
+            Projectile.Size = new Vector2(100);
+            Projectile.alpha = 0;
+
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = false;
+
+            Projectile.aiStyle = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+        }
+
+        bool initilize = true;
+
+        public override void AI()
+        {
+            if (initilize)
+            {
+                Projectile.rotation = Main.rand.NextFloat(0f, 360f);
+
+                initilize = false;
+            }
+
+            Projectile.scale *= 0.9f;
+
+            Projectile.alpha += 25;
+            if (Projectile.alpha >= 255) { Projectile.Kill(); }
+        }
+
+        public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, Projectile.alpha);
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+
+            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameY = frameHeight * Projectile.frame;
+
+            Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            Color color = Projectile.GetAlpha(lightColor);
+
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+
+            return false;
+        }
+    }
+
+    public class BlueRoseFlash2 : ModProjectile
+    {
+        public override string Texture => "Divergency/Assets/Textures/Ring";
+
+        public override bool ShouldUpdatePosition() => false;
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Blue Rose");
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+
+            Projectile.scale = 0f;
+            Projectile.Size = new Vector2(600);
+            Projectile.alpha = 0;
+
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = false;
+
+            Projectile.aiStyle = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+        }
+
+        public override void AI()
+        {
+            Projectile.scale += 0.05f;
+
+            Projectile.alpha += 10;
+            if (Projectile.alpha >= 255) { Projectile.Kill(); }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+
+            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameY = frameHeight * Projectile.frame;
+
+            Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            Color color = Projectile.GetAlpha(lightColor);
+
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+
+            return false;
+        }
+    }
 }
 
  

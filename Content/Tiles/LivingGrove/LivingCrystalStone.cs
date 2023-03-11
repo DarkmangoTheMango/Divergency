@@ -5,6 +5,9 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Divergency.Content.Dusts;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using Terraria.DataStructures;
 
 namespace Divergency.Content.Tiles.LivingGrove
 {
@@ -15,7 +18,6 @@ namespace Divergency.Content.Tiles.LivingGrove
             Main.tileMerge[Type][ModContent.TileType<CradleWood>()] = true;
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
-            Main.tileBlockLight[Type] = true;
 
             DustType = ModContent.DustType<LivingShard>();
             ItemDrop = ModContent.ItemType<LivingCrystalStoneItem>();
@@ -26,9 +28,9 @@ namespace Divergency.Content.Tiles.LivingGrove
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 79f * 0.2f;
-            g = 214f * 0.2f;
-            b = 126f * 0.2f;
+            r = 79f * 0.9f;
+            g = 214f * 0.9f;
+            b = 126f * 0.9f;
         }
     }
 

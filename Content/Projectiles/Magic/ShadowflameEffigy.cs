@@ -2,12 +2,9 @@
 using Divergency.Common.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Effects;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -87,6 +84,8 @@ namespace Divergency.Content.Projectiles.Magic
 
         public Trail trail;
 
+        float timer;
+
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -104,17 +103,18 @@ namespace Divergency.Content.Projectiles.Magic
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), sourceRectangle, color, Projectile.rotation, drawOrigin, Projectile.scale, spriteEffects, 0);
 
-            Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Default").Value;
+            Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Light").Value;
 
             for (int k = 0; k < 3; k++)
             {
                 if (trail == null)
                 {
-                    trail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(32f - k), (p) => Projectile.GetAlpha(new Color(220, 82, 255, 100)) * (float)Math.Pow(1f - p, 2f));
+                    trail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(60f), (p) => Projectile.GetAlpha(new Color(220, 82, 255, 100)) * (float)Math.Pow(1f - p, 2f));
                     trail.drawOffset = Projectile.Size / 2f;
                 }
 
-                trail.Draw(Projectile.oldPos);
+                trail.Draw(Projectile.oldPos, timer);
+                timer -= 0.01f;
             }
 
             return false;

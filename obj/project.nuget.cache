@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "3fCTi7rwO2XUsiORgnm6oOkVQHctkzrK+DiyJyt2fsIWUweXSGEfUhMlxyJd7t/gl9a78AHcrN1qFPpkOPwLmQ==",
+  "dgSpecHash": "ioYARPkMyuuEjueo043u80P2mcelsdMqU86Z2E3AVuZx70oAAhYJUL7BMicLWT8VYXt7NAsQJd+SzawZTtA+5g==",
   "success": true,
-  "projectFilePath": "C:\\Users\\kings\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Divergency\\Divergency.csproj",
+  "projectFilePath": "C:\\Users\\Tyler\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Divergency\\Divergency.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\kings\\.nuget\\packages\\tmodloader.codeassist\\0.1.5\\tmodloader.codeassist.0.1.5.nupkg.sha512"
+    "C:\\Users\\Tyler\\.nuget\\packages\\tmodloader.codeassist\\0.1.5\\tmodloader.codeassist.0.1.5.nupkg.sha512"
   ],
   "logs": []
 }

@@ -105,7 +105,7 @@ namespace Divergency.Content.Projectiles.Ranged
 
             Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
-            texture = texture = TextureAssets.Projectile[Projectile.type].Value;
+            texture = TextureAssets.Projectile[Projectile.type].Value;
 
             frameHeight = texture.Height / Main.projFrames[Projectile.type];
             frameY = frameHeight * Projectile.frame;
