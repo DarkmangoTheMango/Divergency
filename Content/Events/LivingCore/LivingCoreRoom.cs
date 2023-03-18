@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using Divergency.Content.Tiles.LivingGrove;
 using Divergency.Events.LivingCore;
-using Divergency.Assets.Particles;
+using Divergency.Content.Particles;
 using Divergency.Common.Helpers;
 using Terraria.ID;
 

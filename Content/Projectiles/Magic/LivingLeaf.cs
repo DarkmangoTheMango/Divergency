@@ -1,4 +1,4 @@
-﻿using Divergency.Assets.Particles;
+﻿using Divergency.Content.Particles;
 using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Microsoft.Xna.Framework;
@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Divergency.Content.Items.Weapons.LivingCore;
 
 namespace Divergency.Content.Projectiles.Magic
 {
@@ -43,6 +44,10 @@ namespace Divergency.Content.Projectiles.Magic
         public override void AI()
         {
             Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, new Vector2(Main.rand.NextFloat(-0.4f, 0.4f)), 0, default, 1.2f).noGravity = true;
+
+            Projectile.rotation += 0.1f;
+
+            Projectile.velocity.Y += 0.1f;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -61,6 +66,11 @@ namespace Divergency.Content.Projectiles.Magic
                 float radius = 2;
 
                 for (int i = 0; i < numberOfDusts; i++) { Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, default, 1.2f).noGravity = true; }
+
+                for (int k = 0; k < Projectile.oldPos.Length; k++)
+                {
+                    Projectile.oldPos[k] = Projectile.position;
+                }
             }
 
             return false;
@@ -68,11 +78,24 @@ namespace Divergency.Content.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            int numberOfDusts = 20;
-            float radius = 2;
+            Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
 
-            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center + (Main.rand.NextVector2Circular(1f, 1f) * target.width), Vector2.Zero, ModContent.ProjectileType<LivingLeafFLash>(), 0, 0f, Projectile.owner);
-            for (int i = 0; i < numberOfDusts; i++) { Dust.NewDustPerfect(target.Center, DustID.TerraBlade, Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, default, 1.2f).noGravity = true; }
+            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), position, Vector2.Zero, ModContent.ProjectileType<LivingCoreSpearDamage>(), 0, 0f, Projectile.owner);
+
+            for (int k = 0; k < 5; k++)
+            {
+                float speed = Main.rand.NextFloat(0.2f, 2f);
+                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(0f, speed), 0, default, 1.2f).noGravity = true;
+
+                speed = Main.rand.NextFloat(0.2f, 2f);
+                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(speed, 0f), 0, default, 1.2f).noGravity = true;
+
+                speed = Main.rand.NextFloat(0.2f, 2f);
+                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(0f, -speed), 0, default, 1.2f).noGravity = true;
+
+                speed = Main.rand.NextFloat(0.2f, 2f);
+                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(-speed, 0f), 0, default, 1.2f).noGravity = true;
+            }
         }
 
         public Trail trail;
@@ -105,69 +128,6 @@ namespace Divergency.Content.Projectiles.Magic
 
             trail.Draw(Projectile.oldPos);
             whiteTrail.Draw(Projectile.oldPos);
-
-            return false;
-        }
-    }
-
-    public class LivingLeafFLash : ModProjectile
-    {
-        public override string Texture => "Divergency/Assets/Textures/Star";
-        public override bool ShouldUpdatePosition() => false;
-
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Living Bolt");
-        }
-
-        public override void SetDefaults()
-        {
-            Projectile.penetrate = -1;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.friendly = false;
-            Projectile.hostile = false;
-
-            Projectile.scale = 0.8f;
-            Projectile.Size = new Vector2(16);
-            Projectile.alpha = 0;
-
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = false;
-
-            Projectile.aiStyle = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-        }
-
-        bool initilize = true;
-
-        public override void AI()
-        {
-            if (initilize)
-            {
-                Projectile.rotation = Main.rand.NextFloat(0f, 360f);
-                initilize = false;
-            }
-
-            Projectile.scale *= 0.9f;
-
-            Projectile.alpha += 25;
-            if (Projectile.alpha >= 255) { Projectile.Kill(); }
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
-            int frameY = frameHeight * Projectile.frame;
-
-            Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
-            Vector2 origin = sourceRectangle.Size() / 2f;
-            Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            Color color = Projectile.GetAlpha(new Color(109, 223, 94, 0));
-
-            Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
             return false;
         }

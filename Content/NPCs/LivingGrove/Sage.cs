@@ -1,4 +1,4 @@
-using Divergency.Assets.Particles;
+using Divergency.Content.Particles;
 using Divergency.Content.Projectiles.Hostile;
 using Divergency.Content.Projectiles.Summoner.Minions;
 using Microsoft.Xna.Framework;

@@ -1,4 +1,4 @@
-﻿using Divergency.Assets.Particles;
+﻿using Divergency.Content.Particles;
 using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Buffs;

@@ -1,4 +1,4 @@
-﻿using Divergency.Assets.Particles;
+﻿using Divergency.Content.Particles;
 using Divergency.Common.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

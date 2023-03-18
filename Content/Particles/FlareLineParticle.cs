@@ -4,7 +4,7 @@ using ParticleLibrary;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace Divergency.Assets.Particles
+namespace Divergency.Content.Particles
 {
 	public class FlareLineParticle : Particle
 	{

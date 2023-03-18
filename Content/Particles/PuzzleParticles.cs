@@ -12,7 +12,7 @@ using Divergency.Content.Tiles.LivingGrove.CorePuzzle;
 using Terraria.ID;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Divergency.Assets.Particles
+namespace Divergency.Content.Particles
 {
     public class ResetParticle : Particle
     {

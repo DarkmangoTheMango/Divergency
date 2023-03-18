@@ -1,5 +1,5 @@
 ﻿
-using Divergency.Assets.Particles;
+using Divergency.Content.Particles;
 using Divergency.Content.NPCs.LivingGrove;
 using Divergency.Content.Tiles.LivingGrove;
 using Divergency.Events.LivingCore;

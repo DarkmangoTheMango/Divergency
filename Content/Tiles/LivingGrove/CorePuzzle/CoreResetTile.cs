@@ -10,7 +10,7 @@ using ParticleLibrary;
 using Terraria.ObjectData;
 using Terraria.DataStructures;
 using Terraria.Localization;
-using Divergency.Assets.Particles;
+using Divergency.Content.Particles;
 using Divergency.Common.Players;
 
 namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
