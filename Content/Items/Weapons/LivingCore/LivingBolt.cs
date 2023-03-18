@@ -5,7 +5,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Items.Weapons.Magic
+namespace Divergency.Content.Items.Weapons.LivingCore
 {
     public class LivingBolt : ModItem
     {

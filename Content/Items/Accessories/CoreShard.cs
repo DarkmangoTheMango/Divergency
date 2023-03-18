@@ -8,7 +8,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Divergency.Content.Projectiles;
-using Divergency.Assets.Particles;
+using Divergency.Content.Particles;
 using ParticleLibrary;
 
 namespace Divergency.Content.Items.Accessories

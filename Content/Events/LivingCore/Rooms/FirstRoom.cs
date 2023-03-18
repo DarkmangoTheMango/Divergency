@@ -1,7 +1,7 @@
-﻿using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Divergency.Content.Items.Weapons.Melee;
+﻿using Divergency.Content.Items.Weapons.LivingCore;
 using Divergency.Content.NPCs.LivingGrove;
+using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace Divergency.Content.Events.LivingCore.Rooms
 {
@@ -9,7 +9,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
     {
         public override int Music => MusicLoader.GetMusicSlot("Divergency/Assets/Sounds/Music/LivingGroveBattle1");
         public override string RewardTexturePath => "Divergency/Assets/Rewards/LivingCoreSwordGlow";
-        public override int RewardID => ModContent.ItemType<LivingCoreSword>();
+        public override int RewardID => ModContent.ItemType<LivingCoreSpear>();
         public override Vector2[] BlockingBlocks => new Vector2[] {
             new Vector2(-74, -10),
             new Vector2(-74, -11),

@@ -45,7 +45,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Item.noMelee = true;
 
             Item.useAmmo = AmmoID.Bullet;
-            Item.shoot = ModContent.ProjectileType<ShortBullet>();
+            Item.shoot = ModContent.ProjectileType<LivingCoreShrapnel>();
             Item.shootSpeed = 15f;
 
             Item.width = Item.height = 16;
@@ -74,7 +74,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             }
             else
             {
-                Item.shoot = ModContent.ProjectileType<ShortBullet>();
+                Item.shoot = ModContent.ProjectileType<LivingCoreShrapnel>();
                 Item.shootSpeed = 15f;
 
                 Item.useStyle = ItemUseStyleID.Shoot;
@@ -111,7 +111,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             {
                 player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 8;
 
-                if (type == ProjectileID.Bullet) { type = ModContent.ProjectileType<ShortBullet>(); }
+                if (type == ProjectileID.Bullet) { type = ModContent.ProjectileType<LivingCoreShrapnel>(); }
 
                 Vector2 offset = Vector2.Normalize(velocity) * 52f;
 
@@ -122,16 +122,18 @@ namespace Divergency.Content.Items.Weapons.Ranged
                     Vector2 perturbedSpeed = velocity.RotatedByRandom(MathHelper.ToRadians(30));
                     float scale = 1f - (Main.rand.NextFloat() * 0.9f);
 
-                    Dust dust = Dust.NewDustPerfect(position, DustID.Torch, (perturbedSpeed * scale) * 0.5f, 0, default, 3f);
-                    dust.noGravity = true;
-
                     Dust.NewDustPerfect(position, ModContent.DustType<Smoke>(), (perturbedSpeed * scale) * 0.5f, 0, new Color(255, 217, 0), 1f);
                 }
 
-                for (int k = 0; k < 2; k++)
+                for (int k = 0; k < 15; k++)
+                {
+                    Dust.NewDustPerfect(position, ModContent.DustType<Glow>(), (velocity * 0.5f).RotatedByRandom(0.4f) * Main.rand.NextFloat(3f), 125, new Color(255, 108, 23), Main.rand.NextFloat(0.2f, 0.5f));
+                }
+
+                for (int k = 0; k < 4; k++)
                 {
                     Vector2 newVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(20));
-                    newVelocity *= 1f - Main.rand.NextFloat(0.5f);
+                    newVelocity *= 1f - Main.rand.NextFloat(0.3f);
 
                     Projectile.NewProjectile(source, position, newVelocity, type, damage, knockback, player.whoAmI);
                 }
