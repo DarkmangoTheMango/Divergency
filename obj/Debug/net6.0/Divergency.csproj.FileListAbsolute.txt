@@ -173,3 +173,5 @@ C:\Users\kings\Documents\My Games\Terraria\tModLoader\ModSources\Divergency\obj\
 C:\Users\kings\Documents\My Games\Terraria\tModLoader\ModSources\Divergency\obj\Debug\net6.0\refint\Divergency.dll
 C:\Users\kings\Documents\My Games\Terraria\tModLoader\ModSources\Divergency\obj\Debug\net6.0\Divergency.pdb
 C:\Users\kings\Documents\My Games\Terraria\tModLoader\ModSources\Divergency\obj\Debug\net6.0\ref\Divergency.dll
+C:\Users\kings\Documents\My Games\Terraria\tModLoader\ModSources\Divergency\bin\Debug\net6.0\SubworldLibrary.dll
+C:\Users\kings\Documents\My Games\Terraria\tModLoader\ModSources\Divergency\bin\Debug\net6.0\SubworldLibrary.xml
