@@ -13,6 +13,25 @@ namespace Divergency.Common.Helpers
 {
     public static class DivergencyDraw
     {
+        public static object GetFieldValue(this Type type, string fieldName, object obj = null, BindingFlags? flags = null)
+        {
+            if (flags == null)
+            {
+                flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+            }
+            FieldInfo field = type.GetField(fieldName, flags.Value);
+            return field.GetValue(obj);
+        }
+
+        public static T GetFieldValue<T>(this Type type, string fieldName, object obj = null, BindingFlags? flags = null)
+        {
+            if (flags == null)
+            {
+                flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+            }
+            FieldInfo field = type.GetField(fieldName, flags.Value);
+            return (T)field.GetValue(obj);
+        }
 
 
         public static void SpawnRing(Vector2 center, Color color, float flatScale = 0.13f, float multiScale = 0.9f, float glowScale = 2)
@@ -255,4 +274,5 @@ namespace Divergency.Common.Helpers
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+
 }
