@@ -8,7 +8,7 @@ namespace Divergency.Content.Particles
 {
     public class StarParticle : Particle
     {
-        public override string Texture => "Divergency/Assets/Textures/ParticleTextures/SmallStar";
+        public override string Texture => "Divergency/Assets/Textures/ParticleTextures/Star";
 
         public override void SetDefaults()
         {
@@ -17,7 +17,7 @@ namespace Divergency.Content.Particles
             timeLeft = 30;
 
         }
-
+        
         public override void AI()
         {
             velocity *= 0.96f;
@@ -40,40 +40,5 @@ namespace Divergency.Content.Particles
             return false;
         }
     }
-    public class EyeParticle : Particle
-    { //only for sage
-        public override string Texture => "Divergency/Assets/Textures/ParticleTextures/SmallStar";
-
-        public override void SetDefaults()
-        {
-            width = 1;
-            height = 1;
-            timeLeft = 10;
-        }
-
-        public override void AI()
-        {
-            position = Main.npc[(int)ai[1]].Top + new Vector2(10,30);
-            timeLeft = 10;
-            if (!Main.npc[(int)ai[1]].active)
-            {
-                active = false;
-            }
-        }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
-        {
-
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-
-            float alpha = timeLeft > 40f ? (20f - (timeLeft - 40f)) / 20f : timeLeft <= 20f ? timeLeft / 20f : 1f;
-            Color color2 = Color.Multiply(new(2.55f, 2.55f, 2.55f, 0), alpha);
-
-            spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color * alpha, rotation, texture.Size() * 0.5f, Scale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color2, rotation, texture.Size() * 0.5f, Scale / 2f, SpriteEffects.None, 0f);
-
-
-            return false;
-        }
-    }
+   
 }

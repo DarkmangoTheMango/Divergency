@@ -68,7 +68,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.scale = 2f;
+            Projectile.scale = 1.3f;
             Projectile.Size = new Vector2(72);
 
             Projectile.tileCollide = false;
@@ -224,7 +224,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.scale = 2f;
+            Projectile.scale = 1f;
             Projectile.Size = new Vector2(72);
 
             Projectile.tileCollide = false;
