@@ -1,3 +1,4 @@
+using Divergency.Common.Systems3D;
 using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Buffs;
@@ -5,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -14,8 +16,21 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
-    public class CommandantsBlade : ModItem
+    public class CommandantsBlade : ModItem, I3D
     {
+        float slash(int time, int maxTime)
+        {
+            float x = (float)time / (float)maxTime;
+            return x < 0.5 ? 4*x*x*x : 1 - MathF.Pow(-2 * x + 2, 3) / 2;
+        }
+
+        public Vector3 StartRotation => new Vector3(-1f, -0.6f, 0f);
+        public Vector3 EndRotation => new Vector3(2.4f, 0.4f, 1.4f);
+        public Vector2 Offset => new Vector2(0, 80);
+        public string SwordTexture => "Divergency/Content/Items/Weapons/Melee/CommandantsBlade";
+        public Func<int, int, float> SlashAnimation => slash;
+        public int Duration => 30;
+
         public int attackDirection = 1;
         public int AttackCounter = 1;
 
@@ -42,7 +57,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.width = Item.height = 90;
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 50;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -65,7 +80,9 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             attackDirection = -attackDirection;
 
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
+            //Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
+
+            Handler3D.Swing(player, source, Item.type, damage, knockback);
 
             return false;
         }
