@@ -47,16 +47,29 @@ namespace Divergency.Common.Systems3D
         {
             I3D ItemInfo = ModContent.GetModItem(baseItem) as I3D;
 
+            int frame = ItemInfo.SwordFrames.lookupArray.Count - Projectile.timeLeft;
+            int keyframe = ItemInfo.SwordFrames.lookupArray[frame];
+
+            SwordAnimation SA = ItemInfo.SwordFrames.realArray[keyframe];
+
+            Vector3 StartRotation = keyframe == 0 ? ItemInfo.StartRotation : ItemInfo.SwordFrames.realArray[keyframe - 1].TargetRotation;
+            Vector3 EndRotation = SA.TargetRotation;
+
+            Vector2 StartOffset = keyframe == 0 ? ItemInfo.StartOffset : ItemInfo.SwordFrames.realArray[keyframe - 1].Offset;
+            Vector2 EndOffset = SA.Offset;
+
             Player player = Main.player[Projectile.owner];
 
             Handler3D.Activate();
 
-            Vector3 rotation = Vector3.Lerp(ItemInfo.EndRotation, ItemInfo.StartRotation, ItemInfo.SlashAnimation(Projectile.timeLeft, ItemInfo.Duration));
+            Vector3 rotation = SA.Interpolation3D.Lerp(StartRotation, EndRotation, frame - SA.LastKeyframe, SA.ThisKeyframe - SA.LastKeyframe);
+            Vector2 offset = SA.Interpolation2D.Lerp(StartOffset, EndOffset, frame - SA.LastKeyframe, SA.ThisKeyframe - SA.LastKeyframe);
 
-            rotation.X *= -player.direction;
-            Console.WriteLine(player.direction);
+            Console.WriteLine(frame + ": " + StartRotation + " | " + EndRotation + " | " + (frame - SA.LastKeyframe) + " | " + (SA.ThisKeyframe - SA.LastKeyframe));
 
-            Handler3D.SetValues(player, ItemInfo.Offset, rotation);
+            //rotation.X *= -player.direction;
+
+            Handler3D.SetValues(player, ItemInfo.ConstOffset, offset, rotation);
 
             Texture2D texture = ModContent.Request<Texture2D>(ItemInfo.SwordTexture).Value;
             if (texture != null)

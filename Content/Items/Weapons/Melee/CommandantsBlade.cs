@@ -21,18 +21,19 @@ namespace Divergency.Content.Items.Weapons.Melee
         float smoothInOut(int time, int maxTime)
         {
             float x = (float)time / (float)maxTime;
-            return x < 0.5 ? 4*x*x*x : 1 - MathF.Pow(-2 * x + 2, 3) / 2;
+            return x < 0.5 ? 4 * x * x * x : 1 - MathF.Pow(-2 * x + 2, 3) / 2;
         }
 
         public Vector3 StartRotation => new Vector3(0f, 0f, 0f);
         public Vector2 ConstOffset => new Vector2(0, 80);
+        public Vector2 StartOffset => new Vector2(0, 0);
         public string SwordTexture => "Divergency/Content/Items/Weapons/Melee/CommandantsBlade";
 
-        public SwordAnimation[] SwordAnimations => new SwordAnimation[]
-        {
-            new SwordAnimation(new Vector3(MathF.PI / 2, 0, 0), 20),
-            new SwordAnimation(new Vector3(MathF.PI / 2, MathF.PI / 2, MathF.PI / 2), 20),
-        };
+        public AnimKeyframes SwordFrames => new AnimKeyframes(new SwordAnimation[] {
+            new SwordAnimation(new Vector3(MathF.PI / 2, 0, 0), 10),
+            new SwordAnimation(new Vector3(MathF.PI / 2, 1.2f, 0), 12),
+            new SwordAnimation(new Vector3(MathF.PI / 2, 1.2f, MathF.PI*2), 30),
+        });
 
         public int attackDirection = 1;
         public int AttackCounter = 1;
