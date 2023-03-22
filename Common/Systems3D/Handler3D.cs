@@ -84,18 +84,22 @@ namespace Divergency.Common.Systems3D
             return result;
         }
 
-        public static void SetValues(Player player, Vector2 OriginOffset, Vector2 Offset, Vector3 Rotations)
+        public static void SetValues(Player player, Vector2 OriginOffset, Vector2 Offset, Vector3 Rotations, Vector2 LocalOffset, Vector2 Scale)
         {
             projection = Matrix.CreatePerspectiveFieldOfView(80 * MathF.PI / 180, (float)Main.screenWidth / Main.screenHeight, 0.1f, 1000f);
 
             model = Matrix.CreateScale(1);
+
+            model *= Matrix.CreateScale(Scale.X, Scale.Y, 1);
+
+            Vector2 target = player.Center - Main.screenPosition - Main.ScreenSize.ToVector2() / 2;// - player.velocity;
+            model *= Matrix.CreateTranslation(target.X, target.Y, 0);
 
             model *= Matrix.CreateRotationZ(-MathF.PI / 4);
 
             model *= Matrix.CreateScale(-1, -1, 1);
 
             model *= Matrix.CreateTranslation(OriginOffset.X, OriginOffset.Y, 0);
-
             model *= Matrix.CreateTranslation(Offset.X, Offset.Y, 0);
 
             model *= Matrix.CreateRotationY(Rotations.Y);
@@ -112,9 +116,7 @@ namespace Divergency.Common.Systems3D
 
             model *= Matrix.CreateScale(-player.direction, 1, 1);
 
-            Vector2 target = player.Center - Main.screenPosition - Main.ScreenSize.ToVector2() / 2 - player.velocity;
-
-            model *= Matrix.CreateTranslation(target.X, target.Y, 0);
+            model *= Matrix.CreateTranslation(LocalOffset.X, LocalOffset.Y, 0);
 
             // idk if this needs to be called every frame time you change stuff...
             /*

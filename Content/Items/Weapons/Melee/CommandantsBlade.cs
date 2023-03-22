@@ -27,10 +27,12 @@ namespace Divergency.Content.Items.Weapons.Melee
         public Vector3 StartRotation => new Vector3(0f, 0f, 0f);
         public Vector2 ConstOffset => new Vector2(0, 80);
         public Vector2 StartOffset => new Vector2(0, 0);
+        public Vector2 StartLocalOffset => new Vector2(0, 0);
+        public Vector2 StartScale => new Vector2(1, 1);
         public string SwordTexture => "Divergency/Content/Items/Weapons/Melee/CommandantsBlade";
 
         public AnimKeyframes SwordFrames => new AnimKeyframes(new SwordAnimation[] {
-            new SwordAnimation(new Vector3(MathF.PI / 2, 0, 0), 10),
+            new SwordAnimation(new Vector3(MathF.PI / 2, 0, 0), 10, 20),
             new SwordAnimation(new Vector3(MathF.PI / 2, 1.2f, 0), 12),
             new SwordAnimation(new Vector3(MathF.PI / 2, 1.2f, MathF.PI*2), 30),
         });
@@ -61,7 +63,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.width = Item.height = 90;
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 30;
+            Item.useTime = Item.useAnimation = 62;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;

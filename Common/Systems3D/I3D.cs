@@ -43,6 +43,9 @@ namespace Divergency.Common.Systems3D
 
         public Vector3 Lerp(Vector3 v1, Vector3 v2, int time, int maxTime)
         {
+            if (time > maxTime)
+                time = maxTime;
+
             return new Vector3(
                 lerp(v1.X, v2.X, X(time, maxTime)),
                 lerp(v1.Y, v2.Y, Y(time, maxTime)),
@@ -105,38 +108,63 @@ namespace Divergency.Common.Systems3D
                 SwordAnimation SA = realArray[SAIDX];
                 SA.LastKeyframe = curIDX;
 
-                for (int i = 0; i < (SA.Duration + SA.Delay); i++)
+                for (int i = 0; i < (SA.Duration); i++)
                 {
                     lookupArray.Add(SAIDX);
                     curIDX++;
                 }
 
-                SA.ThisKeyframe = curIDX-1; // MIGHT BE WRONG
+                SA.ThisKeyframe = curIDX - 1; // MIGHT BE WRONG
+
+                for (int i = 0; i < (SA.Delay); i++)
+                {
+                    lookupArray.Add(SAIDX);
+                    curIDX++;
+                }
             }
         }
     }
 
     public class SwordAnimation
     {
-
         public Vector3 TargetRotation;
-        public InterpolationAnimation3D Interpolation3D;
-        public InterpolationAnimation2D Interpolation2D;
-        public int Duration;
-        
-        public int LastKeyframe;
-        public int ThisKeyframe;
-        
+        public InterpolationAnimation3D TargetRotationAnim;
+
         public Vector2 Offset;
+        public InterpolationAnimation2D OffsetAnim;
+
+        public Vector2 Scale;
+        public InterpolationAnimation2D ScaleAnim;
+
+        public Vector2 LocalOffset;
+        public InterpolationAnimation2D LocalOffsetAnim;
+
+        public int Duration;
         public int Delay;
 
-        public SwordAnimation(Vector3 TargetRotation, int Duration, InterpolationAnimation3D SlashAnimation3D = null, InterpolationAnimation2D SlashAnimation2D = null, Vector2 Offset = default, int Delay = 0)
+        public int LastKeyframe;
+        public int ThisKeyframe;
+
+        public SwordAnimation(
+            Vector3 TargetRotation, int Duration,
+            int Delay = 0, InterpolationAnimation3D TargetRotationAnim = null,
+            Vector2 Offset = default, InterpolationAnimation2D OffsetAnim = null,
+            Vector2 Scale = default,InterpolationAnimation2D ScaleAnim = null,
+            Vector2 LocalOffset = default, InterpolationAnimation2D LocalOffsetAnim = null)
         {
             this.TargetRotation = TargetRotation;
-            this.Interpolation3D = ((SlashAnimation3D == null) ? new InterpolationAnimation3D() : SlashAnimation3D);
-            this.Interpolation2D = ((SlashAnimation2D == null) ? new InterpolationAnimation2D() : SlashAnimation2D);
-            this.Duration = Duration;
+            this.TargetRotationAnim = ((TargetRotationAnim == null) ? new InterpolationAnimation3D() : TargetRotationAnim);
+
             this.Offset = Offset;
+            this.OffsetAnim = ((OffsetAnim == null) ? new InterpolationAnimation2D() : OffsetAnim);
+
+            this.Scale = Scale == default ? new Vector2(1, 1) : Scale;
+            this.ScaleAnim = ((ScaleAnim == null) ? new InterpolationAnimation2D() : ScaleAnim);
+
+            this.LocalOffset = LocalOffset;
+            this.LocalOffsetAnim = ((LocalOffsetAnim == null) ? new InterpolationAnimation2D() : LocalOffsetAnim);
+
+            this.Duration = Duration;
             this.Delay = Delay;
         }
     }
@@ -145,6 +173,8 @@ namespace Divergency.Common.Systems3D
     {
         public Vector3 StartRotation { get; }
         public Vector2 StartOffset { get; }
+        public Vector2 StartLocalOffset { get; }
+        public Vector2 StartScale { get; }
         public AnimKeyframes SwordFrames { get; }
         public Vector2 ConstOffset { get; }
         public string SwordTexture { get; }

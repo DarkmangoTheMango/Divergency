@@ -58,18 +58,28 @@ namespace Divergency.Common.Systems3D
             Vector2 StartOffset = keyframe == 0 ? ItemInfo.StartOffset : ItemInfo.SwordFrames.realArray[keyframe - 1].Offset;
             Vector2 EndOffset = SA.Offset;
 
+            Vector2 StartLocalOffset = keyframe == 0 ? ItemInfo.StartLocalOffset : ItemInfo.SwordFrames.realArray[keyframe - 1].LocalOffset;
+            Vector2 EndLocalOffset = SA.LocalOffset;
+
+            Vector2 StartScale = keyframe == 0 ? ItemInfo.StartScale : ItemInfo.SwordFrames.realArray[keyframe - 1].Scale;
+            Vector2 EndScale = SA.Scale;
+
             Player player = Main.player[Projectile.owner];
 
             Handler3D.Activate();
 
-            Vector3 rotation = SA.Interpolation3D.Lerp(StartRotation, EndRotation, frame - SA.LastKeyframe, SA.ThisKeyframe - SA.LastKeyframe);
-            Vector2 offset = SA.Interpolation2D.Lerp(StartOffset, EndOffset, frame - SA.LastKeyframe, SA.ThisKeyframe - SA.LastKeyframe);
+            Vector3 rotation = SA.TargetRotationAnim.Lerp(StartRotation, EndRotation, frame - SA.LastKeyframe, SA.ThisKeyframe - SA.LastKeyframe);
+            Vector2 offset = SA.OffsetAnim.Lerp(StartOffset, EndOffset, frame - SA.LastKeyframe, SA.ThisKeyframe - SA.LastKeyframe);
+            Vector2 localoffset = SA.LocalOffsetAnim.Lerp(StartLocalOffset, EndLocalOffset, frame - SA.LastKeyframe, SA.ThisKeyframe - SA.LastKeyframe);
+            Vector2 scale = SA.ScaleAnim.Lerp(StartScale, EndScale, frame - SA.LastKeyframe, SA.ThisKeyframe - SA.LastKeyframe);
 
             Console.WriteLine(frame + ": " + StartRotation + " | " + EndRotation + " | " + (frame - SA.LastKeyframe) + " | " + (SA.ThisKeyframe - SA.LastKeyframe));
 
+            //Console.WriteLine(player + " | " + ItemInfo.ConstOffset + " | " + offset + " | " + rotation + " | " + localoffset + " | " + scale);
+
             //rotation.X *= -player.direction;
 
-            Handler3D.SetValues(player, ItemInfo.ConstOffset, offset, rotation);
+            Handler3D.SetValues(player, ItemInfo.ConstOffset, offset, rotation, localoffset, scale);
 
             Texture2D texture = ModContent.Request<Texture2D>(ItemInfo.SwordTexture).Value;
             if (texture != null)
