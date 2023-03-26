@@ -1,6 +1,8 @@
-﻿using System;
+﻿using IL.Terraria.DataStructures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
@@ -37,6 +39,8 @@ namespace Divergency.Content.NPCs.Friendly
             NPC.knockBackResist = 0f;
             NPC.npcSlots = 0;
             NPC.scale = 1.3f;
+            NPC.townNPC = true;
+            NPC.homeless = true;
         }
         public override bool CanChat()
         {
@@ -135,16 +139,18 @@ namespace Divergency.Content.NPCs.Friendly
         }
     }
 
-    public class DoordealerSpawn : GlobalNPC
-    {
-        public override void AI(NPC npc)
-        {
-            if (!npc.homeless)
-            {
-                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.position.X, (int)npc.position.Y, ModContent.NPCType<DoordealerFirstEncounter>());
-            }
-        }
-    }
+    //public class DoordealerSpawn : GlobalNPC
+    //{
+
+       // public override void AI(NPC npc)
+        //{
+            
+         //   if (!npc.homeless && npc.townNPC)
+          //  {
+           //     NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.homeTileX, (int)npc.homeTileY, ModContent.NPCType<DoordealerFirstEncounter>());
+            //}
+       // }
+    //}
  
 
 
