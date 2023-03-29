@@ -8,7 +8,7 @@ namespace Divergency.Content.Particles
 {
     public class StarParticle : Particle
     {
-        public override string Texture => "Divergency/Assets/Textures/ParticleTextures/Star";
+        public override string Texture => "Divergency/Assets/Textures/ParticleTextures/BigStar";
 
         public override void SetDefaults()
         {
