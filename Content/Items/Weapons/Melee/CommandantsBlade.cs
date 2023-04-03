@@ -1,10 +1,12 @@
 using Divergency.Common.Helpers;
+using Divergency.Common.Helpers.SwordAnimator;
 using Divergency.Common.Players;
 using Divergency.Content.Buffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -14,10 +16,85 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
-    public class CommandantsBlade : ModItem
+    public class CommandantsBlade : ModItem, ISwordSwing
     {
+        float ScaleEase(float cur, float max)
+        {
+            float x = cur / max;
+            return 1f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1 - x) * MathHelper.Pi) * 0.6f * 0.6f;
+        }
+
+        float RotationEase(float cur, float max)
+        {
+            float x = cur / max;
+            return EaseFunction.EaseCircularInOut.Ease(x);
+        }
+
+        private int freezeFrames = -1;
+        void NPCHit(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        {
+            Player player = Main.player[projectile.owner];
+
+            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
+
+            target.AddBuff(ModContent.BuffType<FleshWound>(), 180);
+
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
+
+            for (int i = 0; i < 20; i++)
+            {
+                Dust.NewDust(target.position, target.width, target.height, DustID.Blood, target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 10f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, default, 2f);
+            }
+
+            if (freezeFrames == -1)
+                freezeFrames = projectile.localNPCHitCooldown;
+        }
+
+        private void Update(Projectile projectile)
+        {
+            if (freezeFrames > -1)
+            {
+                freezeFrames--;
+
+                if (freezeFrames > 0)
+                {
+                    SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
+                    ISwordSwing SwingInfo = ModContent.GetModItem(proj.baseItem) as ISwordSwing;
+                    proj.FramesPassed-=1f / SwingInfo.Updates;
+                }
+            }
+        }
+
         public int attackDirection = 1;
         public int AttackCounter = 1;
+
+        public int Updates => 10;
+        public Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
+        public string SwordTexture => "Divergency/Content/Items/Weapons/Melee/CommandantsBlade";
+        public Vector2 Pivot => new Vector2(0, 55);
+
+        public TimedFunction[] SwingFunctions => new TimedFunction[]
+        {
+            new TimedFunction(Update, 0, RunEveryFrame: true),
+        };
+
+        static void PlaySound(Projectile proj)
+        {
+            Player player = Main.player[proj.owner];
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingHeavy") with { Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, player.Center);
+        }
+
+        private static TimedFunction[] timedFunctions = new TimedFunction[] { new TimedFunction(PlaySound, 0.5f) };
+        public Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
+        {
+            new SwordAnimation(-2f+MathF.PI/2, 0), // TimedFunction should be in here, not down below...
+            new SwordAnimation(2f+MathF.PI/2, 49, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(-2f+MathF.PI/2, 49, 4, FrameFunctions: timedFunctions, Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(MathF.PI/2, 0, 4, LocalOffset: new Vector2(0, -20), HoldToContinue: true),
+            new SwordAnimation(MathF.PI/2, 5, LocalOffset: new Vector2(0, 40)),
+        });
+        public float Width => MathF.Sqrt(MathF.Pow(12, 2)*2)+1f; // 12 is vertical width of blade
+
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
 
@@ -36,9 +113,9 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.damage = 35;
             Item.knockBack = 5f;
 
-            Item.shoot = ModContent.ProjectileType<CommandantsBladePro>();
             Item.shootSpeed = 1f;
 
+            Item.shoot = ModContent.ProjectileType<SwordProjectile>();
             Item.width = Item.height = 90;
             Item.scale = 1f;
 
@@ -65,7 +142,9 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             attackDirection = -attackDirection;
 
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
+            //Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
+
+            SwordAnimator.Swing(player, source, Item.type, damage, knockback);
 
             return false;
         }
@@ -118,7 +197,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void AI()
         {
-            if (--pauseTimer > 0 && maxHits > 0) { Projectile.timeLeft = oldTimeleft; }
+            if (--pauseTimer > 0 && maxHits > 0) { Projectile.timeLeft ++; }
 
             Player player = Main.player[Projectile.owner];
 
