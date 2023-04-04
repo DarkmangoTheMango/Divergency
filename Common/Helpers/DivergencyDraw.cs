@@ -152,16 +152,16 @@ namespace Divergency.Common.Helpers
                     Projectile.Center = entityTarget.Center;
             }
 
-            Projectile.timeLeft = 10;
+            Projectile.timeLeft = 300;
             Projectile.velocity *= 0;
             Projectile.localAI[0]++;
-            if (Projectile.localAI[0] < 60)
+            if (Projectile.localAI[0] < 300)
             {
                 if (Projectile.localAI[0] < 30)
                     Projectile.alpha -= 5;
                 else
-                    Projectile.alpha += 5;
-                Projectile.scale += 0.003f;
+                    Projectile.alpha += 1;
+                Projectile.scale += 0.01f;
             }
             else
             {

@@ -126,7 +126,8 @@ namespace Divergency.Content.Particles
         {
             width = 1;
             height = 1;
-            timeLeft = 60;
+            timeLeft = 120;
+            layer = Layer.BeforeProjectiles;
         }
 
         public override void AI()
@@ -134,8 +135,8 @@ namespace Divergency.Content.Particles
 
             rotation = velocity.ToRotation();
 
-            velocity *= 0.99f;
-            velocity.Y -= 0.01f;
+            velocity *= 1f;
+           // velocity.Y -= 0.01f;
 
         }
 
@@ -143,7 +144,7 @@ namespace Divergency.Content.Particles
         {
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            float alpha = timeLeft > 40f ? (20f - (timeLeft - 40f)) / 20f : timeLeft <= 20f ? timeLeft / 20f : 1f;
+            float alpha = timeLeft > 120f ? (20f - (timeLeft - 120f)) / 20f : timeLeft <= 20f ? timeLeft / 20f : 1f;
 
             spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color * alpha, rotation, texture.Size() * 0.04f, Scale, SpriteEffects.None, 0f);
             spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color * alpha, rotation, texture.Size() * 0.02f, Scale, SpriteEffects.None, 0f);
