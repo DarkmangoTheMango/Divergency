@@ -39,6 +39,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             }
             else
             {
+                Console.WriteLine(TargetTime + " | " + curTime + " | " + TargetTime + " | " + lastTime + ": " + (TargetTime <= curTime && TargetTime >= lastTime));
                 if (TargetTime <= curTime && TargetTime >= lastTime)
                     FunctionToRun(proj);
             }
@@ -315,6 +316,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
             float curTime = FramesPassed * AttackSpeed;
             FramesPassed += 1f / SwingInfo.Updates;
+            //Console.WriteLine(curTime);
 
             Keyframes.FrameInfo frameInfo = SwingInfo.SwordFrames.NextFrame(curTime);
             int keyframe = frameInfo.frameID;
@@ -333,7 +335,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             SwordAnimation SA = SwingInfo.SwordFrames.keyframeArray[keyframe];
             SwordAnimation LastSA = SwingInfo.SwordFrames.keyframeArray[keyframe - 1];
 
-            float lastTime = curTime - AttackSpeed;
+            float lastTime = curTime - AttackSpeed / SwingInfo.Updates;
 
             if (FramesPassed > 1)
             {
@@ -359,16 +361,16 @@ namespace Divergency.Common.Helpers.SwordAnimator
             }
 
             float CurFrame = frameInfo.framePassed;
-            float LastFrame = frameInfo.framePassed - AttackSpeed;
             float MaxFrame = SA.Duration;
 
             bool inAnimation = CurFrame >= SA.SDelay && CurFrame <= SA.Duration;
 
             CurFrame = MathF.Min(MathF.Max(CurFrame - SA.SDelay, 0), SA.Duration);
 
+            float LastFrame = CurFrame - AttackSpeed / SwingInfo.Updates;
+
             if (inAnimation)
             {
-                //Console.WriteLine(CurFrame + " | " + LastFrame + " | " + MaxFrame + ": " + SA.FrameFunctions.Length);
                 foreach (TimedFunction TF in SA.FrameFunctions)
                 {
                     TF.TryRun(Projectile, CurFrame, LastFrame, MaxFrame);
