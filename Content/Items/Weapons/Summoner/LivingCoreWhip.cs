@@ -104,7 +104,18 @@ namespace Divergency.Content.Items.Weapons.Summoner
 
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            target.AddBuff(ModContent.BuffType<CoreInfection>(), 30);
+            if (target.HasBuff(ModContent.BuffType<CoreInfection>()))
+            {
+               // target.DelBuff(ModContent.BuffType<CoreInfection>());
+
+                target.AddBuff(ModContent.BuffType<CoreInfectionII>(), 30);
+            }
+            else 
+            {
+
+                target.AddBuff(ModContent.BuffType<CoreInfection>(), 30);
+            }
+
             Main.player[Projectile.owner].MinionAttackTargetNPC = target.whoAmI;
         }
 

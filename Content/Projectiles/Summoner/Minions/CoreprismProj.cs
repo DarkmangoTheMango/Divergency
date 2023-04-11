@@ -1,6 +1,8 @@
 ﻿using Divergency.Common.Helpers;
+using Divergency.Content.Buffs;
 using Divergency.Content.Items.Weapons.LivingCore;
 using Divergency.Content.Particles;
+using Divergency.Content.Tiles.LivingGrove.CorePuzzle;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
@@ -51,6 +53,16 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
         {
             Player owner = Main.player[Projectile.owner];
             Player player = Main.LocalPlayer;
+
+            for (int io = 0; io < Main.maxNPCs; io++)
+            {
+                NPC target = Main.npc[io];
+                if (target.Distance(Projectile.Center) < 500 && !target.HasBuff(ModContent.BuffType<CoreInfection>()) && !target.HasBuff(ModContent.BuffType<CoreInfectionII>()))
+                {
+                    target.AddBuff(ModContent.BuffType<CoreInfection>(), 5);
+                }
+            }
+            if (player != null)
             Projectile.spriteDirection = (int)Projectile.ai[0];
             Projectile.velocity.Y += 1;
             if (!CheckActive(owner))
@@ -58,7 +70,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
             if (collided)
             {
                 timer++;
-                if (timer == 150)
+                if (timer == 200)
                 {
                     timer = 0;
                    DivergencyDraw.SpawnCirclePulse(Projectile.Center, Color.LimeGreen, 0.5f);
@@ -92,7 +104,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
                 }
                 if (player.Distance(Projectile.Center) < 500)
                 {
-                    player.AddBuff(BuffID.DryadsWard, 1);
+                    player.AddBuff(BuffID.Summoning, 1);
                 }
             }
         }
