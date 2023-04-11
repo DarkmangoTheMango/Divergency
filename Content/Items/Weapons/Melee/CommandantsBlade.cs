@@ -2,6 +2,7 @@ using Divergency.Common.Helpers;
 using Divergency.Common.Helpers.SwordAnimator;
 using Divergency.Common.Players;
 using Divergency.Content.Buffs;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -88,13 +89,17 @@ namespace Divergency.Content.Items.Weapons.Melee
         public Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
             new SwordAnimation(-2f+MathF.PI/2, 0), // TimedFunction should be in here, not down below...
-            new SwordAnimation(2f+MathF.PI/2, 49, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(2f+MathF.PI/2, 49, MaxCharge: 10f, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
             new SwordAnimation(-2f+MathF.PI/2, 49, 4, FrameFunctions: timedFunctions, Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
             new SwordAnimation(MathF.PI/2, 0, 4, LocalOffset: new Vector2(0, -20), HoldToContinue: true),
             new SwordAnimation(MathF.PI/2, 5, LocalOffset: new Vector2(0, 40)),
         });
         public float Width => MathF.Sqrt(MathF.Pow(12, 2)*2)+1f; // 12 is vertical width of blade
 
+        public SwordTrail[] SwordTrails => new SwordTrail[]
+        {
+            new SwordTrail("Divergency/Assets/Textures/Trails/Stretched", 100),
+        };
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
 
@@ -144,7 +149,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             //Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
 
-            SwordAnimator.Swing(player, source, Item.type, damage, knockback);
+            SwordAnimator.Swing(player, Item.type, damage, knockback);
 
             return false;
         }

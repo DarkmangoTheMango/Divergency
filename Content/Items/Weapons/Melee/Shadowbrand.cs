@@ -26,8 +26,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Shadowbrand");
-            Tooltip.SetDefault("Striking enemies increases the blade's power"
-                + "\n'As powerful as it is stylish'");
+            Tooltip.SetDefault("Striking enemies increases the blade's power");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
