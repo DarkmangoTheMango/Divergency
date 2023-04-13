@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.Projectiles.Ranged.Doors
 {
-    public class WoodenDoor : ModProjectile
+    public class BorealDoor : ModProjectile
     {
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
@@ -60,6 +60,11 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
             }
         }
 
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.AddBuff(BuffID.Frostburn, 360);
+        }
+
         public override void Kill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
@@ -70,8 +75,8 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
             if (!Main.dedServ)
             {
-                Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, -Projectile.velocity * 0.1f, Mod.Find<ModGore>("WoodenDoor1").Type);
-                Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, -Projectile.velocity * 0.1f, Mod.Find<ModGore>("WoodenDoor2").Type);
+                Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, -Projectile.velocity * 0.1f, Mod.Find<ModGore>("BorealDoor1").Type);
+                Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, -Projectile.velocity * 0.1f, Mod.Find<ModGore>("BorealDoor2").Type);
             }
         }
 
