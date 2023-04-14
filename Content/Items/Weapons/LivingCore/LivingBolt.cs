@@ -13,7 +13,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Casts a living core that bounces off tiles");
+            Tooltip.SetDefault("AW FUCK");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -26,7 +26,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item.knockBack = 3f;
             Item.noMelee = true;
 
-            Item.shoot = ModContent.ProjectileType<LivingLeaf>();
+            Item.shoot = ModContent.ProjectileType<Projectiles.Magic.LivingBolt>();
             Item.shootSpeed = 9f;
             Item.channel = true;
 

@@ -1,5 +1,7 @@
 ﻿using Divergency.Common.Helpers;
+using Divergency.Common.Players;
 using Divergency.Content.Dusts;
+using Divergency.Content.Projectiles.Ranged.Doors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -29,7 +31,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Item.knockBack = 4f;
             Item.noMelee = true;
 
-            Item.useAmmo = AmmoID.Bullet;
+            Item.useAmmo = ItemID.WoodenDoor;
             Item.shoot = 1;
             Item.shootSpeed = 10f;
 
@@ -59,6 +61,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
         {
             float rotation = velocity.ToRotation();
 
+            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3f;
+
             Vector2 offset = new Vector2(0.8f, 0).RotatedBy(rotation);
 
             for (int k = 0; k < 15; k++)
@@ -81,6 +85,10 @@ namespace Divergency.Content.Items.Weapons.Ranged
         bool initialize = true;
 
         float maxTimeLeft;
+
+        float widthMod = 1;
+        
+        float heightMod = 1;
 
         public override string Texture => "Divergency/Content/Items/Weapons/Ranged/DoorLauncher";
 
@@ -119,7 +127,10 @@ namespace Divergency.Content.Items.Weapons.Ranged
             }
 
             Projectile.Center = player.Center;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(-0.5f * player.direction, 0f, EaseFunction.EaseQuinticOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
+            Projectile.rotation = Projectile.velocity.ToRotation();
+
+            widthMod = MathHelper.Lerp(0.75f, 1, EaseFunction.EaseQuinticInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
+            heightMod = MathHelper.Lerp(1.25f, 1, EaseFunction.EaseQuinticInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
 
             player.heldProj = Projectile.whoAmI;
         }
@@ -127,15 +138,18 @@ namespace Divergency.Content.Items.Weapons.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             Player player = Main.player[Projectile.owner];
+
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
             Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], frameY: Projectile.frame);
-            Vector2 origin = sourceRectangle.Size() / 2f;
-            Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 10f - Main.screenPosition;
+
+            Vector2 origin = new Vector2(0, sourceRectangle.Size().Y / 2);
+
+            Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * -20f - Main.screenPosition;
 
             SpriteEffects drawFlipped = player.direction == -1 ? SpriteEffects.FlipVertically : 0;
 
-            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, Projectile.rotation, origin, Projectile.scale, drawFlipped, 0f);
+            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, Projectile.rotation, origin, new Vector2(widthMod, heightMod), drawFlipped, 0f);
 
             return false;
         }

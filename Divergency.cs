@@ -1,9 +1,11 @@
 using Divergency.Common.Helpers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Reflection;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.WorldBuilding;
 
 namespace Divergency
 {
@@ -35,7 +37,22 @@ namespace Divergency
         {
             BeamShader = ModContent.Request<Effect>("Divergency/Common/Helpers/Beam", (AssetRequestMode)1).Value;
         }
-
     }
 
+    static class DivergencyUtils
+    {
+        public static Vector2 findGroundUnder(this Vector2 position)
+        {
+            Vector2 returned = position;
+            while (!WorldUtils.Find(returned.ToTileCoordinates(), Searches.Chain(new Searches.Down(1), new GenCondition[]
+                {
+                new Conditions.IsSolid()
+                }), out _))
+            {
+                returned.Y++;
+            }
+
+            return returned;
+        }
+    }
 }
