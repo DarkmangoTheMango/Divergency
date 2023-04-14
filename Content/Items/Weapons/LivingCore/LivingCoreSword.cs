@@ -53,6 +53,27 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 freezeFrames = 40;
         }
 
+        void TileHit(Projectile projectile, Vector2 oldvelocity, int damage, float knockback, bool crit)
+        {
+            Player player = Main.player[projectile.owner];
+
+            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
+           
+
+
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
+
+            for (int i = 0; i < 5; i++)
+            {
+                Dust.NewDust(projectile.Center, default, default, ModContent.DustType<Glow>(), player.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 10f), player.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.LimeGreen, 1f);
+                Dust.NewDust(projectile.Center, default, default, DustID.GemEmerald, player.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 10f), player.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, default, 1f);
+
+            }
+
+            if (freezeFrames == -1)
+                freezeFrames = 40;
+        }
+
         private void Update(Projectile projectile)
         {
             if (freezeFrames > -1)
@@ -73,6 +94,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public int Updates => 10;
         public Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
+        public Action<Projectile, Vector2, int, float, bool> OnTileCollide => TileHit;
+
         public string SwordTexture => "Divergency/Content/Items/Weapons/LivingCore/LivingCoreSword";
         public Vector2 Pivot => new Vector2(0, 55);
 
@@ -80,7 +103,10 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         {
             new TimedFunction(Update, 0, RunEveryFrame: true),
         };
-
+        public SwordTrail[] SwordTrails => new SwordTrail[]
+        {
+            new SwordTrail("Divergency/Assets/Textures/Trails/Stretched", 1),
+        };
         static void PlaySound(Projectile proj)
         {
             Player player = Main.player[proj.owner];
@@ -151,7 +177,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
             //Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, attackDirection, 0f);
 
-            SwordAnimator.Swing(player, source, Item.type, damage, knockback);
+            SwordAnimator.Swing(player, Item.type, damage, knockback);
 
             return false;
         }
