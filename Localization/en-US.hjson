@@ -335,6 +335,8 @@ Mods: {
 				"": Living Core Blast
 				DisplayName: Podest Projectile
 			}
+
+			MetalPipe.DisplayName: Metal Pipe
 		}
 
 		Biomes: {
@@ -392,6 +394,11 @@ Mods: {
 			SpazmatismBuff: {
 				DisplayName: Spazmatism
 				Description: Spazmatism will fight for you
+			}
+
+			PipedDown: {
+				DisplayName: Piped Down
+				Description: Mods.Divergency.Buffs.PipedDown.Description
 			}
 		}
 
@@ -811,6 +818,11 @@ Mods: {
 			LivingCorePortal: {
 				DisplayName: Living Core Portal
 				Tooltip: Used for crafting living core items
+			}
+
+			HeavyMetal: {
+				DisplayName: Heavy Metal
+				Tooltip: ""
 			}
 		}
 

@@ -26,7 +26,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 30;
+            Item.damage = 45;
             Item.knockBack = 4f;
 
             Item.shoot = ModContent.ProjectileType<LivingCoreSpearPro>();
@@ -138,7 +138,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
                     if (delay >= 3f && Projectile.ai[1] <= 3f)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.MountedCenter, (Projectile.velocity.SafeNormalize(Vector2.One) * 20f).RotatedByRandom(0.3f), ModContent.ProjectileType<LivingCoreSpearPro2>(), (int)(Projectile.damage * 1.2f),
+                        Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.MountedCenter, (Projectile.velocity.SafeNormalize(Vector2.One) * 12f).RotatedByRandom(0.3f), ModContent.ProjectileType<LivingCoreSpearPro2>(), (int)(Projectile.damage * 0.5f),
                             Projectile.knockBack, Projectile.owner);
 
                         SoundEngine.PlaySound(SoundID.Item71, player.Center);
@@ -264,7 +264,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
 
-            Projectile.alpha += 10;
+            Projectile.alpha += 11;
 
             if (Projectile.alpha >= 255f)
             {
