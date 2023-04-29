@@ -49,23 +49,7 @@ namespace Divergency.Content.Items.Accessories
             Orbs = false;
         }
 
-        public override void OnHitByNPC(NPC target, Player.HurtInfo hurtInfo)
-        {
- 
-        
-            if (Player.HeldItem.DamageType == DamageClass.Magic && Orbs)
-            {
-                if (Player.HeldItem.DamageType == DamageClass.Magic && Orbs && !target.immortal && !target.dontTakeDamage)
-                {
 
-                    for (int i = 0; i < Main.rand.Next(1, 2); i++)
-                    {
-                        Projectile.NewProjectile(target.GetSource_FromThis(), target.Center, new Vector2(Main.rand.Next(-20, 20) * 0.9f, Main.rand.Next(-10, 30)) * 0.9f, ModContent.ProjectileType<LifeOrb>(), 12, 1f, Player.whoAmI);
-                    }
-
-                }
-            }
-        }
 
 
         public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
@@ -77,7 +61,7 @@ namespace Divergency.Content.Items.Accessories
             if (proj.DamageType == DamageClass.Magic && Orbs && proj.type != ModContent.ProjectileType<AcornProj>())
             {
 
-                for (int i = 0; i < Main.rand.Next(1, 2); i++)
+                for (int i = 0; i < Main.rand.Next(-6, 2); i++)
                 {
                     Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
 

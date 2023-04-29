@@ -6,6 +6,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ModLoader;
 using System;
 using Terraria.Audio;
+using Divergency.Content.Items.Weapons.Magic;
 
 namespace Divergency.Content.Items.Accessories
 {
@@ -49,41 +50,25 @@ namespace Divergency.Content.Items.Accessories
             Acorns = false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-  
-            if (Player.HeldItem.DamageType == DamageClass.Magic && Acorns)
-            {
-                if (Player.HeldItem.DamageType == DamageClass.Magic && Acorns && !target.immortal && !target.dontTakeDamage)
-                {
-
-                    for (int i = 0; i < Main.rand.Next(3, 4); i++)
-                    {
-                        Projectile.NewProjectile(target.GetSource_FromThis(), target.Center, new Vector2(Main.rand.Next(-20, 20) * 0.9f, Main.rand.Next(-10, 30)) * 0.9f, ModContent.ProjectileType<AcornProj>(), 12, 1f, Player.whoAmI);
-                    }
-
-                }
-            }
-        }
-
+       
 
         public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
-                
 
-            if (proj.DamageType == DamageClass.Magic && Acorns && proj.type != ModContent.ProjectileType<AcornProj>() && cooldown >= 180)
+
+            if (proj.DamageType == DamageClass.Magic && Acorns && proj.type != ModContent.ProjectileType<AcornProj>())
             {
 
                 for (int i = 0; i < Main.rand.Next(0, 2); i++)
                 {
                     Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Projectile.NewProjectile(target.GetSource_FromThis(), target.Top, speed * 13, ModContent.ProjectileType<AcornProj>(), 10, 1f, Player.whoAmI);
-                    cooldown = 0;
+                    Projectile.NewProjectile(Player.GetSource_FromAI(), target.Center, speed * 13, ModContent.ProjectileType<AcornProj>(), 0, 0f, Player.whoAmI, 0f, 0);
                 }
 
             }
-        }
+        
+    }
         public override void PreUpdate()
         {
             if (Acorns && cooldown < 180)
