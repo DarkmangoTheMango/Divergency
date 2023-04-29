@@ -82,7 +82,7 @@ namespace Divergency.Content.Projectiles.Hostile
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Core Beam");
+            //.setdefault("Core Beam");
         }
         int damage;
         Vector2 vel;

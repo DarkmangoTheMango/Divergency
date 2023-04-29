@@ -38,7 +38,7 @@
             <summary>
             </summary>
         </member>
-        <member name="M:ParticleLibrary.EmitterSystem.Emitter.SetDefaults">
+        <member name="M:ParticleLibrary.EmitterSystem.Emitter//.setdefaults">
             <summary>
             Runs on instantiation.
             </summary>

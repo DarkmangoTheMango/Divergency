@@ -632,12 +632,13 @@ namespace Divergency.Common.Helpers.SwordAnimator
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+       
             ISwordSwing SwingInfo = ModContent.GetModItem(baseItem) as ISwordSwing;
 
             if (SwingInfo.OnHitNPC != null)
-                SwingInfo.OnHitNPC(Projectile, target, damage, knockback, crit);
+                SwingInfo.OnHitNPC(Projectile, target, hit.Damage, hit.Knockback, hit.Crit);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

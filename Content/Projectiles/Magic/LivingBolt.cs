@@ -73,7 +73,7 @@ namespace Divergency.Content.Projectiles.Magic
             return true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
 

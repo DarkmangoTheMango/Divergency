@@ -17,8 +17,8 @@ namespace Divergency.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Core Drain");
-            Tooltip.SetDefault("Summons Core Crystals when struck \\n Increases defense by 2");
+            //.setdefault("Core Drain");
+            ////.setdefault("Summons Core Crystals when struck \\n Increases defense by 2");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -123,7 +123,7 @@ namespace Divergency.Content.Items.Accessories
 
       
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Collided)
             {
@@ -214,8 +214,10 @@ namespace Divergency.Content.Items.Accessories
             
             ShardSpawn = false;
         }
-        public override void OnHitByNPC(NPC npc, int damage, bool crit)
+        public override void OnHitByNPC(NPC npc, Player.HurtInfo hurtInfo)
         {
+    
+        
             if (ShardCooldown <= 0 && ShardSpawn)
             {
                 for (int i = 0; i < Main.rand.Next(3, 4); i++)

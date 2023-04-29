@@ -13,7 +13,7 @@ namespace Divergency.Content.Projectiles.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("BewitchedSpikyBall");
+            //.setdefault("BewitchedSpikyBall");
             Main.projFrames[Projectile.type] = 7;
         }
 
@@ -107,7 +107,7 @@ namespace Divergency.Content.Projectiles.Melee
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player Player = Main.player[Projectile.owner];
             Player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 8;

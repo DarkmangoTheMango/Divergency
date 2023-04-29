@@ -41,8 +41,8 @@ namespace Divergency.Content.NPCs
 
         public override void SetStaticDefaults()
         {
-			DisplayName.SetDefault("Super Dummy");
-			Tooltip.SetDefault("Summons a Super Dummy");
+			//.setdefault("Super Dummy");
+			////.setdefault("Summons a Super Dummy");
 
 			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
 		}

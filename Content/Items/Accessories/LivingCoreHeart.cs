@@ -14,7 +14,7 @@ namespace Divergency.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Magic attacks summon Life Orbs upon striking enemies");
+            ////.setdefault("Magic attacks summon Life Orbs upon striking enemies");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -48,9 +48,11 @@ namespace Divergency.Content.Items.Accessories
         {
             Orbs = false;
         }
-            
-        public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+
+        public override void OnHitByNPC(NPC target, Player.HurtInfo hurtInfo)
         {
+ 
+        
             if (Player.HeldItem.DamageType == DamageClass.Magic && Orbs)
             {
                 if (Player.HeldItem.DamageType == DamageClass.Magic && Orbs && !target.immortal && !target.dontTakeDamage)
@@ -64,10 +66,12 @@ namespace Divergency.Content.Items.Accessories
                 }
             }
         }
-       
 
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
+
+        
 
             
             if (proj.DamageType == DamageClass.Magic && Orbs && proj.type != ModContent.ProjectileType<AcornProj>())

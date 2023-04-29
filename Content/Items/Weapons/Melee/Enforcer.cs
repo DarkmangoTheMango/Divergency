@@ -32,9 +32,9 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Life Enforcer");
-            Tooltip.SetDefault("Direct hits deploy orbs, right click in order to call them back to the player" +
-                "Orb daamage scales with your current health stat (not maximum)");
+            //.setdefault("Life Enforcer");
+            ////.setdefault("Direct hits deploy orbs, right click in order to call them back to the player" +
+                //"Orb daamage scales with your current health stat (not maximum)");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -100,7 +100,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
     public class EnforcerPro : ModProjectile
     {
-        public override void SetStaticDefaults() => DisplayName.SetDefault("Enforcer");
+        //public override void SetStaticDefaults() => //.setdefault("Enforcer");
 
         public override void SetDefaults()
         {
@@ -164,7 +164,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             //ParticleManager.NewParticle(player.Center + (Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f)), new Vector2(0f, Main.rand.NextFloat(1, 5)).RotatedBy(Projectile.rotation) * -SwingDirection, ParticleManager.NewInstance<StarParticle>(),
               //  new Color(0.50f, 2f, 0.5f, 0), 0.5f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             for (int i = 0; i < 2; i++)
             {
@@ -257,7 +257,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public bool initialzed;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Life Orb");
+            //.setdefault("Life Orb");
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;

@@ -16,7 +16,7 @@ namespace Divergency.Content.Projectiles.Hostile
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sage Beam");
+            //.setdefault("Sage Beam");
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25; // in SetStaticDefaults()
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;

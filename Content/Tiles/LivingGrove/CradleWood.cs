@@ -28,8 +28,8 @@ namespace Divergency.Content.Tiles.LivingGrove
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cradle Wood");
-            Tooltip.SetDefault("Used for crafting living core items");
+            //.setdefault("Cradle Wood");
+            ////.setdefault("Used for crafting living core items");
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 100;
         }
 

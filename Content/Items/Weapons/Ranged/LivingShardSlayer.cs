@@ -30,8 +30,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Core Slayer");
-            Tooltip.SetDefault("Overheats when used enough\n<right> to throw the gun when overheated, detonating it on impact");
+            //.setdefault("Living Core Slayer");
+            ////.setdefault("Overheats when used enough\n<right> to throw the gun when overheated, detonating it on impact");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -166,7 +166,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Shard Slayer");
+            //.setdefault("Living Shard Slayer");
         }
 
         public override void SetDefaults()
@@ -241,7 +241,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             return true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.ai[1] == 0)
             {
@@ -318,7 +318,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Shard Slayer");
+            //.setdefault("Living Shard Slayer");
         }
 
         public override void SetDefaults()
@@ -338,7 +338,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Projectile.timeLeft = 3;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire, 360);
         }

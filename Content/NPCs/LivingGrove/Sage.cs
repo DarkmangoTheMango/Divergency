@@ -26,7 +26,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPCID.Sets.TrailCacheLength[NPC.type] = 5;
             NPCID.Sets.TrailingMode[NPC.type] = 0;
             Main.npcFrameCount[NPC.type] = 8;
-            DisplayName.SetDefault("Core Sage");
+            //.setdefault("Core Sage");
 
 
         }
@@ -308,8 +308,9 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         }
 
-        public override void HitEffect(int hitDirection, double damage)
+        public override void HitEffect(NPC.HitInfo hit)
         {
+  
             if (Main.netMode == NetmodeID.Server)
             {
                 return;
@@ -365,7 +366,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Core Sage");
+            //.setdefault("Core Sage");
             Main.npcFrameCount[NPC.type] = 8;
 
         }

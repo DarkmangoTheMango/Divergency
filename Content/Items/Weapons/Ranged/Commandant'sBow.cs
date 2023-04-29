@@ -11,8 +11,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Commandant's Bow"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
-            Tooltip.SetDefault("'Heavy. Too heavy.'");
+            //.setdefault("Commandant's Bow"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
+            ////.setdefault("'Heavy. Too heavy.'");
         }
 
         public int wombocombo = 0;

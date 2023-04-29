@@ -38,8 +38,8 @@ namespace Divergency.Content.Tiles.LivingGrove
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Crystal Stone");
-            Tooltip.SetDefault("Used for crafting living core items");
+            //.setdefault("Living Crystal Stone");
+            ////.setdefault("Used for crafting living core items");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 100;
         }

@@ -10,8 +10,8 @@ namespace Divergency.Content.Items.Accessories
 	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Rapidity Glove");
-			Tooltip.SetDefault("Doubles your ranged weapons fire rate and enables Auto-Shoot, however ranged damage is decreased by 50% \n'Fire quicker than your own shadow!'");
+			//.setdefault("Rapidity Glove");
+			////.setdefault("Doubles your ranged weapons fire rate and enables Auto-Shoot, however ranged damage is decreased by 50% \n'Fire quicker than your own shadow!'");
 			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
 		}
 

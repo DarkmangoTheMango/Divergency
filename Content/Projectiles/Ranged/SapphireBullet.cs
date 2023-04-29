@@ -13,7 +13,7 @@ namespace Divergency.Content.Projectiles.Ranged
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Sapphire Bullet");
+            //.setdefault("Sapphire Bullet");
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -55,7 +55,7 @@ namespace Divergency.Content.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath, Projectile.Center);
 

@@ -9,13 +9,13 @@ namespace Divergency.Content.Items.Weapons.Ranged
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("'Quite janky'");
+            ////.setdefault("'Quite janky'");
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 99;
         }
 
         public override void SetDefaults()
         {
-            base.SetDefaults();
+          //  base//.setdefaults();
             Item.maxStack = 999; // The maximum number of items that can be contained within a single stack
             Item.consumable = true;
             Item.ammo = Item.type; // Important. The first item in an ammo class sets the AmmoID to its type

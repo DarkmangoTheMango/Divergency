@@ -143,7 +143,7 @@ namespace Divergency.Content.Tiles.Furniture
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Forsakened, I am awakened...");
+            ////.setdefault("Forsakened, I am awakened...");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }

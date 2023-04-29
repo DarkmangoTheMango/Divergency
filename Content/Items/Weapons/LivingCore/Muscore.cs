@@ -23,8 +23,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Muscore");
-            Tooltip.SetDefault("");
+            //.setdefault("Muscore");
+            ////.setdefault("");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -87,7 +87,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Muscore");
+            //.setdefault("Muscore");
             Main.projFrames[Projectile.type] = 12;
         }
 
@@ -189,7 +189,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Muscore Bullet");
+            //.setdefault("Muscore Bullet");
 
             Main.projFrames[Projectile.type] = 1;
 

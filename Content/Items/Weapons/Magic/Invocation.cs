@@ -20,8 +20,8 @@ namespace Divergency.Content.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Commandant's Guide To Invocation");
-            Tooltip.SetDefault("Chargable");
+            //.setdefault("Commandant's Guide To Invocation");
+            ////.setdefault("Chargable");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }

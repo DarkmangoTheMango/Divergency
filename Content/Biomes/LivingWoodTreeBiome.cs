@@ -36,7 +36,7 @@ namespace Divergency.Content.Biomes
 		// Use SetStaticDefaults to assign the display name
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Example Underground");
+			//.setdefault("Example Underground");
 	       
 		}
 		public override ModWaterStyle WaterStyle => base.WaterStyle;

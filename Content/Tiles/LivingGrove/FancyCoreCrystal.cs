@@ -86,7 +86,7 @@ namespace Divergency.Content.Tiles.LivingGrove
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("fance");
+            //.setdefault("fance");
         }
 
         public override void SetDefaults()

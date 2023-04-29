@@ -24,7 +24,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Door");
+            //.setdefault("Door");
         }
 
         public override void SetDefaults()
@@ -116,7 +116,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Door");
+            //.setdefault("Door");
         }
 
         public override void SetDefaults()
@@ -237,7 +237,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mushroom");
+            //.setdefault("Mushroom");
 
             Main.projFrames[Projectile.type] = 5;
         }

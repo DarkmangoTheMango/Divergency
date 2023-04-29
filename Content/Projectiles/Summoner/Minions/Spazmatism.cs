@@ -15,8 +15,8 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Spazmatism");
-			Description.SetDefault("Spazmatism will fight for you");
+			//.setdefault("Spazmatism");
+			////.setdefault("Spazmatism will fight for you");
 
 			Main.buffNoSave[Type] = true;
 		}
@@ -26,7 +26,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Spazmatism");
+			//.setdefault("Spazmatism");
 			Main.projFrames[Projectile.type] = 3;
 
 			ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
@@ -107,11 +107,13 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 			}
 		}
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-		{
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+      
+		
 			Player player = Main.player[Projectile.owner];
 
-			if (Main.rand.NextBool(4)) { crit = true; }
+			if (Main.rand.NextBool(4)) { hit.Crit = true; }
 
 			player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 5;
 

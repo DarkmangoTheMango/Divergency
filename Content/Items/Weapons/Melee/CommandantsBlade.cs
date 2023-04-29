@@ -105,8 +105,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Commandant's Blade");
-            Tooltip.SetDefault($"Inflicts Flesh Wound [i:{ModContent.ItemType<FleshWoundIcon>()}]");
+            //.setdefault("Commandant's Blade");
+            ////.setdefault($"Inflicts Flesh Wound [i:{ModContent.ItemType<FleshWoundIcon>()}]");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -179,7 +179,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override bool? CanHitNPC(NPC target) => maxHits >= 1;
 
-        public override void SetStaticDefaults() { DisplayName.SetDefault("Commandant's Blade"); }
+        //public override void SetStaticDefaults() { //.setdefault("Commandant's Blade"); }
 
         public override void SetDefaults()
         {
@@ -242,7 +242,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
 

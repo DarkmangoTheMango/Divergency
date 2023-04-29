@@ -9,7 +9,7 @@ namespace Divergency.Content.Projectiles.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Aku Saraishi Slash");
+            //.setdefault("Aku Saraishi Slash");
         }
 
         public override void SetDefaults()
@@ -53,7 +53,7 @@ namespace Divergency.Content.Projectiles.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.ai[0] = 15;
             Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center, Vector2.Zero, ModContent.ProjectileType<SaraishiStrike>(), Projectile.damage, 0f, Projectile.owner);

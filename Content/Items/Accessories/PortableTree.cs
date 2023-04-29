@@ -14,7 +14,7 @@ namespace Divergency.Content.Items.Accessories
 
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("Decreases movement speed by 60%");
+			////.setdefault("Decreases movement speed by 60%");
 
 			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
 		}

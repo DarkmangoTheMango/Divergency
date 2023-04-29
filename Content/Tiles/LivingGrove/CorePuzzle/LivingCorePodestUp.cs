@@ -72,7 +72,7 @@ namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                NetMessage.SendData(MessageID.Unlock, -1, -1, null, player.whoAmI, 1f, left, top);
+                //NetMessage.SendData(MessageID.Unlock, -1, -1, null, player.whoAmI, 1f, left, top);
             }
             return true;
         }
@@ -167,7 +167,7 @@ namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Core Blast");
+            //.setdefault("Living Core Blast");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;

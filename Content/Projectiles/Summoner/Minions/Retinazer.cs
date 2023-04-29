@@ -14,7 +14,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Retinazer");
+			//.setdefault("Retinazer");
 			Main.projFrames[Projectile.type] = 3;
 
 			ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
@@ -265,7 +265,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Retinazer");
+			//.setdefault("Retinazer");
 
 			ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
 			ProjectileID.Sets.TrailingMode[Projectile.type] = 0;

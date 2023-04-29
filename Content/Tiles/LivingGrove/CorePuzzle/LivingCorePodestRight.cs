@@ -73,7 +73,7 @@ namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                NetMessage.SendData(MessageID.Unlock, -1, -1, null, player.whoAmI, 1f, left, top);
+                //NetMessage.SendData(MessageID.Unlock, -1, -1, null, player.whoAmI, 1f, left, top);
             }
 
 

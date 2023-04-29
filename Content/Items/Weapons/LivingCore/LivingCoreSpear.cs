@@ -16,8 +16,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Core Spear");
-            Tooltip.SetDefault("Hold <left> to charge the spear");
+            //.setdefault("Living Core Spear");
+            ////.setdefault("Hold <left> to charge the spear");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -59,7 +59,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Core Spear");
+            //.setdefault("Living Core Spear");
         }
 
         public override void SetDefaults()
@@ -173,7 +173,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             SoundEngine.PlaySound(SoundID.Item1, player.Center);
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
 
@@ -234,7 +234,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Core Spear");
+            //.setdefault("Living Core Spear");
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -272,7 +272,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
 
@@ -352,7 +352,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Core Spear");
+            //.setdefault("Living Core Spear");
         }
 
         public override void SetDefaults()

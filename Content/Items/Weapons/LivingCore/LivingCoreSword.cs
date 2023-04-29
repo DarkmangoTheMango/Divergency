@@ -128,8 +128,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Commandant's Blade");
-            Tooltip.SetDefault($"Inflicts Flesh Wound [i:{ModContent.ItemType<FleshWoundIcon>()}]");
+            //.setdefault("Commandant's Blade");
+            ////.setdefault($"Inflicts Flesh Wound [i:{ModContent.ItemType<FleshWoundIcon>()}]");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }

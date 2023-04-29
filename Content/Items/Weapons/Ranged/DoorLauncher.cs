@@ -17,8 +17,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Door Launcher");
-            Tooltip.SetDefault("Uses doors as ammo");
+            //.setdefault("Door Launcher");
+            ////.setdefault("Uses doors as ammo");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -94,7 +94,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Door Launcher");
+            //.setdefault("Door Launcher");
         }
 
         public override void SetDefaults()

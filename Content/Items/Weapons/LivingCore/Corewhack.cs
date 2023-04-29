@@ -13,9 +13,9 @@ namespace Divergency.Content.Items.Weapons.LivingCore
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Corewhack");
+            //.setdefault("Corewhack");
 
-            Tooltip.SetDefault("Stuff");
+            ////.setdefault("Stuff");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
 
@@ -59,8 +59,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Corewhack Buff");
-            Description.SetDefault(" -- || --");
+            //.setdefault("Corewhack Buff");
+            ////.setdefault(" -- || --");
 
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;

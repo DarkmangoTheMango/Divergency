@@ -94,7 +94,7 @@ namespace Divergency.Content.Tiles.LivingGrove
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Crystal Test Item");
+            //.setdefault("Living Crystal Test Item");
         }
 
         public override void SetDefaults()
@@ -124,7 +124,7 @@ namespace Divergency.Content.Tiles.LivingGrove
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Crystal Test Item 2");
+            //.setdefault("Living Crystal Test Item 2");
         }
 
         public override void SetDefaults()

@@ -1,10 +1,4 @@
-﻿using IL.Terraria.DataStructures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,7 +12,7 @@ namespace Divergency.Content.NPCs.Friendly
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mystery Man");
+            //.setdefault("Mystery Man");
             NPCID.Sets.ActsLikeTownNPC[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new(0)
             {
@@ -48,7 +42,7 @@ namespace Divergency.Content.NPCs.Friendly
         }
         public override bool CanGoToStatue(bool toKingStatue) => true;
         public override bool UsesPartyHat() => false; // FOR NOW
-        public override bool CanTownNPCSpawn(int numTownNPCs, int money) => false;
+        public override bool CanTownNPCSpawn(int numTownNPCs    ) => false;
         public override void AI()
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -95,7 +89,7 @@ namespace Divergency.Content.NPCs.Friendly
        
             }
         }
-        public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
             Player player = Main.LocalPlayer;
             if (firstButton)

@@ -92,7 +92,7 @@ namespace Divergency.Common.Helpers
         public override string Texture => "Divergency/Assets/Textures/Ring";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ring");
+            //.setdefault("Ring");
         }
         public override void SetDefaults()
         {
@@ -130,7 +130,7 @@ namespace Divergency.Common.Helpers
         public override string Texture => "Divergency/Assets/Textures/Shockwave";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pulse");
+            //.setdefault("Pulse");
         }
         public override void SetDefaults()
         {
@@ -190,7 +190,7 @@ namespace Divergency.Common.Helpers
         public override string Texture => "Divergency/Assets/Textures/Empty";
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Explosion");
+            //.setdefault("Explosion");
         }
         public override void SetDefaults()
         {
