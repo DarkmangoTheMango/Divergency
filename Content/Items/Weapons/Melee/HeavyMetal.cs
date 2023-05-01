@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using Terraria;
 using Terraria.Audio;
@@ -167,10 +168,9 @@ namespace Divergency.Content.Items.Weapons.Melee
     {
 
         public override string Texture => "Divergency/Content/Items/Weapons/Melee/HeavyMetal";
-        int counter = 7;
         int timer = 0;
         bool collided;
-
+        int counter;
             public override void SetStaticDefaults()
             {
                 ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4; // The length of old position to be recorded
@@ -179,14 +179,13 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             public override void SetDefaults()
             {
-                Projectile.penetrate = 15;
+                Projectile.penetrate = 10;
                 Projectile.DamageType = DamageClass.Ranged;
                 Projectile.friendly = true;
                 Projectile.hostile = false;
 
-                Projectile.Size = new Vector2(20);
+                Projectile.Size = new Vector2(30);
                 Projectile.scale = 1f;
-
                 Projectile.tileCollide = true;
                 Projectile.ignoreWater = false;
                 Projectile.timeLeft = 1200;
@@ -197,7 +196,10 @@ namespace Divergency.Content.Items.Weapons.Melee
             public override void AI()
             {
             timer++;
-
+            if (counter == 2)
+            {
+                Projectile.Kill();
+            }
             Projectile.velocity.Y += 0.2f;
             if (collided)
             {
@@ -210,10 +212,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45);
 
             }
-            if (counter == 0)
-            {
-                Projectile.Kill();
-            }
+  
             }
             public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
             {
@@ -225,19 +224,19 @@ namespace Divergency.Content.Items.Weapons.Melee
             {  SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/metalpipe") { Volume = 1.5f, Pitch = Main.rand.NextFloat(-0.3f, 0.3f), MaxInstances = 99 }, Projectile.Center);
             collided = true;
                 if (Math.Abs(Projectile.velocity.X - oldVelocity.X) >= float.Epsilon) { Projectile.velocity.X = -oldVelocity.X * 0.7f; }
+            Projectile.penetrate--;
 
-                if (Math.Abs(Projectile.velocity.Y - oldVelocity.Y) >= float.Epsilon) { Projectile.velocity.Y = -oldVelocity.Y * 0.5f; }
-            counter--;
+            if (Math.Abs(Projectile.velocity.Y - oldVelocity.Y) >= float.Epsilon) { Projectile.velocity.Y = -oldVelocity.Y * 0.5f; }
                 return false;
             }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            counter--;
+            Projectile.penetrate--;
+            counter++;
             target.AddBuff(BuffID.Confused, 600);
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/metalpipe") { Volume = 3f, MaxInstances = 99 }, Projectile.Center) ;
             Projectile.velocity.X *=  -0.9f;
             Projectile.velocity.Y *= -1.3f;
-
         }
         public override bool PreDraw(ref Color lightColor)
         {
