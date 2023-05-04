@@ -144,6 +144,6 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f;
 
-        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail", 115);
+        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail4", 115, TrailType.Sqrt, trailMultiplier: 120f, trailLimit: 1.2f);
     }
 }

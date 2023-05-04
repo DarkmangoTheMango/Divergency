@@ -313,8 +313,16 @@ namespace Divergency.Common.Helpers.SwordAnimator
         Tip,
     }
     */
+
+    public enum TrailType
+    {
+        Raw,
+        Sqrt,
+    }
+    
     public class SwordTrail
     {
+
         public Texture2D Texture; // 1*x where x is sword height
 
         public float trailMultiplier;
@@ -322,14 +330,18 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
         public float height;
 
+        public TrailType TT;
+
         public static Effect effect = ModContent.Request<Effect>("Divergency/Content/Effects/SwordTrailShader/Renderer", AssetRequestMode.ImmediateLoad).Value;
 
-        public SwordTrail(string Texture, float height, float trailMultiplier = 80, float trailLimit = 1)
+        public SwordTrail(string Texture, float height, TrailType trailType = TrailType.Raw, float trailMultiplier = 80, float trailLimit = 1)
         {
             this.Texture = ModContent.Request<Texture2D>(Texture).Value;
 
             this.trailMultiplier = trailMultiplier;
             this.trailLimit = trailLimit;
+
+            this.TT = trailType;
 
             this.height = height;
         }
@@ -344,7 +356,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             effect.Parameters.GetParameterBySemantic("mlen").SetValue(trailLimit);
             effect.Parameters.GetParameterBySemantic("dir").SetValue(dir);
 
-            effect.Parameters.GetParameterBySemantic("type").SetValue(2);
+            effect.Parameters.GetParameterBySemantic("type").SetValue((int)TT+1);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
