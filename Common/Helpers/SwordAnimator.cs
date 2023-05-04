@@ -316,28 +316,40 @@ namespace Divergency.Common.Helpers.SwordAnimator
     public class SwordTrail
     {
         public Texture2D Texture; // 1*x where x is sword height
-        public int height;
-        public int TrailLength;
+
+        public float trailMultiplier;
+        public float trailLimit;
+
+        public float height;
 
         public static Effect effect = ModContent.Request<Effect>("Divergency/Content/Effects/SwordTrailShader/Renderer", AssetRequestMode.ImmediateLoad).Value;
 
-        public SwordTrail(string Texture, int TrailLenght)
+        public SwordTrail(string Texture, float height, float trailMultiplier = 80, float trailLimit = 1)
         {
             this.Texture = ModContent.Request<Texture2D>(Texture).Value;
-            this.TrailLength = TrailLenght;
+
+            this.trailMultiplier = trailMultiplier;
+            this.trailLimit = trailLimit;
+
+            this.height = height;
         }
 
-        public void DrawSwordTrail(Vector2 worldPos, float rotation) // float speed and max speed to scale TrailLength width
+        public void DrawSwordTrail(Vector2 worldPos, float scale, int dir, float rotation, float lastRot) // float speed and max speed to scale TrailLength width
         {
-            height = 100;
+            int _height = (int)(height * scale);
+            float len = MathF.Min(((rotation - lastRot) * trailMultiplier) * dir, trailLimit);
 
-            effect.Parameters.GetParameterBySemantic("rot").SetValue(rotation);
-            effect.Parameters.GetParameterBySemantic("len").SetValue(TrailLength);
+            effect.Parameters.GetParameterBySemantic("rot").SetValue(rotation - MathF.PI/ 2f);
+            effect.Parameters.GetParameterBySemantic("len").SetValue(len);
+            effect.Parameters.GetParameterBySemantic("mlen").SetValue(trailLimit);
+            effect.Parameters.GetParameterBySemantic("dir").SetValue(dir);
+
+            effect.Parameters.GetParameterBySemantic("type").SetValue(2);
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
 
-            Main.spriteBatch.Draw(Texture, worldPos, new Rectangle(0, 0, height * 2, height * 2), Color.White, 0, new Vector2(height, height), 1f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(Texture, new Rectangle((int)worldPos.X - _height, (int)worldPos.Y - _height, _height * 2, _height * 2), Color.White);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin();
@@ -382,11 +394,20 @@ namespace Divergency.Common.Helpers.SwordAnimator
         // pass values from update into draw, i assume update runs on all clients
         //private float Rotation;
         //private Vector2 Position;
+        private Vector2 TrailPosition;
         private Vector2 Scale;
 
         //private bool Flipped;
 
         // private int freeze ?
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+
+            base.SetStaticDefaults();
+        }
 
         public override void SetDefaults()
         {
@@ -515,6 +536,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             {
                 NPC npc = Main.npc[NPCOwned];
 
+                TrailPosition = npc.Center + localOffset.RotatedBy(Rotation) + globalOffset;
                 Position = npc.Center - pivot.RotatedBy(Rotation) + globalOffset;
 
                 npc.direction = direction;
@@ -523,6 +545,8 @@ namespace Divergency.Common.Helpers.SwordAnimator
             {
                 Player player = Main.player[Projectile.owner];
 
+                Console.WriteLine(pivot.RotatedBy(Rotation));
+                TrailPosition = player.Center + localOffset.RotatedBy(Rotation) + globalOffset;
                 Position = player.Center - pivot.RotatedBy(Rotation) + globalOffset;
 
                 player.heldProj = Projectile.whoAmI;
@@ -547,13 +571,16 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
             SwordTrail ST = SwingInfo.SwordTrail;
 
+            Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
+
 
             Player player = Main.player[Projectile.owner];
             if (ST != null)
-                ST.DrawSwordTrail(player.Center - Main.screenPosition, Projectile.rotation);
-
-
-            Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
+            {
+                float h = texture.Height * Scale.Y;
+                float w = texture.Width * Scale.X;
+                ST.DrawSwordTrail(TrailPosition - Main.screenPosition, Scale.Y, direction * -Projectile.spriteDirection, Projectile.oldRot[0], Projectile.oldRot[1]);
+            }
 
             SpriteEffects spriteEffects = direction * (flipped ? -1 : 1) == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
