@@ -822,6 +822,21 @@ Mods: {
 
 			HeavyMetal: {
 				DisplayName: Heavy Metal
+				Tooltip: This could definitely kill a lower class medieval peasant
+			}
+
+			LivingWoodChestplate: {
+				DisplayName: Living Wood Chestplate
+				Tooltip: ""
+			}
+
+			LivingWoodGreaves: {
+				DisplayName: Living Wood Greaves
+				Tooltip: ""
+			}
+
+			LivingWoodHelmet: {
+				DisplayName: Living Wood Helmet
 				Tooltip: ""
 			}
 		}

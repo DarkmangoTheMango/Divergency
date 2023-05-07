@@ -123,7 +123,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Ranged;
             Item.noMelee = true;
-            Item.damage = 20;
+            Item.damage = 40;
             Item.knockBack = 12f;
 
             Item.shootSpeed = 20f;
@@ -190,8 +190,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 Projectile.ignoreWater = false;
                 Projectile.timeLeft = 1200;
                 Projectile.aiStyle = -1;
-                Projectile.usesLocalNPCImmunity = true;
-                Projectile.localNPCHitCooldown = -1;
+               
             }
             public override void AI()
             {
@@ -232,8 +231,8 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.penetrate--;
-            counter++;
-            target.AddBuff(BuffID.Confused, 600);
+            //counter++;
+            target.AddBuff(BuffID.Confused, 60);
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/metalpipe") { Volume = 3f, MaxInstances = 99 }, Projectile.Center) ;
             Projectile.velocity.X *=  -0.9f;
             Projectile.velocity.Y *= -1.3f;
