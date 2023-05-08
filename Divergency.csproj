@@ -17,6 +17,7 @@
     <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Content\Effects\SwordTrailShader\" />
     <Folder Include="Content\Events\LivingCore\" />
   </ItemGroup>
   <ItemGroup>
