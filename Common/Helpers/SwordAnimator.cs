@@ -644,13 +644,17 @@ namespace Divergency.Common.Helpers.SwordAnimator
                     if (!SwingInfo.PreDraw(Projectile)) // values to pass in
                         return false;
 
-
-                foreach (SwordGlow glow in frontGlow)
+                foreach (SwordGlow glow in backGlow)
                 {
                     glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects);
                 }
 
                 Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
+
+                foreach (SwordGlow glow in frontGlow)
+                {
+                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects);
+                }
             }
 
             return false;
