@@ -23,6 +23,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using XPT.Core.Audio.MP3Sharp.Decoding.Decoders.LayerIII;
 
 namespace Divergency.Common.Helpers.SwordAnimator
 {
@@ -368,6 +369,33 @@ namespace Divergency.Common.Helpers.SwordAnimator
         }
     }
 
+    public class SwordGlow
+    {
+        public string Path;
+        public Color Color;
+        public float Scale;
+        public bool InFront;
+
+        public SwordGlow(Color color, float scale = 1f, bool inFront = true, string path = "")
+        {
+            Path = path;
+            Color = color;
+            Scale = scale;
+            InFront = inFront;
+        }
+
+        //texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f)
+        public void Draw(string tex, Vector2 position, Rectangle rec, float rotation, Vector2 offset, Vector2 scale, SpriteEffects spriteEffects)
+        {
+            string path = Path;
+            if (path == "") { path = tex + "Glow"; }
+
+            Texture2D texture = ModContent.Request<Texture2D>(path).Value;
+
+            Main.spriteBatch.Draw(texture, position, rec, Color, rotation, offset, Scale*scale, spriteEffects, 1f);
+        }
+    }
+
     public abstract class SwordSwing
     {
         public abstract float Width { get; }
@@ -383,6 +411,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
         public virtual int NPCHitCooldown { get { return 10; } }
         public virtual SwordTrail SwordTrail { get { return null; } }
         public virtual Action<Projectile, Trail[], Vector2[], float[]> DrawTrails { get { return null; } }
+        public virtual SwordGlow[] Glows { get { return new SwordGlow[] { }; } }
     }
 
 
@@ -580,11 +609,20 @@ namespace Divergency.Common.Helpers.SwordAnimator
             int direction = Projectile.velocity.X > 0 ? 1 : -1;
             bool flipped = Projectile.spriteDirection == 1 ? true : false;
 
-
             SwordTrail ST = SwingInfo.SwordTrail;
 
-            Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
+            List<SwordGlow> frontGlow = new List<SwordGlow>();
+            List<SwordGlow> backGlow = new List<SwordGlow>();
 
+            foreach (SwordGlow glow in SwingInfo.Glows)
+            {
+                if (glow.InFront)
+                    frontGlow.Add(glow);
+                else
+                    backGlow.Add(glow);
+            }
+
+            Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
 
             Player player = Main.player[Projectile.owner];
             if (ST != null)
@@ -605,6 +643,12 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 if (SwingInfo.PreDraw != null)
                     if (!SwingInfo.PreDraw(Projectile)) // values to pass in
                         return false;
+
+
+                foreach (SwordGlow glow in frontGlow)
+                {
+                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects);
+                }
 
                 Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
             }
