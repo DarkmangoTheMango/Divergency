@@ -145,7 +145,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
             Vector2 origin = new Vector2(0, sourceRectangle.Size().Y / 2);
 
-            Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * -20f - Main.screenPosition;
+            Vector2 drawPosition = player.Center - new Vector2(0,10) + Projectile.rotation.ToRotationVector2() * 1f - Main.screenPosition;
 
             SpriteEffects drawFlipped = player.direction == -1 ? SpriteEffects.FlipVertically : 0;
 

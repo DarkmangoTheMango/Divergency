@@ -13,6 +13,8 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Divergency.Common.Helpers.SwordAnimator;
+using Divergency.Content.Dusts;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
@@ -46,11 +48,11 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.damage = 50;
             Item.knockBack = 4f;
 
-            Item.shoot = ModContent.ProjectileType<EnforcerPro>();
+            Item.shoot = ModContent.ProjectileType<SwordProjectile>(); // this dosent actually have to be there at all...
             Item.shootSpeed = 1f;
 
             Item.width = Item.height = 96;
-            Item.scale = 1f;
+            Item.scale = 1.5f;
 
             Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -88,7 +90,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             else
             {
                 attackDirection = -attackDirection;
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<EnforcerPro>(), damage, knockback, player.whoAmI, attackDirection, 0f);
+                SwordAnimator.Swing<EnforcerSwing>(player, damage, knockback);
 
             }
 
@@ -97,161 +99,111 @@ namespace Divergency.Content.Items.Weapons.Melee
             return false;
         }
     }
-
-    public class EnforcerPro : ModProjectile
+    public class EnforcerSwing : SwordSwing
     {
-        //public override void SetStaticDefaults() => //.setdefault("Enforcer");
-
-        public override void SetDefaults()
+        float ScaleEase(float cur, float max)
         {
-            Projectile.penetrate = -1;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.friendly = true;
-            Projectile.hostile = false;
-
-            Projectile.scale = 1f;
-            Projectile.Size = new Vector2(130);
-
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-
-            Projectile.aiStyle = -1;
-            Projectile.ownerHitCheck = true;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 60;
+            float x = cur / max;
+            return 1.2f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1.3f - x) * MathHelper.Pi) * 0.5f * 0.5f;
         }
 
-        List<float> oldRotation = new List<float>();
-
-        Vector2 direction;
-
-        bool initialize = true;
-
-        float maxTimeLeft;
-
-        public float SwingDirection => Projectile.ai[0] * Math.Sign(direction.X);
-
-        public override void AI()
+        float RotationEase(float cur, float max)
         {
-            Player player = Main.player[Projectile.owner];
-            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
-
-            if (initialize)
-            {
-                float attackSpeed = player.GetTotalAttackSpeed(DamageClass.Melee) - 1f;
-                Projectile.timeLeft = (int)(player.HeldItem.useAnimation * (1f - attackSpeed));
-                maxTimeLeft = Projectile.timeLeft;
-                direction = Projectile.velocity;
-                direction.Normalize();
-                Projectile.rotation = Utils.ToRotation(direction);
-                Projectile.netUpdate = true;
-
-                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingStyleLight"), player.Center);
-
-                initialize = false;
-            }
-
-            Projectile.Center = player.Center + direction * 45;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(2f * SwingDirection, -2f * SwingDirection, EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)));
-            Projectile.scale = 1.5f + (float)Math.Sin(EaseFunction.EaseCircularInOut.Ease(1 - (Projectile.timeLeft / maxTimeLeft)) * MathHelper.Pi) * 0.6f * 0.6f;
-
-            player.heldProj = Projectile.whoAmI;
-
-            oldRotation.Add(Projectile.rotation);
-
-            if (oldRotation.Count > 10) { oldRotation.RemoveAt(0); }
-
-            //ParticleManager.NewParticle(player.Center + (Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(30f, 110f)), new Vector2(0f, Main.rand.NextFloat(1, 5)).RotatedBy(Projectile.rotation) * -SwingDirection, ParticleManager.NewInstance<StarParticle>(),
-              //  new Color(0.50f, 2f, 0.5f, 0), 0.5f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
+            float x = cur / max;
+            return EaseFunction.EaseCircularInOut.Ease(x);
         }
-         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+
+        private int freezeFrames = -1;
+        void NPCHit(Projectile projectile, NPC target, int damage, float knockback, bool crit)
         {
+            Player player = Main.player[projectile.owner];
+
+            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
+
+
             for (int i = 0; i < 2; i++)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), target.Center, Projectile.velocity.RotateRandom(3) * Main.rand.NextFloat(7, 10), ModContent.ProjectileType<EnforcerOrb>(), 20, 0, Projectile.owner);
+                Projectile.NewProjectileDirect(projectile.GetSource_FromAI(), target.Center, new Vector2(7,10).RotateRandom(3), ModContent.ProjectileType<EnforcerOrb>(), 20, 0, projectile.owner);
 
             }
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Player player = Main.player[Projectile.owner];
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
 
-            Rectangle sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
-            Vector2 origin = sourceRectangle.Size() / 2f;
-            Vector2 drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 80f - Main.screenPosition;
-            float rotation = Projectile.rotation + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f);
-
-
-            SpriteEffects drawFlipped = player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
-            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, lightColor, rotation, origin, Projectile.scale, drawFlipped, 0f);
-
-
-
-            for (int k = 10; k > 0; k--)
+            for (int i = 0; i < 20; i++)
             {
-                float progress = 1 - (float)(((float)(10 - k) / (float)10));
-                Color color = lightColor * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
+                Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 10f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.LimeGreen, 0.3f);
+                Dust.NewDust(target.position, target.width, target.height, DustID.GemEmerald, target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 10f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, default, 0.3f);
+                Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 4f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.LimeGreen, 0.8f);
 
-                if (Projectile.timeLeft < 20)
-                {
-                    color = Color.Lerp(color, Color.Transparent, 1f - (Projectile.timeLeft / 10f) * k);
-                }
-
-                color.A = 0;
-
-                if (k > 0 && k < oldRotation.Count)
-                {
-                    Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, color, oldRotation[k] + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f), origin, Projectile.scale, drawFlipped,
-                    0f);
-                }
-            }
-            
-
-
-            texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
-            sourceRectangle = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame, 0, 0);
-            origin = sourceRectangle.Size() / 2f;
-            drawPosition = player.Center + Projectile.rotation.ToRotationVector2() * 120f - Main.screenPosition;
-
-            Color textureColor = Color.Transparent;
-
-            if (Projectile.timeLeft <= maxTimeLeft / 2f)
-            {
-                textureColor = Color.Lerp(new Color(153, 255, 167, 50), Color.Transparent, 1f - (Projectile.timeLeft / 20f));
-            }
-
-            Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, textureColor, 0f, origin, Projectile.scale, drawFlipped, 0f);
-
-            return false;
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-
-            bool flip = false;
-            SpriteEffects effects = SpriteEffects.None;
-
-            Vector2 scaleVec = Vector2.One;
-
-            for (int k = 16; k > 0; k--)
-            {
-
-                float progress = 1 - (float)((16 - k) / (float)16);
-                Color color = lightColor * EaseFunction.EaseQuarticOut.Ease(progress) * 0.1f;
-                if (k > 0 && k < oldRotation.Count)
-                    Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, color, oldRotation[k] + MathHelper.PiOver4 + (player.direction == -1 ? MathHelper.PiOver2 : 0f), origin, Projectile.scale, drawFlipped, 0f);
             }
 
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        bool OnHitTile2(Projectile projectile, Vector2 oldVelocity)
         {
-            Player player = Main.player[Projectile.owner];
-            float collisionPoint = 0f;
+            Player player = Main.player[projectile.owner];
 
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, player.Center + ((110 * Projectile.scale) * Projectile.rotation.ToRotationVector2()), 20, ref collisionPoint)) { return true; }
+            // player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
 
+
+
+          //  SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
+
+
+
+           
             return false;
         }
+
+        private void Update(Projectile projectile)
+        {
+            if (freezeFrames > -1)
+            {
+                freezeFrames--;
+
+                if (freezeFrames > 0)
+                {
+                    SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
+                    proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
+                }
+            }
+        }
+
+        public int attackDirection = 1;
+        public int AttackCounter = 1;
+
+        public override int Updates => 10;
+        public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
+        public override Func<Projectile, Vector2, bool> OnHitTile { get { return OnHitTile2; } }
+        public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Enforcer";
+        public override Vector2 Pivot => new Vector2(0, 38);
+
+        public override TimedFunction[] SwingFunctions => new TimedFunction[]
+        {
+            new TimedFunction(Update, 0, RunEveryFrame: true),
+        };
+
+        static void PlaySound(Projectile proj)
+        {
+            Player player = Main.player[proj.owner];
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingHeavy") with { Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, player.Center);
+        }
+
+        private static TimedFunction[] timedFunctions = new TimedFunction[] { new TimedFunction(PlaySound, 0.5f) };
+
+        public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
+        {
+            new SwordAnimation(-2f+MathF.PI/2, 0), // TimedFunction should be in here, not down below...
+            new SwordAnimation(2f+MathF.PI/2, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(-2f+MathF.PI/2, 45, 4, FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
+
+
+        });
+        public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f; // 12 is vertical width of blade
+
+        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 90, TrailType.Raw);
+
     }
+   
     public class EnforcerOrb : ModProjectile
     {
         public bool initialzed;
@@ -259,10 +211,17 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             //.setdefault("Life Orb");
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
+        public Trail trail3;
 
+        public Trail trail4;
+        float radius = 0;
+
+        float timer = 0;
+
+        float width = 10;
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Generic;
@@ -288,6 +247,9 @@ namespace Divergency.Content.Items.Weapons.Melee
             Projectile.velocity *= 0.98f;
             if (!initialzed)
             {
+                radius += (10 - radius) / 5f;
+
+               
 
                 Projectile.damage = 0;
             }
@@ -297,7 +259,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (Main.mouseRight && Main.mouseRightRelease && player.HeldItem.type == ModContent.ItemType<Enforcer>())
             {
                 initialzed = true;
-                Projectile.velocity += Projectile.Center.DirectionTo(player.Center) * 3;
+                Projectile.velocity += Projectile.Center.DirectionTo(player.Center) * 2;
 
 
             }
@@ -349,6 +311,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
 
             Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Stretched").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Shadow").Value;
+
 
             if (trail == null)
             {
@@ -363,6 +327,32 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             trail.Draw(Projectile.oldPos);
             trail2.Draw(Projectile.oldPos);
+
+            if (trail3 == null)
+            {
+                trail3 = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(width), (p) => Projectile.GetAlpha(new Color(0, 255, 0, 0)));
+                trail3.drawOffset = Projectile.Size / 2f;
+
+                trail4 = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(width / 1.9f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 100)));
+                trail4.drawOffset = Projectile.Size / 2f;
+            }
+
+            int parts = 8;
+            Vector2[] tests = new Vector2[parts];
+            float[] rotations = new float[parts];
+
+            for (int point = 0; point < parts; point++)
+            {
+                float rad = ((float)point / (parts - 1)) * MathHelper.TwoPi;
+
+                tests[point] = Projectile.position + new Vector2(MathF.Cos(rad) * radius, MathF.Sin(rad) * radius);
+                rotations[point] = rad;
+            }
+
+            timer -= 0.01f;
+
+            trail3.Draw(tests, rotations, timer);
+            trail4.Draw(tests, rotations, timer);
 
             return false;
         }

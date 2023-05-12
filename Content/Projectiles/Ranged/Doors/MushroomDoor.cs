@@ -155,9 +155,9 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
                 instanceHealSound = false;
 
-                if (healTime >= 30)
+                if (healTime >= 60)
                 {
-                    player.Heal(10);
+                    player.Heal(1);
 
                     healTime = 0;
                 }

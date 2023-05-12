@@ -110,7 +110,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         {
             Player player = Main.player[projectile.owner];
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
+           // player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
 
 
 

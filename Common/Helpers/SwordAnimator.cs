@@ -364,7 +364,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Main.spriteBatch.Draw(Texture, new Rectangle((int)worldPos.X - _height, (int)worldPos.Y - _height, _height * 2, _height * 2), Color.White);
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,null, null, null, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
 
@@ -561,7 +561,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 TrailPosition = player.Center + localOffset.RotatedBy(Rotation) + globalOffset;
                 Position = player.Center - pivot.RotatedBy(Rotation) + globalOffset;
 
-                player.heldProj = Projectile.whoAmI;
+                player.heldProj = Projectile.whoAmI;    
 
                 player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Rotation - direction * MathF.PI);
                 player.ChangeDir(direction);
@@ -607,6 +607,9 @@ namespace Divergency.Common.Helpers.SwordAnimator
                         return false;
 
                 Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
+          
+
+
             }
 
             return false;
