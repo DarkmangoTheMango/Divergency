@@ -15,6 +15,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Divergency.Common.Helpers.SwordAnimator;
 using Divergency.Content.Dusts;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
@@ -193,7 +194,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
             new SwordAnimation(-2f+MathF.PI/2, 0), // TimedFunction should be in here, not down below...
-            new SwordAnimation(2f+MathF.PI/2, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(2f+MathF.PI/2, 450, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
             new SwordAnimation(-2f+MathF.PI/2, 45, 4, FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
@@ -201,7 +202,19 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f; // 12 is vertical width of blade
 
         public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 90, TrailType.Raw, 100f);
-        public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(new Color(0, 188, 0), 0.95f, false) };
+        public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(
+            new SwordGlowColor(
+                new List<Color>{
+                    new Color(0, 0, 255, 100),
+                    new Color(0, 255, 0),
+                    new Color(255, 0, 0)
+                }, new List<int>
+                {
+                    0,
+                    180,
+                    181,
+                }), 
+            0.95f, false) };
     }
    
     public class EnforcerOrb : ModProjectile
