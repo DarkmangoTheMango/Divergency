@@ -20,7 +20,7 @@ namespace Divergency.Content.Tiles.LivingGrove
             Main.tileMergeDirt[Type] = true;
 
             DustType = ModContent.DustType<LivingShard>();
-            ItemDrop = ModContent.ItemType<LivingCrystalStoneItem>();
+           //    ItemDrop = ModContent.ItemType<LivingCrystalStoneItem>();
             HitSound = SoundID.DD2_WitherBeastCrystalImpact;
 
             AddMapEntry(new Color(79, 214, 126));

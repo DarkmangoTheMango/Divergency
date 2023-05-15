@@ -17,7 +17,7 @@ namespace Divergency.Content.Tiles.LivingGrove
             Main.tileBlockLight[Type] = true;
 
             DustType = ModContent.DustType<CradleWoodFurniture>();
-            ItemDrop = ModContent.ItemType<CradleWoodItem>();
+           // ItemDrop = ModContent.ItemType<CradleWoodItem>();
             HitSound = new SoundStyle("Divergency/Assets/Sounds/Tiles/CradleWoodHit") with { PitchVariance = 0.1f };
 
             AddMapEntry(new Color(81, 44, 57));

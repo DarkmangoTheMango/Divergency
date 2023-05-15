@@ -650,17 +650,11 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 }
 
                 Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
-<<<<<<< HEAD
-          
-
-
-=======
 
                 foreach (SwordGlow glow in frontGlow)
                 {
                     glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects);
                 }
->>>>>>> f7556ead49575c07b7ab858a181d0671ae788f5d
             }
 
             return false;

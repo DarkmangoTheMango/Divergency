@@ -104,7 +104,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         float ScaleEase(float cur, float max)
         {
             float x = cur / max;
-            return 1.2f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1.3f - x) * MathHelper.Pi) * 0.5f * 0.5f;
+            return 1.15f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1.3f - x) * MathHelper.Pi) * 0.5f * 0.5f;
         }
 
         float RotationEase(float cur, float max)
@@ -175,7 +175,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
         public override Func<Projectile, Vector2, bool> OnHitTile { get { return OnHitTile2; } }
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Enforcer";
-        public override Vector2 Pivot => new Vector2(0, 38);
+        public override Vector2 Pivot => new Vector2(0, 50);
 
         public override TimedFunction[] SwingFunctions => new TimedFunction[]
         {
@@ -200,8 +200,8 @@ namespace Divergency.Content.Items.Weapons.Melee
         });
         public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f; // 12 is vertical width of blade
 
-        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 90, TrailType.Raw);
-
+        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 90, TrailType.Raw, 100f);
+        public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(new Color(0, 188, 0), 0.95f, false) };
     }
    
     public class EnforcerOrb : ModProjectile
@@ -302,6 +302,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public Trail trail;
         public Trail trail2;
         private int initialDamage;
+        float timer2;
 
         public bool Particlespawned { get; private set; }
 
@@ -313,11 +314,16 @@ namespace Divergency.Content.Items.Weapons.Melee
             Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Stretched").Value;
             Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Shadow").Value;
 
-
-            if (trail == null)
+            for (int k = 0; k < 3; k++)
             {
-                trail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(25f), (p) => Projectile.GetAlpha(new Color(30, 220, 30, 100)));
-                trail.drawOffset = Projectile.Size / 2f;
+                if (trail == null)
+                {
+                    trail = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(20f), (p) => Projectile.GetAlpha(new Color(30, 220, 30, 100)) * (float)Math.Pow(1f - p, 2f));
+                    trail.drawOffset = Projectile.Size / 2f;
+                }
+
+                trail.Draw(Projectile.oldPos, timer);
+                timer2 -= 0.01f;
             }
             if (trail2 == null)
             {
