@@ -159,7 +159,9 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
 
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/DecodeDestruction";
-        public override Vector2 Pivot => new Vector2(0, 100);
+
+        public override Vector2 Pivot => new Vector2(0, 140);
+
 
         public override TimedFunction[] SwingFunctions => new TimedFunction[]
         {
@@ -176,9 +178,10 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
-            new SwordAnimation(-2f+MathF.PI/2, 0), // TimedFunction should be in here, not down below...
-            new SwordAnimation(2f+MathF.PI/2, 90, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-            new SwordAnimation(-2f+MathF.PI/2, 90, 4, FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
+
+            new SwordAnimation(-2f+MathF.PI/2, 0, Scale: new Vector2(0.5f, 0.5f)), // TimedFunction should be in here, not down below...
+            new SwordAnimation(2f+MathF.PI/2, 45, Scale: new Vector2(0.5f, 0.5f), FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(-2f+MathF.PI/2, 45, 4, Scale: new Vector2(0.5f, 0.5f), FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
         });
@@ -199,6 +202,10 @@ namespace Divergency.Content.Items.Weapons.Melee
                     91,
                 }),
             1f, false) };
+        public override bool SlantingSword => false;
+
+        //public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 90, TrailType.Raw, 100f);
+        //public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(new Color(0, 188, 0), 0.95f, false) };
     }
    
    
