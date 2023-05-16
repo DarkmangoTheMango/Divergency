@@ -90,7 +90,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             else
             {
                 attackDirection = -attackDirection;
-                SwordAnimator.Swing<EnforcerSwing>(player, damage, knockback);
+                SwordAnimator.Swing<DecodeSwing>(player, damage, knockback);
 
             }
 
@@ -104,7 +104,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         float ScaleEase(float cur, float max)
         {
             float x = cur / max;
-            return 1.15f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1.3f - x) * MathHelper.Pi) * 0.5f * 0.5f;
+            return 0.5f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1.3f - x) * MathHelper.Pi) * 0.5f * 0.5f;
         }
 
         float RotationEase(float cur, float max)
@@ -121,11 +121,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
 
 
-            for (int i = 0; i < 2; i++)
-            {
-                Projectile.NewProjectileDirect(projectile.GetSource_FromAI(), target.Center, new Vector2(7,10).RotateRandom(3), ModContent.ProjectileType<EnforcerOrb>(), 20, 0, projectile.owner);
-
-            }
+           
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
 
             for (int i = 0; i < 20; i++)
@@ -163,7 +159,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
 
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/DecodeDestruction";
-        public override Vector2 Pivot => new Vector2(0, 50);
+        public override Vector2 Pivot => new Vector2(0, 100);
 
         public override TimedFunction[] SwingFunctions => new TimedFunction[]
         {
@@ -181,15 +177,28 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
             new SwordAnimation(-2f+MathF.PI/2, 0), // TimedFunction should be in here, not down below...
-            new SwordAnimation(2f+MathF.PI/2, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-            new SwordAnimation(-2f+MathF.PI/2, 45, 4, FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(2f+MathF.PI/2, 90, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(-2f+MathF.PI/2, 90, 4, FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
         });
         public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f; // 12 is vertical width of blade
 
-        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 90, TrailType.Raw, 100f);
-        public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(new Color(0, 188, 0), 0.95f, false) };
+        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail", 90, TrailType.Raw, 100f);
+        public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(
+            new SwordGlowColor(
+                new List<Color>{
+                    Color.Transparent,
+                    new Color(126, 84, 217, 100),
+                    new Color(126, 84, 217, 100)
+
+                }, new List<int>
+                {
+                    0,
+                    90,
+                    91,
+                }),
+            1f, false) };
     }
    
    
