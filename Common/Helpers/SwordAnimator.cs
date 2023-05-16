@@ -482,6 +482,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
         public virtual SwordTrail SwordTrail { get { return null; } }
         public virtual Action<Projectile, Trail[], Vector2[], float[]> DrawTrails { get { return null; } }
         public virtual SwordGlow[] Glows { get { return new SwordGlow[] { }; } }
+        public virtual bool SlantingSword { get { return true; } }
     }
 
 
@@ -702,11 +703,25 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 ST.DrawSwordTrail(TrailPosition - Main.screenPosition, Scale.Y, direction * -Projectile.spriteDirection, Projectile.oldRot[0], Projectile.oldRot[1]);
             }
 
-            SpriteEffects spriteEffects = direction * (flipped ? -1 : 1) == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+            SpriteEffects spriteEffects;
+            float rotation;
+            
+            if (SwingInfo.SlantingSword)
+            {
+                spriteEffects = direction * (flipped ? -1 : 1) == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
-            float rotation = (Projectile.rotation - (direction == 1 ? (MathF.PI / 4) : (MathF.PI / 4*3)));
+                rotation = (Projectile.rotation - (direction == 1 ? (MathF.PI / 4) : (MathF.PI / 4 * 3)));
 
-            rotation += (flipped ? (direction == 1 ? MathF.PI * 1.5f : MathF.PI/2f) : 0);
+                rotation += (flipped ? (direction == 1 ? MathF.PI * 1.5f : MathF.PI / 2f) : 0);
+
+            }
+            else
+            {
+                spriteEffects = SpriteEffects.None;
+
+                rotation = Projectile.rotation;
+
+            }
 
             float curTime = FramesPassed * AttackSpeed;
 

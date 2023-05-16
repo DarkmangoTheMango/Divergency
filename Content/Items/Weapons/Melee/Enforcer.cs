@@ -194,7 +194,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
             new SwordAnimation(-2f+MathF.PI/2, 0), // TimedFunction should be in here, not down below...
-            new SwordAnimation(2f+MathF.PI/2, 450, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(2f+MathF.PI/2, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
             new SwordAnimation(-2f+MathF.PI/2, 45, 4, FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
