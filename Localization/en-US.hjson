@@ -839,6 +839,11 @@ Mods: {
 				DisplayName: Living Wood Helmet
 				Tooltip: ""
 			}
+
+			DecodeDestruction: {
+				DisplayName: Decode Destruction
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {

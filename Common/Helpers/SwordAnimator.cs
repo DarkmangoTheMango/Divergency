@@ -20,6 +20,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -368,15 +370,81 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,null, null, null, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+    public class SwordGlowColor // Color animation
+    {
+        public bool loop;
+        public List<Color> colors;
+        public List<int> colorTimers;
+        public float loopTime;
+
+        public SwordGlowColor(List<Color> colors, List<int> colorTimers)
+        {
+            this.colors = colors;
+            this.colorTimers = colorTimers;
+            this.loop = false;
+            this.loopTime = 0f;
+        }
+        public SwordGlowColor(List<Color> colors, float loopTime)
+        {
+            this.colors = colors;
+            this.loopTime = loopTime;
+            this.loop = true;
+            this.colorTimers = null;
+        }
+
+        public Color GetColor(float time)
+        {
+            if (colors.Count == 1)
+                return colors[1];
+            else if (colors.Count == 0)
+                return Color.White;
+
+            if (loop)
+            {
+                float colorCalculation = (time / loopTime) % colors.Count;
+                int color = (int)Math.Ceiling(colorCalculation) - 1;
+                float transition = colorCalculation % 1f;
+
+                int otherColor = (color - 1) % colors.Count;
+                if (otherColor < 0) otherColor += colors.Count;
+
+                Console.WriteLine(colors[otherColor] + ", " + colors[color] + ", " + transition + " => " + Color.Lerp(colors[otherColor], colors[color], transition));
+
+                return Color.Lerp(colors[otherColor], colors[color], transition);
+            }
+            else
+            {
+                int curTime = 0;
+
+                for (int i = 0; i < colorTimers.Count; i++)
+                {
+                    if (curTime + colorTimers[i] > time)
+                    {
+                        float progress = time - curTime;
+                        float percentProgress = progress / colorTimers[i];
+
+                        int otherColor = i - 1;
+                        if (otherColor == -1) otherColor = 0;
+
+                        return Color.Lerp(colors[otherColor], colors[i], percentProgress);
+                    }
+
+                    curTime = curTime + colorTimers[i];
+                }
+
+                return colors[colors.Count-1];
+            }
+        }
+    }
 
     public class SwordGlow
     {
         public string Path;
-        public Color Color;
+        public SwordGlowColor Color;
         public float Scale;
         public bool InFront;
 
-        public SwordGlow(Color color, float scale = 1f, bool inFront = true, string path = "")
+        public SwordGlow(SwordGlowColor color, float scale = 1f, bool inFront = true, string path = "")
         {
             Path = path;
             Color = color;
@@ -385,14 +453,16 @@ namespace Divergency.Common.Helpers.SwordAnimator
         }
 
         //texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f)
-        public void Draw(string tex, Vector2 position, Rectangle rec, float rotation, Vector2 offset, Vector2 scale, SpriteEffects spriteEffects)
+        public void Draw(string tex, Vector2 position, Rectangle rec, float rotation, Vector2 offset, Vector2 scale, SpriteEffects spriteEffects, float time)
         {
             string path = Path;
             if (path == "") { path = tex + "Glow"; }
 
             Texture2D texture = ModContent.Request<Texture2D>(path).Value;
 
-            Main.spriteBatch.Draw(texture, position, rec, Color, rotation, offset, Scale*scale, spriteEffects, 1f);
+            Console.WriteLine(Color.GetColor(time));
+
+            Main.spriteBatch.Draw(texture, position, rec, Color.GetColor(time), rotation, offset, Scale*scale, spriteEffects, 1f);
         }
     }
 
@@ -638,6 +708,8 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
             rotation += (flipped ? (direction == 1 ? MathF.PI * 1.5f : MathF.PI/2f) : 0);
 
+            float curTime = FramesPassed * AttackSpeed;
+
             if (texture != null)
             {
                 if (SwingInfo.PreDraw != null)
@@ -646,14 +718,14 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
                 foreach (SwordGlow glow in backGlow)
                 {
-                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects);
+                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
                 }
 
                 Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
 
                 foreach (SwordGlow glow in frontGlow)
                 {
-                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects);
+                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
                 }
             }
 
