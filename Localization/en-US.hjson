@@ -337,6 +337,8 @@ Mods: {
 			}
 
 			MetalPipe.DisplayName: Metal Pipe
+			LinkArrowActive.DisplayName: Link Arrow Active
+			LinkHandler.DisplayName: Link Handler
 		}
 
 		Biomes: {

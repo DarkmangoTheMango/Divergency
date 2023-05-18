@@ -15,6 +15,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Divergency.Common.Helpers.SwordAnimator;
 using Divergency.Content.Dusts;
+using Microsoft.CodeAnalysis;
+using System.Threading;
+using Mono.Cecil;
+using Terraria.GameContent;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
@@ -71,6 +75,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 if (player.ItemAnimationActive) { player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation - MathHelper.PiOver2 * player.direction); }
                 else { player.SetCompositeArmFront(false, default, default); }
             }
+            
         }
         
 
@@ -121,14 +126,17 @@ namespace Divergency.Content.Items.Weapons.Melee
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
 
 
-           
-            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
 
-            for (int i = 0; i < 20; i++)
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);            
+
+            for (int i = 0; i < 10; i++)
             {
                 Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 10f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.MediumPurple, 0.3f);
-                Dust.NewDust(target.position, target.width, target.height, DustID.GemAmethyst, target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 10f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, default, 0.3f);
                 Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 4f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.MediumPurple, 0.8f);
+                Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<CodeDust>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 5f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.MediumPurple, 0.4f);
+                Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<CodeDust1>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 5f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.MediumPurple, 0.4f);
+
+
 
             }
 
@@ -136,7 +144,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
 
 
-    
+
 
         private void Update(Projectile projectile)
         {
@@ -179,33 +187,239 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
 
-            new SwordAnimation(-2f+MathF.PI/2, 0, Scale: new Vector2(0.5f, 0.5f)), // TimedFunction should be in here, not down below...
-            new SwordAnimation(2f+MathF.PI/2, 45, Scale: new Vector2(0.5f, 0.5f), FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-            new SwordAnimation(-2f+MathF.PI/2, 45, 4, Scale: new Vector2(0.5f, 0.5f), FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(-2f+MathF.PI/2, 0, Scale: new Vector2(1f, 1f)), // TimedFunction should be in here, not down below...
+            new SwordAnimation(2f+MathF.PI/2, 35, Scale: new Vector2(1f, 1f), FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(-2f+MathF.PI/2, 35, 4, Scale: new Vector2(1f, 1f), FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
         });
         public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f; // 12 is vertical width of blade
 
-        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail", 90, TrailType.Raw, 100f);
-        public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(
-            new SwordGlowColor(
+        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/DecodeTrail", 280, TrailType.Raw, 100, 0.70f);
+        //  public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
+        public override SwordGlow[] Glows => new SwordGlow[]
+        {
+         new SwordGlow(new SwordGlowColor(
                 new List<Color>{
-                    Color.Transparent,
-                    new Color(126, 84, 217, 100),
-                    new Color(126, 84, 217, 100)
+                    new Color(255, 182, 193, 100),
+                    new Color(255, 182, 193, 100),
+                    new Color(240, 182, 230, 100)
 
                 }, new List<int>
                 {
                     0,
-                    90,
-                    91,
+                    40,
+                    40,
                 }),
-            1f, false) };
+
+            1f, false),
+          new SwordGlow(new SwordGlowColor(
+                new List<Color>{
+                    new Color(255, 255, 255, 75),
+                    new Color(255, 255, 255, 75),
+                    new Color(255, 255, 255, 75)
+
+                }, new List<int>
+                {
+                    0,
+                    1,
+                    1,
+                    
+                }),
+
+            1f, false, "Divergency/Content/Items/Weapons/Melee/DecodeDestructionGlow2"),
+
+          };
+
+
+
+
+
         public override bool SlantingSword => false;
 
         //public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 90, TrailType.Raw, 100f);
         //public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(new Color(0, 188, 0), 0.95f, false) };
+    }
+    public class LinkHandler : ModProjectile
+    {
+        public override string Texture => "Divergency/Assets/Textures/Empty";
+        public bool ArrowsActive;
+        public override bool? CanCutTiles()
+        {
+            return false;
+        }
+        public override void SetDefaults()
+        {
+            Projectile.DamageType = DamageClass.Generic;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+
+            Projectile.Size = new Vector2(50);
+            Projectile.scale = 1f;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = false;
+            Projectile.timeLeft = 999;
+            Projectile.aiStyle = -1;
+            Projectile.extraUpdates = 1;
+            Projectile.friendly = true;
+        }
+        public override void AI()
+        {
+
+            Projectile.timeLeft = 666;
+            Player player = Main.player[Projectile.owner];
+            Projectile.Center = player.Center;
+            if (player.HeldItem.type != ModContent.ItemType<DecodeDestruction>())
+            {
+                Projectile.Kill();
+                player.GetModPlayer<LinkPlayer>().spawned = false;
+            }
+            else if (!ArrowsActive && player.HeldItem.type == ModContent.ItemType<DecodeDestruction>())
+            {
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), player.Center + new Vector2(100,100), new Vector2(0), ModContent.ProjectileType<LinkArrowActive>(), 0, 0, ai0: 0);
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), player.Center + new Vector2(-100, 100), new Vector2(0), ModContent.ProjectileType<LinkArrowActive>(), 0, 0, ai0: 1);
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), player.Center + new Vector2(-100, 100), new Vector2(0), ModContent.ProjectileType<LinkArrowActive>(), 0, 0, ai0: 2);
+
+                ArrowsActive = true;
+            }
+        }
+    }
+    public class LinkArrowActive : ModProjectile
+    {
+        public int PointCounter;
+        public Vector2 SpawnPosition;
+        public int timer;
+
+        public EntitySource_Misc source { get; private set; }
+        public override bool? CanCutTiles()
+        {
+            return false;
+        }
+        public override void SetDefaults()
+        {
+            Projectile.DamageType = DamageClass.Generic;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+
+            Projectile.Size = new Vector2(30);
+            Projectile.scale = 1f;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = false;
+            Projectile.timeLeft = 999;
+            Projectile.aiStyle = -1;
+            Projectile.friendly = true;
+        }
+        public override void AI()
+        {
+            Vector3 RGB = new Vector3(2.55f, 2.55f, 2.55f);
+            float multiplier = 0.3f;
+            float max = 0.3f;
+            float min = 0.3f;
+            RGB *= multiplier;
+            if (RGB.X > max)
+            {
+                multiplier = 0.4f;
+            }
+            if (RGB.X < min)
+            {
+                multiplier = 0.4f;
+            }
+             Lighting.AddLight(Projectile.position, RGB.X, RGB.Y, RGB.Z);
+            Player player = Main.player[Projectile.owner];
+           
+            
+                //if (source is EntitySource_Misc entitySource_Misc && entitySource_Misc.Context == "Right Arrow")
+                if (Projectile.ai[0] == 0f)
+                {
+                    Projectile.Center = player.Center + new Vector2(100);
+                    Projectile.rotation = 3 * MathHelper.Pi / 4;
+
+                }
+                else if (Projectile.ai[0] == 1f)
+                {
+                    Projectile.Center = player.Center + new Vector2(-100, 100);
+                    Projectile.rotation = 5 * MathHelper.Pi/4;
+                }
+                else
+                {
+                    Projectile.Center = player.Center + new Vector2(0, -140);
+
+                }
+                Projectile.timeLeft = 666;
+                if (player.HeldItem.type != ModContent.ItemType<DecodeDestruction>())
+                {
+                    Projectile.Kill();
+                }
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    NPC npc = Main.npc[i];
+                    if (Projectile.active && Projectile.Hitbox.Intersects(npc.Hitbox) && npc.active)
+                {
+                    PointCounter--;
+
+                    for (int guh = 0; guh < 1; guh++)
+                        {
+                            if (Main.rand.NextBool(15))
+                            {
+                                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<CodeDust>(), 0f, -Main.rand.NextFloat(4, 5), 0, Color.MediumPurple, 0.35f);
+                                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<CodeDust1>(), 0f, -Main.rand.NextFloat(4, 5), 0, Color.MediumPurple, 0.35f);
+                            }
+                                
+
+                        }
+                        
+
+                        //SoundEngine.PlaySound(SoundID.Item2 with { Volume = 0.8f, MaxInstances = 3 });
+                    }
+                    
+                }
+
+
+
+
+        }
+           
+            
+        
+        
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Player player = Main.player[Projectile.owner];
+
+
+            Main.instance.LoadProjectile(Projectile.type);
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture0 = ModContent.Request<Texture2D>("Divergency/Content/Items/Weapons/Melee/LinkArrow").Value;
+
+            // Redraw the projectile with the color not influenced by light
+            Vector2 drawOrigin = new Vector2(texture.Width * 0.5f, Projectile.height * 0.5f);
+  
+            
+            Vector2 drawPos = Projectile.Center - Main.screenPosition + drawOrigin + new Vector2(0f, Projectile.gfxOffY);
+                
+            //Main.EntitySpriteDraw(texture0, drawPos, null, Color.White, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0);
+            //Main.EntitySpriteDraw(texture, drawPos, null, new Color(255, 255, 255, player.GetModPlayer<LinkPlayer>().PointCounter), Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0);
+
+            return true;
+        }
+    }
+
+    public class LinkPlayer : ModPlayer
+    {
+        public bool spawned;
+        public int PointCounter = 255;
+        public override void PreUpdate()
+        {
+            Main.NewText(PointCounter);
+
+            if (!Player.dead && Player.HeldItem.type == ModContent.ItemType<DecodeDestruction>() && !spawned)
+            {
+                Projectile.NewProjectileDirect(null, Player.Center, new Vector2 (0), ModContent.ProjectileType<LinkHandler>(), 0, 0);
+                spawned = true;
+            }
+          
+            
+        }
     }
    
    
