@@ -201,23 +201,23 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
          new SwordGlow(new SwordGlowColor(
                 new List<Color>{
-                    new Color(120, 182, 193, 100),
-                    new Color(120, 182, 193, 100),
-                    new Color(240, 182, 230, 100)
+                    new Color(219, 112, 147, 100),
+                    new Color(219, 112, 147, 100),
+                    new Color(219, 112, 147, 100)
 
                 }, new List<int>
                 {
                     0,
-                    40,
-                    40,
+                    1,
+                    1,
                 }),
 
             1f, false),
           new SwordGlow(new SwordGlowColor(
                 new List<Color>{
-                    new Color(120, 120, 120, 75),
-                    new Color(120, 120, 120, 75),
-                    new Color(120, 120, 120, 75)
+                    new Color(219, 112, 147, 75),
+                    new Color(219, 112, 147, 75),
+                    new Color(219, 112, 147, 75)
 
                 }, new List<int>
                 {
@@ -319,6 +319,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         float width = 50;
 
+        
         public override void AI()
         {
             radius += (55 - radius) / 5f;
@@ -328,7 +329,8 @@ namespace Divergency.Content.Items.Weapons.Melee
                 width += (0 - width) / 5f;
             }
             Player player = Main.player[Projectile.owner];
-           
+
+            
             
                 //if (source is EntitySource_Misc entitySource_Misc && entitySource_Misc.Context == "Right Arrow")
                 if (Projectile.ai[0] == 0f)
@@ -376,18 +378,22 @@ namespace Divergency.Content.Items.Weapons.Melee
                     }
                     if (player.GetModPlayer<LinkPlayer>().PointCounter == 120 && Projectile.ai[0] == 0 && player.GetModPlayer<LinkPlayer>().LinkDuration == 0)
                     {
-                        player.GetModPlayer<LinkPlayer>().LinkDuration = 6000;
-                        
-                            for (int guh = 0; guh < 30; guh++)
+                        player.GetModPlayer<LinkPlayer>().LinkDuration = 3000;
+                        timer = 0;
+                        radius = 0;
+                        width = 50;
+                        for (int guh = 0; guh < 30; guh++)
                             {
                                 Dust.NewDust(npc.position, Projectile.width, Projectile.height, ModContent.DustType<CodeDust>(), 0f, -Main.rand.NextFloat(10, 10), 0, Color.Red, 0.45f);
                                 Dust.NewDust(npc.position, Projectile.width, Projectile.height, ModContent.DustType<CodeDust1>(), 0f, -Main.rand.NextFloat(10, 10), 0, Color.Red, 0.45f);
                             }
-                    }
+                    }   
                     if (player.GetModPlayer<LinkPlayer>().PointCounter2 == 120 && Projectile.ai[0] == 1 && player.GetModPlayer<LinkPlayer>().LinkDuration2 == 0)
                     {
-                        player.GetModPlayer<LinkPlayer>().LinkDuration2 = 6000;
-
+                        player.GetModPlayer<LinkPlayer>().LinkDuration2 = 3000;
+                        timer = 0;
+                        radius = 0;
+                        width = 50;
                         for (int guh = 0; guh < 30; guh++)
                         {
                             Dust.NewDust(npc.position, Projectile.width, Projectile.height, ModContent.DustType<CodeDust>(), 0f, -Main.rand.NextFloat(10, 10), 0, Color.Red, 0.45f);
@@ -396,7 +402,10 @@ namespace Divergency.Content.Items.Weapons.Melee
                     }
                     if (player.GetModPlayer<LinkPlayer>().PointCounter3 == 120 && Projectile.ai[0] == 2 && player.GetModPlayer<LinkPlayer>().LinkDuration3 == 0)
                     {
-                        player.GetModPlayer<LinkPlayer>().LinkDuration3 = 6000;
+                        timer = 0;
+                        radius = 0;
+                        width = 50;
+                        player.GetModPlayer<LinkPlayer>().LinkDuration3 = 3000;
 
                         for (int guh = 0; guh < 30; guh++)
                         {
@@ -418,21 +427,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
                     //SoundEngine.PlaySound(SoundID.Item2 with { Volume = 0.8f, MaxInstances = 3 });
                     }
-                     else
-                {
-                    if (player.GetModPlayer<LinkPlayer>().PointCounter < 0)
-                    {
-                        player.GetModPlayer<LinkPlayer>().PointCounter--;
-                    }
-                    if (player.GetModPlayer<LinkPlayer>().PointCounter2 < 0)
-                    {
-                        player.GetModPlayer<LinkPlayer>().PointCounter2--;
-                    }
-                    if (player.GetModPlayer<LinkPlayer>().PointCounter3 < 0)
-                    {
-                        player.GetModPlayer<LinkPlayer>().PointCounter3--;
-                    }
-                }
+             
                     
                 }
 
@@ -549,7 +544,6 @@ namespace Divergency.Content.Items.Weapons.Melee
                 Projectile.NewProjectileDirect(null, Player.Center, new Vector2 (0), ModContent.ProjectileType<LinkHandler>(), 0, 0);
                 spawned = true;
             }
-        
             if (LinkDuration == 0 && PointCounter == 120)
             {
                 PointCounter = 0;
