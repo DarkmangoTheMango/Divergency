@@ -13,7 +13,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
     {
         private int wombocombo;
 
-        public override Vector2? HoldoutOffset() => new Vector2(-10,-0);
+        public override Vector2? HoldoutOffset() => new Vector2(-15,-10);
 
         public override void SetStaticDefaults()
         {
@@ -25,7 +25,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         public override void SetDefaults()
         {
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 32;
+            Item.damage = 35;
             Item.mana = 11;
             Item.knockBack = 3f;
             Item.noMelee = true;
@@ -34,21 +34,20 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item.shootSpeed = 14f;
             Item.channel = true;
 
-            Item.Size = new Vector2(30, 34);
+            Item.Size = new Vector2(74, 70);
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 38;
+            Item.useTime = Item.useAnimation = 45;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;
             Item.useTurn = false;
-
+            
             Item.value = Item.sellPrice(0, 5, 0, 0);
             Item.rare = ItemRarityID.Green;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            SoundEngine.PlaySound(SoundID.DD2_DarkMageAttack, player.position);
+            SoundEngine.PlaySound(SoundID.Item125 with { Volume = 0.9f, Pitch = 3f }, player.position);
 
             wombocombo++;
             if (wombocombo == 10)

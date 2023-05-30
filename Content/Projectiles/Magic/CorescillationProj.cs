@@ -87,7 +87,7 @@ namespace Divergency.Content.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
      
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Beam").Value;
 
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int frameY = frameHeight * Projectile.frame;
