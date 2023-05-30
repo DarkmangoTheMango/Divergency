@@ -168,7 +168,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/DecodeDestruction";
 
-        public override Vector2 Pivot => new Vector2(0, 140);
+        public override Vector2 Pivot => new Vector2(0, 160);
 
 
         public override TimedFunction[] SwingFunctions => new TimedFunction[]
@@ -195,7 +195,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         });
         public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f; // 12 is vertical width of blade
 
-        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/DecodeTrail", 280, TrailType.Raw, 100, 0.70f);
+        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/DecodeTrail", 310, TrailType.Raw, 100, 1f);
         //  public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         public override SwordGlow[] Glows => new SwordGlow[]
         {
@@ -229,6 +229,21 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             1f, false, "Divergency/Content/Items/Weapons/Melee/DecodeDestructionGlow2"),
 
+           new SwordGlow(new SwordGlowColor(
+                new List<Color>{
+                    new Color(219, 112, 147, 75),
+                    new Color(219, 112, 147, 75),
+                    new Color(219, 112, 147, 75)
+
+                }, new List<int>
+                {
+                    0,
+                    1,
+                    1,
+
+                }),
+
+            1f, false, "Divergency/Content/Items/Weapons/Melee/DecodeDestructionGlow3"),
           };
 
 
