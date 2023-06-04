@@ -862,6 +862,21 @@ Mods: {
 				DisplayName: Core Shield
 				Tooltip: ""
 			}
+
+			LivingCoreKilt: {
+				Tooltip: ""
+				DisplayName: Living Core Kilt
+			}
+
+			LivingCoreHelmetMelee: {
+				Tooltip: ""
+				DisplayName: Living Core Helmet Melee
+			}
+
+			LivingCoreChestplate: {
+				Tooltip: ""
+				DisplayName: Living Core Chestplate
+			}
 		}
 
 		NPCs: {
