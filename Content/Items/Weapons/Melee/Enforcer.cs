@@ -205,16 +205,16 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(
             new SwordGlowColor(
                 new List<Color>{
-                    new Color(0, 0, 255, 100),
+                    new Color(0, 0, 0, 255),
                     new Color(0, 255, 0),
-                    new Color(255, 0, 0)
+                    new Color(0, 255, 0)
                 }, new List<int>
                 {
                     0,
-                    180,
-                    181,
+                    0,
+                    1,
                 }), 
-            0.95f, false) };
+            1f, false) };
     }
    
     public class EnforcerOrb : ModProjectile

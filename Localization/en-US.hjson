@@ -337,17 +337,25 @@ Mods: {
 			}
 
 			MetalPipe.DisplayName: Metal Pipe
+			LinkArrowActive.DisplayName: Link Arrow Active
+			LinkHandler.DisplayName: Link Handler
+			CorescillationProj.DisplayName: Corescillation Proj
+			LivingExplosion.DisplayName: Living Explosion
+			CoreDashLeftProjectile.DisplayName: Core Dash Left Projectile
+			CoreDashRightProjectile.DisplayName: Core Dash Right Projectile
 		}
 
 		Biomes: {
 			LivingCoreBiome: {
 				"": Living Core Biome
 				DisplayName: Living Core Biome
+				TownNPCDialogueName: the Living Core Biome
 			}
 
 			LivingWoodTreeBiome: {
 				"": Example Underground
 				DisplayName: Living Wood Tree Biome
+				TownNPCDialogueName: the Living Wood Tree Biome
 			}
 		}
 
@@ -844,6 +852,31 @@ Mods: {
 				DisplayName: Decode Destruction
 				Tooltip: ""
 			}
+
+			Corescillation: {
+				DisplayName: Corescillation
+				Tooltip: ""
+			}
+
+			CoreShield: {
+				DisplayName: Core Shield
+				Tooltip: ""
+			}
+
+			LivingCoreKilt: {
+				Tooltip: ""
+				DisplayName: Living Core Kilt
+			}
+
+			LivingCoreHelmetMelee: {
+				Tooltip: ""
+				DisplayName: Living Core Helmet Melee
+			}
+
+			LivingCoreChestplate: {
+				Tooltip: ""
+				DisplayName: Living Core Chestplate
+			}
 		}
 
 		NPCs: {
@@ -855,6 +888,17 @@ Mods: {
 			DoordealerFirstEncounter: {
 				"": Mystery Man
 				DisplayName: Doordealer First Encounter
+
+				TownNPCMood: {
+					Content: I am content.
+					NoHome: I hate not having a home.
+					FarFromHome: I am too far from home.
+					LoveSpace: I love having so much space.
+					DislikeCrowded: I dislike how crowded I am.
+					HateCrowded: I hate how crowded I am.
+					LikeNPC_Princess: I like {NPCName}.
+					Princess_LovesNPC: I like {NPCName}.
+				}
 			}
 
 			Coreling: {
