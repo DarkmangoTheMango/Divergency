@@ -68,7 +68,22 @@ namespace Divergency.Content.Items.Accessories
                  
             }
          
+            if (dashCooldownLeft == 1 || dashCooldownRight == 1)
+            {
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/RechargeDash"), player.Center);
+                float radius = 2;
+                int numberOfDusts = 20;
 
+                for (int i = 0; i < 20; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(player.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
+                    Dust.NewDustPerfect(player.Center, ModContent.DustType<Glow>(), Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, new Color(109, 223, 94), 0.8f);
+
+                    dust.noGravity = true;
+                }
+                dashCooldownRight = 0;
+                dashCooldownLeft = 0;
+            }
             //left dash
             if (dashResetLeft == 0)
             {
@@ -92,7 +107,8 @@ namespace Divergency.Content.Items.Accessories
             {
                 Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.position, new Vector2(0), ModContent.ProjectileType<CoreDashLeftProjectile>(), 0, 0);
                 dashSpawnLeft = 0;
-                dashCooldownLeft = 360;
+                dashCooldownLeft = 420;
+
             }
             //right dash
             if (dashResetRight == 0)
@@ -117,7 +133,7 @@ namespace Divergency.Content.Items.Accessories
             {
                 Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.position, new Vector2(0), ModContent.ProjectileType<CoreDashRightProjectile>(), 0, 0);
                 dashSpawnRight = 0;
-                dashCooldownRight = 360;
+                dashCooldownRight = 420;
             }
         }
 
