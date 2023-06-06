@@ -41,7 +41,7 @@ namespace Divergency.Content.Items.Weapons.Magic
             Item.crit = 0;
             Item.shoot = ProjectileType<CoreFlame>();
             Item.shootSpeed = 12f;
-            Item.mana = 3;
+            Item.mana = 2;
             Item.width = Item.height = 16;
             Item.scale = 1f;
             Item.useTime = Item.useAnimation = 2;

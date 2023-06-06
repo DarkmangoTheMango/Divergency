@@ -343,6 +343,7 @@ Mods: {
 			LivingExplosion.DisplayName: Living Explosion
 			CoreDashLeftProjectile.DisplayName: Core Dash Left Projectile
 			CoreDashRightProjectile.DisplayName: Core Dash Right Projectile
+			CircleBounceAttack.DisplayName: Circle Bounce Attack
 		}
 
 		Biomes: {

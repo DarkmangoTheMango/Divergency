@@ -38,9 +38,6 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            //.setdefault("Life Enforcer");
-            ////.setdefault("Direct hits deploy orbs, right click in order to call them back to the player" +
-                //"Orb daamage scales with your current health stat (not maximum)");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -49,10 +46,10 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 100;
+            Item.damage = 130;
             Item.knockBack = 4f;
 
-            Item.shoot = ModContent.ProjectileType<SwordProjectile>(); // this dosent actually have to be there at all...
+            Item.shoot = ModContent.ProjectileType<SwordProjectile>(); 
             Item.shootSpeed = 1f;
 
             Item.width = Item.height = 96;
@@ -81,23 +78,11 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse == 2)
-            {
-                Projectile.NewProjectile(source, position, velocity, ProjectileID.None, damage, knockback, player.whoAmI, attackDirection, 0f);
-                for (int k = 0; k < 30 ; k++)
-                {
-                    Vector2 vel = Main.rand.NextVector2Circular(1f, 1f);
-
-                    Dust dust = Dust.NewDustPerfect(player.Center + (vel * 100f), DustID.GemEmerald, vel * -5f, 0, default, Main.rand.NextFloat(0.5f, 1f));
-                    dust.noGravity = true;
-                }
-            }
-            else
-            {
+          
                 attackDirection = -attackDirection;
                 SwordAnimator.Swing<DecodeSwing>(player, damage, knockback);
 
-            }
+            
 
 
 
