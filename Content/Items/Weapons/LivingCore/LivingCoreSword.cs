@@ -106,22 +106,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 freezeFrames = 40;
         }
 
-        bool OnHitTile2(Projectile projectile, Vector2 oldVelocity)
-        {
-            Player player = Main.player[projectile.owner];
-
-           // player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
-
-
-
-            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
-
-
-
-            if (freezeFrames == -1)
-                freezeFrames = 40;
-            return false;
-        }
+       
 
         private void Update(Projectile projectile)
         {
@@ -142,7 +127,6 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override int Updates => 10;
         public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
-        public override Func<Projectile, Vector2, bool> OnHitTile { get { return OnHitTile2; } }
         public override string SwordTexture => "Divergency/Content/Items/Weapons/LivingCore/LivingCoreSword";
         public override Vector2 Pivot => new Vector2(0, 55);
 
@@ -163,10 +147,10 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         {
            new SwordAnimation(0,0),
            new SwordAnimation(2f+MathF.PI/2, 30, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-2f+MathF.PI/2, 30, 4, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(MathF.PI* 3f, 75, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-MathF.PI,0),
-           new SwordAnimation(2f+MathF.PI/2, 120, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-2f+MathF.PI/2, 30, 4, FrameFunctions: timedFunctions, Flipped: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(MathF.PI* 3f, 55, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+                    
+
 
 
         });
