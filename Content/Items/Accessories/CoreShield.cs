@@ -105,6 +105,8 @@ namespace Divergency.Content.Items.Accessories
             }
             if (dashSpawnLeft == 2)
             {
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/Dash") with { Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, player.Center);
+
                 Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.position, new Vector2(0), ModContent.ProjectileType<CoreDashLeftProjectile>(), 0, 0);
                 dashSpawnLeft = 0;
                 dashCooldownLeft = 420;
@@ -131,6 +133,8 @@ namespace Divergency.Content.Items.Accessories
             }
             if (dashSpawnRight == 2)
             {
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/Dash") with { Pitch = Main.rand.NextFloat(-1f, 1f) }, player.Center);
+
                 Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.position, new Vector2(0), ModContent.ProjectileType<CoreDashRightProjectile>(), 0, 0);
                 dashSpawnRight = 0;
                 dashCooldownRight = 420;
