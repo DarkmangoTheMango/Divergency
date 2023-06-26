@@ -50,9 +50,13 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
         int soundtimer = 9;
 
         private bool collided;
+       
 
+    
         public override void AI()
         {
+           
+
             Player owner = Main.player[Projectile.owner];
             Player player = Main.LocalPlayer;
 
@@ -71,7 +75,12 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
                 return;
             if (collided)
             {
+                radius += (55 - radius) / 5f;
 
+                if (radius >= 35)
+                {
+                    width += (0 - width) / 5f;
+                }
 
 
                 timer++;

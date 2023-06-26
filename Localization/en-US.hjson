@@ -528,8 +528,8 @@ Mods: {
 			}
 
 			LivingCoreSword: {
-				DisplayName: Commandant's Blade
-				Tooltip: Inflicts Flesh Wound [i:5197]
+				DisplayName: Living Core Sword
+				Tooltip: Does a combo when swung
 			}
 
 			Muscore: {
