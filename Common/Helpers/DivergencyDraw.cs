@@ -134,8 +134,8 @@ namespace Divergency.Common.Helpers
         }
         public override void SetDefaults()
         {
-            Projectile.width = 600;
-            Projectile.height = 600;
+            Projectile.width = 1;
+            Projectile.height = 1;
             Projectile.penetrate = -1;
             Projectile.hostile = false;
             Projectile.friendly = false;

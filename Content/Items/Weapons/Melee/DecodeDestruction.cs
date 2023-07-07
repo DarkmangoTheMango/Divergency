@@ -449,7 +449,8 @@ namespace Divergency.Content.Items.Weapons.Melee
             // Redraw the projectile with the color not influenced by light
             Vector2 drawOrigin = new Vector2(tex.Width * 0.5f, Projectile.height * 0.5f);
 
-
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(default, BlendState.Additive, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
             if (Projectile.ai[0] == 0)
             {
                 drawPos = Projectile.Center - Main.screenPosition - new Vector2(30);
@@ -493,7 +494,10 @@ namespace Divergency.Content.Items.Weapons.Melee
                 {
                     Main.EntitySpriteDraw(tex, drawPos, null, Color.White, Projectile.rotation, drawOrigin, Projectile.scale * 1f, SpriteEffects.None, 0);
                 }
+
             }
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(default, default, default, default, default, default, default);
 
             //trail
             Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Default").Value;

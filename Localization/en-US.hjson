@@ -344,6 +344,8 @@ Mods: {
 			CoreDashLeftProjectile.DisplayName: Core Dash Left Projectile
 			CoreDashRightProjectile.DisplayName: Core Dash Right Projectile
 			CircleBounceAttack.DisplayName: Circle Bounce Attack
+			CoreTurbineCore.DisplayName: Core Turbine Core
+			CoreTurbineProj.DisplayName: Core Turbine Proj
 		}
 
 		Biomes: {
@@ -877,6 +879,11 @@ Mods: {
 			LivingCoreChestplate: {
 				Tooltip: ""
 				DisplayName: Living Core Chestplate
+			}
+
+			CoreTurbine: {
+				DisplayName: Core Turbine
+				Tooltip: ""
 			}
 		}
 

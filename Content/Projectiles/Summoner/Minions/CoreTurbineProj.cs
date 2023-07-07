@@ -15,9 +15,11 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.Projectiles.Summoner.Minions
 {
-    public class CoreprismProj : ModProjectile
+    public class CoreTurbineProj : ModProjectile
     {
         public bool AuraSpawned { get; private set; }
+        public Projectile cachedProjectile { get; private set; }
+        public bool spawned { get; private set; }
 
         public override void SetStaticDefaults()
         {
@@ -27,23 +29,23 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 7;
+            Main.projFrames[Projectile.type] = 1;
 
         }
         public override void SetDefaults()
         {
-            Projectile.width = 32;
-            Projectile.height = 20;
+            Projectile.width = 57;
+            Projectile.height = 72;
             Projectile.tileCollide = true;
-            Projectile.sentry = true;
+            //Projectile.sentry = true;
             Projectile.timeLeft = Projectile.SentryLifeTime;
 
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.penetrate = -1;
-            Projectile.gfxOffY = -30;
         }
+
         int frameTimer;
         int timer;
         int timer2;
@@ -51,19 +53,37 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 
         private bool collided;
 
+
+
         public override void AI()
         {
+            if (collided && timer > 11)
+            {
+                if (!spawned)
+                {
+                    for (int k = 0; k < Main.maxProjectiles; k++)
+                    {
+                        Projectile taggedProjectile = Main.projectile[k];
+
+                        if (taggedProjectile.active && taggedProjectile.ModProjectile is CoreTurbineCore)
+                        {
+                            cachedProjectile = taggedProjectile;
+                        }
+                    }
+
+                    spawned = true;
+                }
+
+                if (!cachedProjectile.active)
+                {
+                    Projectile.Kill();
+                }
+            }
+
             Player owner = Main.player[Projectile.owner];
             Player player = Main.LocalPlayer;
 
-            for (int io = 0; io < Main.maxNPCs; io++)
-            {
-                NPC target = Main.npc[io];
-                if (target.Distance(Projectile.Center) < 450 && !target.HasBuff(ModContent.BuffType<CoreInfection>()) && !target.HasBuff(ModContent.BuffType<CoreInfectionII>()))
-                {
-                    target.AddBuff(ModContent.BuffType<CoreInfection>(), 5);
-                }
-            }
+
             if (player != null)
                 Projectile.spriteDirection = (int)Projectile.ai[0];
             Projectile.velocity.Y += 1;
@@ -71,60 +91,32 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
                 return;
             if (collided)
             {
+                radius += (100 - radius) / 5f;
 
-
+                if (radius >= 35)
+                {
+                    width += (0 - width) / 5f;
+                }
 
                 timer++;
-                if (timer == 200)
+
+                //if (Projectile.frame != 6 && collided)
+                //{
+                 //   frameTimer++;
+                //}
+                //if (frameTimer == 6)
+                //{
+                  //  Projectile.frame++;
+                    //frameTimer = 0;
+                    //SoundEngine.PlaySound(SoundID.WormDig, Projectile.Center);
+
+               // }
+                if (timer == 10)
                 {
-                    timer = 0;
-                    DivergencyDraw.SpawnCirclePulse(Projectile.Center, Color.LimeGreen, 0.5f);
-                    SoundEngine.PlaySound(SoundID.DD2_WitherBeastAuraPulse, Projectile.Center);
-                    for (int i = 0; i < 20; i++)
-                    {
-                        Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
-
-                        ParticleManager.NewParticle(Projectile.Center, speed * Main.rand.NextFloat(10, 25), ParticleManager.NewInstance<StarParticle>(), new Color(0, 200, 0, 0), 0.4f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
-
-                    }
-
-                }
-                timer2++;
-                if (timer2 == 30)
-                {
-                    ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.3f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
-                    ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.5f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
-                    ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.2f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
-                    ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.7f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
-
-                    timer2 = 0;
-                }
-
-                if (Projectile.frame != 6 && collided)
-                {
-                    frameTimer++;
-                }
-                if (frameTimer == 6)
-                {
-                    Projectile.frame++;
-                    frameTimer = 0;
-                    SoundEngine.PlaySound(SoundID.WormDig, Projectile.Center);
-
-                }
-
-
-                if (!AuraSpawned && Projectile.owner == Main.myPlayer)
-                {
-                    AuraSpawned = true;
-
-                }
-                if (player.Distance(Projectile.Center) < 500)
-                {
-                    player.AddBuff(BuffID.Summoning, 1);
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), Projectile.Bottom + new Vector2(7,0), new Vector2(0), ModContent.ProjectileType<CoreTurbineCore>(), 0, 0, Projectile.owner, 0);
+                    timer++;
                 }
             }
-
-
         }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
@@ -220,6 +212,71 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
         }
 
 
+
+    }
+
+    public class CoreTurbineCore : ModProjectile
+    {
+        public int timer;
+
+        public bool spawned { get; private set; }
+        public Projectile cachedProjectile { get; private set; }
+
+        public override void SetStaticDefaults()
+        {
+            //.setdefault("Coreprism");
+            Main.projPet[Projectile.type] = true;
+            ProjectileID.Sets.DontAttachHideToAlpha[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+
+        }
+        public override void SetDefaults()
+        {
+            Projectile.width = 32;
+            Projectile.height = 20;
+            Projectile.tileCollide = true;
+            Projectile.sentry = true;
+            Projectile.timeLeft = Projectile.SentryLifeTime;
+
+            Projectile.friendly = true;
+            Projectile.ignoreWater = true;
+            Projectile.DamageType = DamageClass.Summon;
+            Projectile.penetrate = -1;
+        }
+        public override void AI()
+        {
+            Player owner = Main.player[Projectile.owner];
+
+            // Main.NewText(timer);
+            Projectile.gfxOffY = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1) * 6;
+            Projectile.velocity.Y *= 0.9f;
+
+            if (!spawned)
+            {
+              
+
+                spawned = true;
+            }
+
+            if (!cachedProjectile.active)
+            {
+                Projectile.Kill();
+            }
+
+
+            timer++;
+
+
+            if (timer == 5)
+            {
+                Projectile.velocity.Y -= 10;
+
+            }
+          
+
+        }
 
     }
 }
