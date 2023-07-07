@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -8,6 +9,8 @@ using Terraria.GameContent.Creative;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI;
+using static ParticleLibrary.Particle;
 
 namespace Divergency.Content.Items.Weapons.LivingCore
 {
@@ -282,25 +285,47 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         string BulletTexture { get; }
     }
 
-    public class ItemSwapKeybindDraw : PlayerDrawLayer
+    public class ItemSwapKeybindDraw : ModSystem
     {
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
+        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
-            IReloadWeapon iweapon = drawInfo.drawPlayer.HeldItem.ModItem as IReloadWeapon;
+            IReloadWeapon iweapon = Main.LocalPlayer.HeldItem.ModItem as IReloadWeapon;
 
-            return iweapon != null;
+            if (iweapon == null)
+                return;
+
+            int resourceBarIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
+            if (resourceBarIndex != -1)
+            {
+                layers.Insert(resourceBarIndex, new LegacyGameInterfaceLayer(
+                    "Divergency: General Reload Weapon UI",
+                    delegate {
+                        UIDraw(Main.spriteBatch);
+                        return true;
+                    },
+                    InterfaceScaleType.UI)
+                );
+            }
+
+            /*
+            Console.WriteLine("START");
+            foreach (var layer in layers)
+            {
+                Console.WriteLine(layer.Name);
+            }
+            Console.WriteLine("END");
+            */
         }
-
-        public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.BeetleBuff);
-
-        protected override void Draw(ref PlayerDrawSet drawInfo)
+        private void UIDraw(SpriteBatch spriteBatch)
         {
-            ReloadWeapon modPlr = drawInfo.drawPlayer.GetModPlayer<ReloadWeapon>();
-            IReloadWeapon iReloadWeapon = drawInfo.drawPlayer.HeldItem.ModItem as IReloadWeapon;
+            ReloadWeapon modPlr = Main.LocalPlayer.GetModPlayer<ReloadWeapon>();
+            IReloadWeapon iReloadWeapon = Main.LocalPlayer.HeldItem.ModItem as IReloadWeapon;
 
             Texture2D stockTexture = (Texture2D)ModContent.Request<Texture2D>(iReloadWeapon.BulletTexture);
 
             int stocksLeft = iReloadWeapon.GetRemainingBullets();
+
+            Console.WriteLine("reach??");
 
             for (int i = 0; i < stocksLeft; i++)
             {
@@ -311,7 +336,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 int position = -(((12 + spacing) * stocksLeft) / 2);
                 position += (12 + spacing / 2) * i + spacing;
 
-                drawInfo.DrawDataCache.Add(new DrawData(stockTexture, new Vector2(Main.screenWidth / 2 + position, Main.screenHeight / 2 - 60f), bulletRect, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0));
+                spriteBatch.Draw(stockTexture, new Vector2(Main.screenWidth / 2 + position, Main.screenHeight / 2 - 60f), bulletRect, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
 
             // draw reload ui
@@ -326,7 +351,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 Rectangle back = new Rectangle(0, 0, 86, 28);
                 Rectangle fill = new Rectangle(0, 0, width, 12);
 
-                drawInfo.DrawDataCache.Add(new DrawData(Pixel, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2 - 60f), fill, new Color(28, 51, 255), 0f, new Vector2(50f, 8f), 1f, SpriteEffects.None, 0));
+                spriteBatch.Draw(Pixel, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2 - 60f), fill, new Color(28, 51, 255), 0f, new Vector2(50f, 8f), 1f, SpriteEffects.None, 0);
                 //drawInfo.DrawDataCache.Add(new DrawData(LoadingBorder, new Vector2(Main.screenWidth / 2, Main.screenHeight / 2 - 60f), back, Color.White, 0f, new Vector2(56f, 16f), 1f, SpriteEffects.None, 0));
             }
         }
