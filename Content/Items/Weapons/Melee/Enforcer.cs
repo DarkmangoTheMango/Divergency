@@ -46,7 +46,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 50;
+            Item.damage = 32;
             Item.knockBack = 4f;
 
             Item.shoot = ModContent.ProjectileType<SwordProjectile>(); // this dosent actually have to be there at all...
@@ -64,7 +64,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.value = Item.sellPrice(0, 4, 0, 0);
             Item.rare = ItemRarityID.Green;
         }
-
+        
         public override void HoldItem(Player player)
         {
             if (player == Main.LocalPlayer)

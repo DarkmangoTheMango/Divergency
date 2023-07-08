@@ -29,7 +29,6 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 1;
 
         }
         public override void SetDefaults()
@@ -37,7 +36,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
             Projectile.width = 57;
             Projectile.height = 72;
             Projectile.tileCollide = true;
-            //Projectile.sentry = true;
+            Projectile.sentry = true;
             Projectile.timeLeft = Projectile.SentryLifeTime;
 
             Projectile.friendly = true;
@@ -53,37 +52,23 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 
         private bool collided;
 
-
-
+       
+       
         public override void AI()
         {
-            if (collided && timer > 11)
-            {
-                if (!spawned)
-                {
-                    for (int k = 0; k < Main.maxProjectiles; k++)
-                    {
-                        Projectile taggedProjectile = Main.projectile[k];
-
-                        if (taggedProjectile.active && taggedProjectile.ModProjectile is CoreTurbineCore)
-                        {
-                            cachedProjectile = taggedProjectile;
-                        }
-                    }
-
-                    spawned = true;
-                }
-
-                if (!cachedProjectile.active)
-                {
-                    Projectile.Kill();
-                }
-            }
 
             Player owner = Main.player[Projectile.owner];
             Player player = Main.LocalPlayer;
-
-
+            if (player.HasMinionAttackTargetNPC)
+            {
+                NPC target = Main.npc[owner.MinionAttackTargetNPC];
+            if (Projectile.Center.Distance(target.Center) > 100 && target.active)
+            {
+                if (eyescale > 2)
+                eyescale += 0.1f; 
+            }
+               
+                }
             if (player != null)
                 Projectile.spriteDirection = (int)Projectile.ai[0];
             Projectile.velocity.Y += 1;
@@ -111,11 +96,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
                     //SoundEngine.PlaySound(SoundID.WormDig, Projectile.Center);
 
                // }
-                if (timer == 10)
-                {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), Projectile.Bottom + new Vector2(7,0), new Vector2(0), ModContent.ProjectileType<CoreTurbineCore>(), 0, 0, Projectile.owner, 0);
-                    timer++;
-                }
+              
             }
         }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
@@ -160,19 +141,26 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
         public float timer4 = 0;
 
         float width = 10;
+        private float eyescale = 0.8f;
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D OrbTex = ModContent.Request<Texture2D>("Divergency/Content/Projectiles/Summoner/Minions/CoreTurbineCore").Value;
+            Texture2D EyeTex = ModContent.Request<Texture2D>("Divergency/Content/Projectiles/Summoner/Minions/CoreTurbineEye").Value;
+            Texture2D GlowTex = ModContent.Request<Texture2D>("Divergency/Assets/Textures/WhiteGlow").Value;
 
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int frameY = frameHeight * Projectile.frame;
 
             Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+            Rectangle sourceRectangle2 = new Rectangle(0, frameY, OrbTex.Width, OrbTex.Height);
+
             Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color color = Projectile.GetAlpha(lightColor);
-            Color color1 = new Color(0.50f / 2, 2f / 3, 0.5f / 2, 0);
+            Color color1 = Color.White;
+            Color color2 = new Color(0.50f / 2, 2f / 3, 0.5f / 2, 0);
 
             Main.EntitySpriteDraw(texture, position - new Vector2(0, 10), sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
@@ -207,7 +195,19 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
             trail.Draw(tests, rotations, timer3);
             // trail2.Draw(tests, rotations, timer3);
 
+            //glow:
+            // Main.EntitySpriteDraw(GlowTex, position - new Vector2(-25, 45), sourceRectangle2, color2, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
 
+      
+
+            //orb:
+          //  Main.EntitySpriteDraw(OrbTex, position - new Vector2(-5, 45), sourceRectangle, color, Projectile.rotation, origin, 0.9f, SpriteEffects.None, 0);
+            //Main.EntitySpriteDraw(OrbTex, position - new Vector2(-5, 45), sourceRectangle, color1, Projectile.rotation, origin, 0.9f, SpriteEffects.None, 0);
+
+            //eye:
+            Main.EntitySpriteDraw(OrbTex, position - new Vector2(-5, 45), sourceRectangle, color, Projectile.rotation, origin, eyescale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(OrbTex, position - new Vector2(-5, 45), sourceRectangle, color1, Projectile.rotation, origin, eyescale, SpriteEffects.None, 0);
+            Main.NewText(eyescale);
             return false;
         }
 
@@ -215,68 +215,5 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 
     }
 
-    public class CoreTurbineCore : ModProjectile
-    {
-        public int timer;
-
-        public bool spawned { get; private set; }
-        public Projectile cachedProjectile { get; private set; }
-
-        public override void SetStaticDefaults()
-        {
-            //.setdefault("Coreprism");
-            Main.projPet[Projectile.type] = true;
-            ProjectileID.Sets.DontAttachHideToAlpha[Type] = true;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-
-        }
-        public override void SetDefaults()
-        {
-            Projectile.width = 32;
-            Projectile.height = 20;
-            Projectile.tileCollide = true;
-            Projectile.sentry = true;
-            Projectile.timeLeft = Projectile.SentryLifeTime;
-
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.DamageType = DamageClass.Summon;
-            Projectile.penetrate = -1;
-        }
-        public override void AI()
-        {
-            Player owner = Main.player[Projectile.owner];
-
-            // Main.NewText(timer);
-            Projectile.gfxOffY = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 1) * 6;
-            Projectile.velocity.Y *= 0.9f;
-
-            if (!spawned)
-            {
-              
-
-                spawned = true;
-            }
-
-            if (!cachedProjectile.active)
-            {
-                Projectile.Kill();
-            }
-
-
-            timer++;
-
-
-            if (timer == 5)
-            {
-                Projectile.velocity.Y -= 10;
-
-            }
-          
-
-        }
-
-    }
+   
 }
