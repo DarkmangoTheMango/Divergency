@@ -885,6 +885,31 @@ Mods: {
 				DisplayName: Core Turbine
 				Tooltip: ""
 			}
+
+			CradleRock: {
+				DisplayName: Cradle Rock
+				Tooltip: ""
+			}
+
+			CradleVine: {
+				DisplayName: Cradle Vine
+				Tooltip: ""
+			}
+
+			CradleWall: {
+				DisplayName: Cradle Wall
+				Tooltip: ""
+			}
+
+			CradleRockWall: {
+				DisplayName: Cradle Rock Wall
+				Tooltip: ""
+			}
+
+			CradleWoodWall: {
+				DisplayName: Cradle Wood Wall
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
