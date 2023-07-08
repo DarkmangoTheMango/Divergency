@@ -25,8 +25,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         public override void SetDefaults()
         {
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 35;
-            Item.mana = 11;
+            Item.damage = 24;
+            Item.mana = 7;
             Item.knockBack = 3f;
             Item.noMelee = true;
 
@@ -37,7 +37,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item.Size = new Vector2(74, 70);
             Item.scale = 1f;
 
-            Item.useTime = Item.useAnimation = 45;
+            Item.useTime = Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
             Item.useTurn = false;
@@ -84,7 +84,9 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                     newVelocity *= 1f - Main.rand.NextFloat(0.6f);
 
                     // Create a projectile.
-                    Projectile.NewProjectileDirect(source, position, newVelocity, type, damage, knockback, player.whoAmI);
+                    Projectile.NewProjectileDirect(source, position, newVelocity * 1.2f, type, damage, knockback, player.whoAmI); 
+
+
                 }
             }
             else
@@ -98,6 +100,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
                     // Create a projectile.
                     Projectile.NewProjectileDirect(source, position, newVelocity, type, damage, knockback, player.whoAmI);
+                    Projectile.NewProjectileDirect(source, position, newVelocity * 1.1f, type, damage, knockback, player.whoAmI);
+
                 }
             }
 

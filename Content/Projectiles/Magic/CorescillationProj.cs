@@ -13,6 +13,7 @@ namespace Divergency.Content.Projectiles.Magic
 {
     public class CorescillationProj : ModProjectile
     {
+        public int timer2;
         public override string Texture => "Divergency/Assets/Textures/Empty";
         public override void SetStaticDefaults()
         {
@@ -42,6 +43,23 @@ namespace Divergency.Content.Projectiles.Magic
 
         public override void AI()
         {
+            timer2++;
+            if  (timer2 == 1)
+            {
+                if (Main.rand.NextBool(3))
+                {
+                    falling = true;
+                }
+                else if (Main.rand.NextBool(3))
+                {
+                    ascend = true;
+                }
+                else
+                {
+                    falling = false;
+                    ascend = false;
+                }
+            }
             Projectile.rotation = Projectile.velocity.ToRotation();
 
             Projectile.direction = Projectile.spriteDirection = (Projectile.velocity.X >= 0f) ? 1 : -1;
@@ -53,10 +71,22 @@ namespace Divergency.Content.Projectiles.Magic
             if (Projectile.alpha <= 0) { Projectile.alpha = 0; }
 
             if (Projectile.spriteDirection == -1) { Projectile.rotation += MathHelper.Pi; }
+            if (ascend)
+            {
+                Projectile.velocity.Y += -0.3f;
+            }
+            else if (falling)
+            {
+                Projectile.velocity.Y += 0.3f;
 
-            
+            }
+            else
+            {
 
-         
+            }
+
+
+
         }
 
         public override void Kill(int timeLeft)
@@ -84,6 +114,9 @@ namespace Divergency.Content.Projectiles.Magic
 
         float timer;
         float trailtimer;
+        private bool falling;
+        private bool ascend;
+
         public override bool PreDraw(ref Color lightColor)
         {
      
@@ -119,7 +152,7 @@ namespace Divergency.Content.Projectiles.Magic
                 }
 
                 trail.Draw(Projectile.oldPos, trailtimer);
-                trailtimer -= 0.01f;
+              //  trailtimer -= 0.01f;
             }
 
             return true;
