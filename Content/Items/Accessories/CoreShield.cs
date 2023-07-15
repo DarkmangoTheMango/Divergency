@@ -189,7 +189,7 @@ namespace Divergency.Content.Items.Accessories
                 for (int i = 0; i < 2; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
-                    Dust.NewDustPerfect(Projectile.Center + new Vector2(0, Main.rand.NextFloat(-30, 30)), ModContent.DustType<GlowLine>(), Projectile.velocity * 2, 0, new Color(109, 223, 94), 1f);
+                   // Dust.NewDustPerfect(Projectile.Center + new Vector2(0, Main.rand.NextFloat(-15, 30)), ModContent.DustType<GlowLine>(), Projectile.velocity * 5, 0, new Color(109, 223, 94), 0.65f);
 
                     dust.noGravity = false;
                 }
@@ -309,7 +309,7 @@ namespace Divergency.Content.Items.Accessories
                 for (int i = 0; i < 2; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
-                    Dust.NewDustPerfect(Projectile.Center + new Vector2(0, Main.rand.NextFloat(-30, 30)), ModContent.DustType<GlowLine>(), Projectile.velocity * 2, 0, new Color(109, 223, 94), 1f);
+                  //  Dust.NewDustPerfect(Projectile.Center + new Vector2(0, Main.rand.NextFloat(-30, 30)), ModContent.DustType<GlowLine>(), Projectile.velocity * 2, 0, new Color(109, 223, 94), 1f);
 
                     dust.noGravity = false;
                 }
