@@ -973,6 +973,8 @@ Mods: {
 				"": Living Core Event Handler
 				DisplayName: Living Core Event Handler
 			}
+
+			CorelingCutscene.DisplayName: Coreling Cutscene
 		}
 
 		"Keybinds.Reload the current weapon.DisplayName": Reload the current weapon
