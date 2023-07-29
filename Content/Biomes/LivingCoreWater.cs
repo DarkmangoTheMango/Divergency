@@ -45,7 +45,7 @@ namespace Divergency.Content.Biomes
 
         public override Asset<Texture2D> GetRainTexture()
         {
-            return ModContent.Request<Texture2D>("DivergencyAssets/Textures/Empty");
+            return ModContent.Request<Texture2D>("Divergency/Assets/Textures/Empty");
 
 
         }

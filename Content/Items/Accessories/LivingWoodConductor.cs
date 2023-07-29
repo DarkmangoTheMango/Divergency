@@ -6,6 +6,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ModLoader;
 using System;
 using Terraria.Audio;
+using Divergency.Content.Items.Weapons.Magic;
 
 namespace Divergency.Content.Items.Accessories
 {
@@ -13,7 +14,7 @@ namespace Divergency.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Magic attacks summon healing Acorns upon striking enemies");
+            ////.setdefault("Magic attacks summon healing Acorns upon striking enemies");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -43,32 +44,18 @@ namespace Divergency.Content.Items.Accessories
     public class AcornDrop : ModPlayer
     {
         public bool Acorns;
+        public int cooldown;
         public override void ResetEffects()
         {
             Acorns = false;
         }
-            
-        public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
-        {
-            if (Player.HeldItem.DamageType == DamageClass.Magic && Acorns)
-            {
-                if (Player.HeldItem.DamageType == DamageClass.Magic && Acorns && !target.immortal && !target.dontTakeDamage)
-                {
 
-                    for (int i = 0; i < Main.rand.Next(3, 4); i++)
-                    {
-                        Projectile.NewProjectile(target.GetSource_FromThis(), target.Center, new Vector2(Main.rand.Next(-20, 20) * 0.9f, Main.rand.Next(-10, 30)) * 0.9f, ModContent.ProjectileType<AcornProj>(), 12, 1f, Player.whoAmI);
-                    }
-
-                }
-            }
-        }
        
 
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
 
-            
+
             if (proj.DamageType == DamageClass.Magic && Acorns && proj.type != ModContent.ProjectileType<AcornProj>())
             {
 
@@ -76,9 +63,17 @@ namespace Divergency.Content.Items.Accessories
                 {
                     Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Projectile.NewProjectile(target.GetSource_FromThis(), target.Top, speed * 13, ModContent.ProjectileType<AcornProj>(), 10, 1f, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetSource_FromAI(), target.Center, speed * 13, ModContent.ProjectileType<AcornProj>(), 0, 0f, Player.whoAmI, 0f, 0);
                 }
 
+            }
+        
+    }
+        public override void PreUpdate()
+        {
+            if (Acorns && cooldown < 180)
+            {
+                cooldown++;
             }
         }
     }
@@ -89,13 +84,13 @@ namespace Divergency.Content.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Acorn");
+            //.setdefault("Acorn");
         }
 
         public override void SetDefaults()
         {
             Projectile.penetrate = 15;
-            Projectile.DamageType = DamageClass.Magic;
+            Projectile.DamageType = DamageClass.Generic;
             Projectile.friendly = true;
             Projectile.hostile = false;
 

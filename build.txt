@@ -1,5 +1,5 @@
-displayName = Divergency
+ = Divergency
 author = The Divergency Team
 version = 0.0.0.1
-modReferences = ParticleLibrary, SubworldLibrary
+modReferences = ParticleLibrary
 version = 0.1

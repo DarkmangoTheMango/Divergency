@@ -24,7 +24,7 @@ namespace Divergency.Content.Items.Weapons.Summoner
         public override void SetStaticDefaults()
         {
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
-            Tooltip.SetDefault($"Attacks inflict Core Infection [i:{ModContent.ItemType<CoreInfectionIcon>()}] \n7% Infected enemies receive additional damage from attacks with summons");
+            ////.setdefault($"Attacks inflict Core Infection [i:{ModContent.ItemType<CoreInfectionIcon>()}] \n7% Infected enemies receive additional damage from attacks with summons");
 
         }
 
@@ -102,7 +102,7 @@ namespace Divergency.Content.Items.Weapons.Summoner
             return false; // Prevent the vanilla whip AI from running.
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (target.HasBuff(ModContent.BuffType<CoreInfection>()))
             {

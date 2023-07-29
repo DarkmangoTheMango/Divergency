@@ -14,7 +14,7 @@ namespace Divergency.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Combines the powers of heart and conductor");
+            ////.setdefault("Combines the powers of heart and conductor");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -30,6 +30,7 @@ namespace Divergency.Content.Items.Accessories
 
         }
 
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.GetModPlayer<HeartDrop>().Orbs = true;
@@ -37,7 +38,17 @@ namespace Divergency.Content.Items.Accessories
         }
 
 
+        public override void AddRecipes()
+        {
+            Recipe recipe = CreateRecipe();
+            recipe.AddTile(TileID.TinkerersWorkbench);
 
+            recipe.AddIngredient(ModContent.ItemType<LivingCoreHeart>(), 1);
+            recipe.AddIngredient(ModContent.ItemType<LivingWoodConductor>(), 1);
+        
+
+            recipe.Register();
+        }
 
     }
 

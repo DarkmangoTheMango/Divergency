@@ -22,10 +22,10 @@ namespace Divergency.Content.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Core Scorcher");
+            //.setdefault("Core Scorcher");
 
-            Tooltip.SetDefault("Fires a deadly Living Core flame"
-                + "\nInflicts the Dryads buffs/debuffs on enemy/player contact");
+            ////.setdefault("Fires a deadly Living Core flame"
+             //   + "\nInflicts the Dryads buffs/debuffs on enemy/player contact");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
    
@@ -41,7 +41,7 @@ namespace Divergency.Content.Items.Weapons.Magic
             Item.crit = 0;
             Item.shoot = ProjectileType<CoreFlame>();
             Item.shootSpeed = 12f;
-            Item.mana = 3;
+            Item.mana = 2;
             Item.width = Item.height = 16;
             Item.scale = 1f;
             Item.useTime = Item.useAnimation = 2;
@@ -143,7 +143,7 @@ namespace Divergency.Content.Items.Weapons.Magic
             Lighting.AddLight(Projectile.position, RGB.X, RGB.Y, RGB.Z);
 
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.DryadsWardDebuff, 120, false);
         }

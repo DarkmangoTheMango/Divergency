@@ -14,8 +14,8 @@ namespace Divergency.Content.Buffs
 
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Bullet Mark");
-			Description.SetDefault("Deadly Napalm is stuck to you");
+			//.setdefault("Bullet Mark");
+			////.setdefault("Deadly Napalm is stuck to you");
 
 			Main.debuff[Type] = true;
 			Main.pvpBuff[Type] = true;

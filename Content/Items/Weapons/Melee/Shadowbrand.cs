@@ -25,8 +25,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shadowbrand");
-            Tooltip.SetDefault("Striking enemies increases the blade's power");
+            //.setdefault("Shadowbrand");
+            ////.setdefault("Striking enemies increases the blade's power");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -144,7 +144,7 @@ namespace Divergency.Content.Items.Weapons.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shadowbrand");
+            //.setdefault("Shadowbrand");
             Main.projFrames[Projectile.type] = 4;
         }
 
@@ -213,7 +213,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
 
@@ -306,7 +306,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shadowbrand");
+            //.setdefault("Shadowbrand");
         }
 
         public override void SetDefaults()
@@ -367,7 +367,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (player.ItemAnimationEndingOrEnded) { Projectile.Kill(); }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
 
@@ -449,7 +449,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shadowbrand");
+            //.setdefault("Shadowbrand");
         }
 
         public override void SetDefaults()

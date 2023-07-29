@@ -24,7 +24,7 @@ namespace Divergency.Content.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Oculomeye");
+            //.setdefault("Oculomeye");
             Main.projFrames[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -60,7 +60,7 @@ namespace Divergency.Content.Items.Weapons.Magic
             set => Projectile.ai[1] = value;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             TimerActive = true;
             Projectile.alpha = 150;

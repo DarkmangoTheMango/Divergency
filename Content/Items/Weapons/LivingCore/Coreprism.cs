@@ -29,6 +29,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item.autoReuse = false;
             Item.shoot = ModContent.ProjectileType<CoreprismProj>();
             Item.mana = 4;
+            Item.shootSpeed = 16;
         }
 
         public override bool CanUseItem(Player player)

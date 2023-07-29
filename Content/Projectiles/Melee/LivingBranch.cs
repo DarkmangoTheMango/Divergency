@@ -71,8 +71,8 @@ namespace Divergency.Content.Projectiles.Melee
 			NPC npc = Main.npc[targetIdentity];
 			Player player = Main.player[Projectile.owner];
 
-			npc.StrikeNPC(player.GetWeaponDamage(player.HeldItem, false) * 3, 4.5f, 0, true, false, false);
-
+			//npc.StrikeNPC(player.GetWeaponDamage(player.HeldItem, false) * 3, 4.5f, 0, true, false, false);
+			npc.SimpleStrikeNPC(player.GetWeaponDamage(player.HeldItem, false),0,true, 0);
 			SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
 
 			for (int i = 0; i < 10; i++)
@@ -99,8 +99,9 @@ namespace Divergency.Content.Projectiles.Melee
 		const int maxCount = 5;
 		readonly Point[] stickyCount = new Point[maxCount];
 
-		public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-		{
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+   
 			sticking = true;
 			targetIdentity = target.whoAmI;
 

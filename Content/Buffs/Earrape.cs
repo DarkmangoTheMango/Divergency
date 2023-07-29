@@ -12,8 +12,8 @@ namespace Divergency.Content.Buffs
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Earraped");
-            Description.SetDefault("I can't hear you it's to dark in here!");
+            //.setdefault("Earraped");
+            ////.setdefault("I can't hear you it's to dark in here!");
 
             Main.buffNoSave[Type] = true; // This buff won't save when you exit the world
         }

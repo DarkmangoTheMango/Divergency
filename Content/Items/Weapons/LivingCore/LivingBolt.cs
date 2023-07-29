@@ -13,7 +13,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("AW FUCK");
+            ////.setdefault("AW FUCK");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }

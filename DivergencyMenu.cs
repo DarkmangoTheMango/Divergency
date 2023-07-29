@@ -13,7 +13,7 @@ namespace Divergency
 
         public override ModSurfaceBackgroundStyle MenuBackgroundStyle => ModContent.Find<ModSurfaceBackgroundStyle>("Divergency/LivingCoreBiomeSurfaceStyle");
 
-        public override string DisplayName => "(Divergency) Living Grove";
+        //public override string  => "(Divergency) Living Grove";
 
         public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
         {

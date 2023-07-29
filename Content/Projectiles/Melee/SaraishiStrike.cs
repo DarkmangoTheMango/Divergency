@@ -12,7 +12,7 @@ namespace Divergency.Content.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Saraishi Strike");
+            //.setdefault("Saraishi Strike");
         }
 
         public override void SetDefaults()

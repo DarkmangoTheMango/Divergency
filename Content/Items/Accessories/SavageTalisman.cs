@@ -16,7 +16,7 @@ namespace Divergency.Content.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault($"Critical strikes inflict Shred [i:{ModContent.ItemType<ShredIcon>()}] \n7% increased critical strike chance");
+            ////.setdefault($"Critical strikes inflict Shred [i:{ModContent.ItemType<ShredIcon>()}] \n7% increased critical strike chance");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -79,9 +79,10 @@ namespace Divergency.Content.Items.Accessories
 
         public override void ResetEffects() => savageTalismanActive = false;
 
-        public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (crit && savageTalismanActive)
+     
+            if (hit.Crit && savageTalismanActive)
             {
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Impacts/Fleshy"), target.Center);
                 target.AddBuff(ModContent.BuffType<Shred>(), 180);
@@ -90,9 +91,10 @@ namespace Divergency.Content.Items.Accessories
             }
         }
 
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (crit && savageTalismanActive)
+
+            if (hit.Crit && savageTalismanActive)
             {
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Impacts/Fleshy"), target.Center);
                 target.AddBuff(ModContent.BuffType<Shred>(), 180);

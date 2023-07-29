@@ -1,0 +1,982 @@
+Mods: {
+	Divergency: {
+		Projectiles: {
+			CirclePulse_Visual: {
+				"": Pulse
+				DisplayName: Circle Pulse_ Visual
+			}
+
+			Explosion_Visual: {
+				"": Explosion
+				DisplayName: Explosion_ Visual
+			}
+
+			Ring_Visual: {
+				"": Ring
+				DisplayName: Ring_ Visual
+			}
+
+			SwordProjectile: {
+				"": Sword Projectile
+				DisplayName: Sword Projectile
+			}
+
+			AcornProj: {
+				"": Acorn
+				DisplayName: Acorn Proj
+			}
+
+			CoreShardProj: {
+				"": Core Shard Proj
+				DisplayName: Core Shard Proj
+			}
+
+			LivingCoreSpearDamage: {
+				"": Living Core Spear
+				DisplayName: Living Core Spear Damage
+			}
+
+			LivingCoreSpearPro: {
+				"": Living Core Spear
+				DisplayName: Living Core Spear Pro
+			}
+
+			LivingCoreSpearPro2: {
+				"": Living Core Spear
+				DisplayName: Living Core Spear Pro2
+			}
+
+			MuscoreBullet: {
+				"": Muscore Bullet
+				DisplayName: Muscore Bullet
+			}
+
+			MuscorePro: {
+				"": Muscore
+				DisplayName: Muscore Pro
+			}
+
+			CoreFlame: {
+				"": Core Flame
+				DisplayName: Core Flame
+			}
+
+			InvocationHoldout: {
+				"": Invocation Holdout
+				DisplayName: Invocation Holdout
+			}
+
+			SorcerersSecretProj: {
+				"": Oculomeye
+				DisplayName: Sorcerers Secret Proj
+			}
+
+			CommandantsBladePro: {
+				"": Commandant's Blade
+				DisplayName: Commandants Blade Pro
+			}
+
+			EnforcerOrb: {
+				"": Life Orb
+				DisplayName: Enforcer Orb
+			}
+
+			EnforcerPro: {
+				"": Enforcer
+				DisplayName: Enforcer Pro
+			}
+
+			NaturesWrathPro: {
+				"": Nature's Wrath
+				DisplayName: Natures Wrath Pro
+			}
+
+			ShadowbrandArc: {
+				"": Shadowbrand
+				DisplayName: Shadowbrand Arc
+			}
+
+			ShadowbrandFlash: {
+				"": Shadowbrand
+				DisplayName: Shadowbrand Flash
+			}
+
+			ShadowbrandPro: {
+				"": Shadowbrand
+				DisplayName: Shadowbrand Pro
+			}
+
+			BlueRoseFlash: {
+				"": Blue Rose
+				DisplayName: Blue Rose Flash
+			}
+
+			BlueRoseFlash2: {
+				"": Blue Rose
+				DisplayName: Blue Rose Flash2
+			}
+
+			BlueRosePro: {
+				"": Blue Rose
+				DisplayName: Blue Rose Pro
+			}
+
+			DoorLauncherPro: {
+				"": Door Launcher
+				DisplayName: Door Launcher Pro
+			}
+
+			HighShot: {
+				"": Blue Rose
+				DisplayName: High Shot
+			}
+
+			LivingShardSlayerExplosion: {
+				"": Living Shard Slayer
+				DisplayName: Living Shard Slayer Explosion
+			}
+
+			LivingShardSlayerPro: {
+				"": Living Shard Slayer
+				DisplayName: Living Shard Slayer Pro
+			}
+
+			LivingWoodBullet: {
+				"": Forest Ripper
+				DisplayName: Living Wood Bullet
+			}
+
+			LivingCoreWhipProj: {
+				"": Living Core Whip Proj
+				DisplayName: Living Core Whip Proj
+			}
+
+			SageDeathBomb: {
+				"": Sage Death Bomb
+				DisplayName: Sage Death Bomb
+			}
+
+			CoreBeam2: {
+				"": Core Beam
+				DisplayName: Core Beam2
+			}
+
+			DirectionalAttack: {
+				"": skill issue
+				DisplayName: Directional Attack
+			}
+
+			DirectionalAttack2: {
+				"": i have taken your family hostage
+				DisplayName: Directional Attack2
+			}
+
+			FloatingBalls: {
+				"": BALLS HAHA SEX PENIS HAHA HA SEX
+				DisplayName: Floating Balls
+			}
+
+			GuardianBeam: {
+				"": Guardian Beam
+				DisplayName: Guardian Beam
+			}
+
+			LuminaryBeam: {
+				"": Core Beam
+				DisplayName: Luminary Beam
+			}
+
+			SageBeam: {
+				"": Sage Beam
+				DisplayName: Sage Beam
+			}
+
+			LifeOrb: {
+				"": Life Orb
+				DisplayName: Life Orb
+			}
+
+			LivingBolt: {
+				"": Living Bolt
+				DisplayName: Living Bolt
+			}
+
+			ShadowflameEffigy: {
+				"": Shadowflame Effigy
+				DisplayName: Shadowflame Effigy
+			}
+
+			BlueRoseWave: {
+				"": Blue Rose Wave
+				DisplayName: Blue Rose Wave
+			}
+
+			LivingBranch: {
+				"": Living Branch
+				DisplayName: Living Branch
+			}
+
+			LivingResonance: {
+				"": BewitchedSpikyBall
+				DisplayName: Living Resonance
+			}
+
+			LivingResonance2: {
+				"": BewitchedSpikyBall
+				DisplayName: Living Resonance2
+			}
+
+			SaraishiPlusSlash: {
+				"": Aku Saraishi Slash
+				DisplayName: Saraishi Plus Slash
+			}
+
+			SaraishiSlash: {
+				"": Saraishi Slash
+				DisplayName: Saraishi Slash
+			}
+
+			SaraishiStrike: {
+				"": Saraishi Strike
+				DisplayName: Saraishi Strike
+			}
+
+			BoneDoor: {
+				"": Door
+				DisplayName: Bone Door
+			}
+
+			BoneDoorBone: {
+				"": Door
+				DisplayName: Bone Door Bone
+			}
+
+			BorealDoor: {
+				"": Door
+				DisplayName: Boreal Door
+			}
+
+			MushroomDoor: {
+				"": Door
+				DisplayName: Mushroom Door
+			}
+
+			MushroomDoorMushroom: {
+				"": Mushroom
+				DisplayName: Mushroom Door Mushroom
+			}
+
+			MushroomDoorWave: {
+				"": Door
+				DisplayName: Mushroom Door Wave
+			}
+
+			WoodenDoor: {
+				"": Door
+				DisplayName: Wooden Door
+			}
+
+			LivingCoreShrapnel: {
+				"": Living Shrapnel
+				DisplayName: Living Core Shrapnel
+			}
+
+			SapphireBullet: {
+				"": Sapphire Bullet
+				DisplayName: Sapphire Bullet
+			}
+
+			WoodenBulletProj: {
+				"": BewitchedSpikyBall
+				DisplayName: Wooden Bullet Proj
+			}
+
+			SavageDagger: {
+				"": Savage Dagger
+				DisplayName: Savage Dagger
+			}
+
+			CoreprismProj: {
+				"": Coreprism Proj
+				DisplayName: Coreprism Proj
+			}
+
+			Corewhack_Summon: {
+				"": Corewhack_ Summon
+				DisplayName: Corewhack_ Summon
+			}
+
+			Corewhack_Summon_Shot: {
+				"": Corewhack_ Summon_ Shot
+				DisplayName: Corewhack_ Summon_ Shot
+			}
+
+			RetinazerLaser: {
+				"": Retinazer
+				DisplayName: Retinazer Laser
+			}
+
+			RetinazerMinion: {
+				"": Retinazer
+				DisplayName: Retinazer Minion
+			}
+
+			SpazmatismMinion: {
+				"": Spazmatism
+				DisplayName: Spazmatism Minion
+			}
+
+			GateProjectile: {
+				"": Living Core Blast
+				DisplayName: Gate Projectile
+			}
+
+			PodestProjectile: {
+				"": Living Core Blast
+				DisplayName: Podest Projectile
+			}
+
+			MetalPipe.DisplayName: Metal Pipe
+			LinkArrowActive.DisplayName: Link Arrow Active
+			LinkHandler.DisplayName: Link Handler
+			CorescillationProj.DisplayName: Corescillation Proj
+			LivingExplosion.DisplayName: Living Explosion
+			CoreDashLeftProjectile.DisplayName: Core Dash Left Projectile
+			CoreDashRightProjectile.DisplayName: Core Dash Right Projectile
+			CircleBounceAttack.DisplayName: Circle Bounce Attack
+			CoreTurbineCore.DisplayName: Core Turbine Core
+			CoreTurbineProj.DisplayName: Core Turbine Proj
+		}
+
+		Biomes: {
+			LivingCoreBiome: {
+				"": Living Core Biome
+				DisplayName: Living Core Biome
+				TownNPCDialogueName: the Living Core Biome
+			}
+
+			LivingWoodTreeBiome: {
+				"": Example Underground
+				DisplayName: Living Wood Tree Biome
+				TownNPCDialogueName: the Living Wood Tree Biome
+			}
+		}
+
+		Buffs: {
+			BulletMark: {
+				DisplayName: Bullet Mark
+				Description: Deadly Napalm is stuck to you
+			}
+
+			CoreInfection: {
+				DisplayName: Core Infection
+				Description: Your very core is infected
+			}
+
+			CoreInfectionII: {
+				DisplayName: Core Infection II
+				Description: Your very core is severely infected
+			}
+
+			Earrape: {
+				DisplayName: Earraped
+				Description: I can't hear you it's to dark in here!
+			}
+
+			FleshWound: {
+				DisplayName: Flesh Wound
+				Description:
+					'''
+					Slowly losing life 
+					Reduced defense
+					'''
+			}
+
+			Shred: {
+				DisplayName: Shred
+				Description: Rapidly losing life
+			}
+
+			CorewhackBuff: {
+				DisplayName: Corewhack Buff
+				Description: " -- || --"
+			}
+
+			SpazmatismBuff: {
+				DisplayName: Spazmatism
+				Description: Spazmatism will fight for you
+			}
+
+			PipedDown: {
+				DisplayName: Piped Down
+				Description: Mods.Divergency.Buffs.PipedDown.Description
+			}
+		}
+
+		Items: {
+			BulletMarkIcon: {
+				"": Bullet Mark Icon
+				Tooltip: ""
+				DisplayName: Bullet Mark Icon
+			}
+
+			CoreInfectionIcon: {
+				"": Core Infection Icon
+				Tooltip: ""
+				DisplayName: Core Infection Icon
+			}
+
+			FleshWoundIcon: {
+				"": Flesh Wound Icon
+				Tooltip: ""
+				DisplayName: Flesh Wound Icon
+			}
+
+			ShredIcon: {
+				"": Shred Icon
+				Tooltip: ""
+				DisplayName: Shred Icon
+			}
+
+			AcornRepellentSpray: {
+				DisplayName: Acorn Repellent Spray
+				Tooltip: "'Being annoyed by noisy Acorns? Then this is what you were searching for! Favorite to activate its effects.'"
+			}
+
+			AttackSpeeder: {
+				DisplayName: Rapidity Glove
+				Tooltip:
+					'''
+					Doubles your ranged weapons fire rate and enables Auto-Shoot, however ranged damage is decreased by 50% 
+					'Fire quicker than your own shadow!'
+					'''
+			}
+
+			CoreShard: {
+				DisplayName: Core Drain
+				Tooltip: Summons Core Crystals when struck \n Increases defense by 2
+			}
+
+			LivingCoreConductor: {
+				DisplayName: Living Core Conductor
+				Tooltip: Combines the powers of heart and conductor
+			}
+
+			LivingCoreHeart: {
+				DisplayName: Living Core Heart
+				Tooltip: Magic attacks summon Life Orbs upon striking enemies
+			}
+
+			LivingWoodConductor: {
+				DisplayName: Living Wood Conductor
+				Tooltip: Magic attacks summon healing Acorns upon striking enemies
+			}
+
+			LuckyDice: {
+				"": Lucky Dice
+				Tooltip: ""
+				DisplayName: Lucky Dice
+			}
+
+			PortableTree: {
+				DisplayName: Portable Tree
+				Tooltip: Decreases movement speed by 60%
+			}
+
+			SavageTalisman: {
+				DisplayName: Savage Talisman
+				Tooltip:
+					'''
+					Critical strikes inflict Shred [i:5198] 
+					7% increased critical strike chance
+					'''
+			}
+
+			SageMask: {
+				"": Sage Mask
+				Tooltip: ""
+				DisplayName: Sage Mask
+			}
+
+			LivingShard: {
+				DisplayName: Living Shard
+				Tooltip: Used for crafting living core items
+			}
+
+			BossBagSage: {
+				DisplayName: Treasure Bag
+				Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
+			}
+
+			Coreprism: {
+				"": Coreprism
+				Tooltip: ""
+				DisplayName: Coreprism
+			}
+
+			Corewhack: {
+				DisplayName: Corewhack
+				Tooltip: Stuff
+			}
+
+			LivingBolt: {
+				DisplayName: Living Bolt
+				Tooltip: AW FUCK
+			}
+
+			LivingCoreSpear: {
+				DisplayName: Living Core Spear
+				Tooltip: Hold <left> to charge the spear
+			}
+
+			LivingCoreSword: {
+				DisplayName: Living Core Sword
+				Tooltip: Does a combo when swung
+			}
+
+			Muscore: {
+				"": Muscore
+				Tooltip: ""
+				DisplayName: Muscore
+			}
+
+			CoreScorcher: {
+				DisplayName: Core Scorcher
+				Tooltip:
+					'''
+					Fires a deadly Living Core flame
+					Inflicts the Dryads buffs/debuffs on enemy/player contact
+					'''
+			}
+
+			Invocation: {
+				DisplayName: Commandant's Guide To Invocation
+				Tooltip: Chargable
+			}
+
+			SorcerersSecret: {
+				DisplayName: Oculomancy Tome
+				Tooltip: "'Eye for an eye'"
+			}
+
+			CommandantsBlade: {
+				DisplayName: Commandant's Blade
+				Tooltip: Inflicts Flesh Wound [i:5197]
+			}
+
+			Enforcer: {
+				DisplayName: Life Enforcer
+				Tooltip: Direct hits deploy orbs, right click in order to call them back to the playerOrb daamage scales with your current health stat (not maximum)
+			}
+
+			LivingWoodGuitar: {
+				DisplayName: Nature's Serenade
+				Tooltip: "'It sounds horrible'"
+			}
+
+			NaturesWrath: {
+				DisplayName: Nature's Wrath
+				Tooltip:
+					'''
+					<right> to throw a branch 
+					hitting branches with your fists amplifies your damage
+					'''
+			}
+
+			Shadowbrand: {
+				DisplayName: Shadowbrand
+				Tooltip: Striking enemies increases the blade's power
+			}
+
+			BlueRose: {
+				DisplayName: Blue Rose
+				Tooltip: Press <right> to perform a Color Up, strengthening the next 3 shots [i:5195]
+			}
+
+			CommandantsBow: {
+				DisplayName: Commandant's Bow
+				Tooltip: "'Heavy. Too heavy.'"
+			}
+
+			DoorLauncher: {
+				DisplayName: Door Launcher
+				Tooltip: Uses doors as ammo
+			}
+
+			LivingShardSlayer: {
+				DisplayName: Living Core Slayer
+				Tooltip:
+					'''
+					Overheats when used enough
+					<right> to throw the gun when overheated, detonating it on impact
+					'''
+			}
+
+			LivingWoodShotgun: {
+				DisplayName: Living Wood Shotgun
+				Tooltip:
+					'''
+					Converts Wooden Bullets to Living Wood Bullets
+					'The confusing sequal!'
+					'''
+			}
+
+			WoodenBullet: {
+				DisplayName: Wooden Bullet
+				Tooltip: "'Quite janky'"
+			}
+
+			WoodenShotgun: {
+				DisplayName: Wooden Shotgun
+				Tooltip:
+					'''
+					'Physics is for wimps'
+					Uses Wooden Bullets as ammo!'
+					'''
+			}
+
+			LivingCoreWhip: {
+				DisplayName: Living Core Whip
+				Tooltip:
+					'''
+					Attacks inflict Core Infection [i:5196] 
+					7% Infected enemies receive additional damage from attacks with summons
+					'''
+			}
+
+			SuperDummySpawner: {
+				DisplayName: Super Dummy
+				Tooltip: Summons a Super Dummy
+			}
+
+			PlasticChairItem: {
+				DisplayName: Plastic Chair Item
+				Tooltip: Forsakened, I am awakened...
+			}
+
+			ANDCore: {
+				"": A N D Core
+				Tooltip: ""
+				DisplayName: A N D Core
+			}
+
+			CoreDoublerDownLeft: {
+				"": Core Doubler Down Left
+				Tooltip: ""
+				DisplayName: Core Doubler Down Left
+			}
+
+			CoreDoublerLeftUp: {
+				"": Core Doubler Left Up
+				Tooltip: ""
+				DisplayName: Core Doubler Left Up
+			}
+
+			CoreDoublerRightDown: {
+				"": Core Doubler Right Down
+				Tooltip: ""
+				DisplayName: Core Doubler Right Down
+			}
+
+			CoreDoublerUpRight: {
+				"": Core Doubler Up Right
+				Tooltip: ""
+				DisplayName: Core Doubler Up Right
+			}
+
+			CoreMirrorDown: {
+				"": Core Mirror Down
+				Tooltip: ""
+				DisplayName: Core Mirror Down
+			}
+
+			CoreMirrorLeft: {
+				"": Core Mirror Left
+				Tooltip: ""
+				DisplayName: Core Mirror Left
+			}
+
+			CoreMirrorRight: {
+				"": Core Mirror Right
+				Tooltip: ""
+				DisplayName: Core Mirror Right
+			}
+
+			CoreMirrorUp: {
+				"": Core Mirror Up
+				Tooltip: ""
+				DisplayName: Core Mirror Up
+			}
+
+			CoreReset: {
+				"": Core Reset
+				DisplayName: Core Reset
+				Tooltip: ""
+			}
+
+			CoreResetDrop2: {
+				"": Core Reset Drop2
+				DisplayName: Core Reset Drop2
+				Tooltip: ""
+			}
+
+			CoreResetDrop3: {
+				"": Core Reset Drop3
+				DisplayName: Core Reset Drop3
+				Tooltip: ""
+			}
+
+			CoreRoots: {
+				"": Core Roots
+				DisplayName: Core Roots
+				Tooltip: ""
+			}
+
+			CoreRoots1: {
+				"": Core Roots1
+				DisplayName: Core Roots1
+				Tooltip: ""
+			}
+
+			CoreRoots2: {
+				"": Core Roots2
+				DisplayName: Core Roots2
+				Tooltip: ""
+			}
+
+			LivingCorePodestLeft: {
+				"": Living Core Podest Left
+				DisplayName: Living Core Podest Left
+				Tooltip: ""
+			}
+
+			LivingCorePodestRight: {
+				"": Living Core Podest Right
+				DisplayName: Living Core Podest Right
+				Tooltip: ""
+			}
+
+			LivingCorePodestUp: {
+				"": Living Core Podest Up
+				DisplayName: Living Core Podest Up
+				Tooltip: ""
+			}
+
+			XORCore: {
+				"": X O R Core
+				DisplayName: X O R Core
+				Tooltip: ""
+			}
+
+			CradleWoodItem: {
+				DisplayName: Cradle Wood
+				Tooltip: Used for crafting living core items
+			}
+
+			FancyCoreCrystalItem: {
+				"": fance
+				DisplayName: Fancy Core Crystal Item
+				Tooltip: ""
+			}
+
+			LivingCombatAltarItem: {
+				"": (Remove) Living Combat Altar
+				DisplayName: Living Combat Altar Item
+				Tooltip: ""
+			}
+
+			LivingCrystalStoneItem: {
+				DisplayName: Living Crystal Stone
+				Tooltip: Used for crafting living core items
+			}
+
+			LivingCrystalTestItem: {
+				"": Living Crystal Test Item
+				DisplayName: Living Crystal Test Item
+				Tooltip: ""
+			}
+
+			LivingCrystalTestItem2: {
+				"": Living Crystal Test Item 2
+				DisplayName: Living Crystal Test Item2
+				Tooltip: ""
+			}
+
+			LivingCrystalTestItem3: {
+				"": Living Crystal Test Item 3
+				DisplayName: Living Crystal Test Item3
+				Tooltip: ""
+			}
+
+			LivingCrystalTestItem4: {
+				"": Living Crystal Test Item 4
+				DisplayName: Living Crystal Test Item4
+				Tooltip: ""
+			}
+
+			LivingCrystalTestItem5: {
+				"": Living Crystal Test Item 5
+				DisplayName: Living Crystal Test Item5
+				Tooltip: ""
+			}
+
+			LivingCoreAltar: {
+				"": Living Core Altar
+				DisplayName: Living Core Altar
+				Tooltip: ""
+			}
+
+			LivingCorePortal: {
+				DisplayName: Living Core Portal
+				Tooltip: Used for crafting living core items
+			}
+
+			HeavyMetal: {
+				DisplayName: Heavy Metal
+				Tooltip: This could definitely kill a lower class medieval peasant
+			}
+
+			LivingWoodChestplate: {
+				DisplayName: Living Wood Chestplate
+				Tooltip: ""
+			}
+
+			LivingWoodGreaves: {
+				DisplayName: Living Wood Greaves
+				Tooltip: ""
+			}
+
+			LivingWoodHelmet: {
+				DisplayName: Living Wood Helmet
+				Tooltip: ""
+			}
+
+			DecodeDestruction: {
+				DisplayName: Decode Destruction
+				Tooltip: ""
+			}
+
+			Corescillation: {
+				DisplayName: Corescillation
+				Tooltip: ""
+			}
+
+			CoreShield: {
+				DisplayName: Core Shield
+				Tooltip: ""
+			}
+
+			LivingCoreKilt: {
+				Tooltip: ""
+				DisplayName: Living Core Kilt
+			}
+
+			LivingCoreHelmetMelee: {
+				Tooltip: ""
+				DisplayName: Living Core Helmet Melee
+			}
+
+			LivingCoreChestplate: {
+				Tooltip: ""
+				DisplayName: Living Core Chestplate
+			}
+
+			CoreTurbine: {
+				DisplayName: Core Turbine
+				Tooltip: ""
+			}
+
+			CradleRock: {
+				DisplayName: Cradle Rock
+				Tooltip: ""
+			}
+
+			CradleVine: {
+				DisplayName: Cradle Vine
+				Tooltip: ""
+			}
+
+			CradleWall: {
+				DisplayName: Cradle Wall
+				Tooltip: ""
+			}
+
+			CradleRockWall: {
+				DisplayName: Cradle Rock Wall
+				Tooltip: ""
+			}
+
+			CradleWoodWall: {
+				DisplayName: Cradle Wood Wall
+				Tooltip: ""
+			}
+		}
+
+		NPCs: {
+			Acrid: {
+				"": Acrid
+				DisplayName: Acrid
+			}
+
+			DoordealerFirstEncounter: {
+				"": Mystery Man
+				DisplayName: Doordealer First Encounter
+
+				TownNPCMood: {
+					Content: I am content.
+					NoHome: I hate not having a home.
+					FarFromHome: I am too far from home.
+					LoveSpace: I love having so much space.
+					DislikeCrowded: I dislike how crowded I am.
+					HateCrowded: I hate how crowded I am.
+					LikeNPC_Princess: I like {NPCName}.
+					Princess_LovesNPC: I like {NPCName}.
+				}
+			}
+
+			Coreling: {
+				"": Coreling
+				DisplayName: Coreling
+			}
+
+			Corelossus: {
+				"": Corelossus
+				DisplayName: Corelossus
+			}
+
+			CoreSage: {
+				"": Core Sage
+				DisplayName: Core Sage
+			}
+
+			LivingCoreSaw: {
+				"": Living Core Saw
+				DisplayName: Living Core Saw
+			}
+
+			Sage: {
+				"": Core Sage
+				DisplayName: Sage
+			}
+
+			SageDeath: {
+				"": Core Sage
+				DisplayName: Sage Death
+			}
+
+			SuperDummy: {
+				"": Super Dummy
+				DisplayName: Super Dummy
+			}
+
+			LivingCoreEventHandler: {
+				"": Living Core Event Handler
+				DisplayName: Living Core Event Handler
+			}
+
+			CorelingCutscene.DisplayName: Coreling Cutscene
+		}
+
+		"Keybinds.Reload the current weapon.DisplayName": Reload the current weapon
+	}
+}

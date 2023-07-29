@@ -21,8 +21,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Nature's Wrath");
-            Tooltip.SetDefault("<right> to throw a branch \nhitting branches with your fists amplifies your damage");
+            //.setdefault("Nature's Wrath");
+            ////.setdefault("<right> to throw a branch \nhitting branches with your fists amplifies your damage");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -100,7 +100,7 @@ namespace Divergency.Content.Items.Weapons.Melee
     {
         public Vector2 directionVector = Vector2.Zero;
 
-        public override void SetStaticDefaults() { DisplayName.SetDefault("Nature's Wrath"); }
+     //   public override void SetStaticDefaults() { //.setdefault("Nature's Wrath"); }
 
         public override void SetDefaults()
         {
@@ -171,7 +171,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(SoundID.Grass, Projectile.position);
 

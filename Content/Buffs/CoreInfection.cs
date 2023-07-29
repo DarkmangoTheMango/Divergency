@@ -18,8 +18,8 @@ namespace Divergency.Content.Buffs
 
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Core Infection");
-			Description.SetDefault("Your very core is infected");
+			//.setdefault("Core Infection");
+			////.setdefault("Your very core is infected");
 
 			Main.debuff[Type] = true;
 			Main.pvpBuff[Type] = true;
@@ -35,8 +35,8 @@ namespace Divergency.Content.Buffs
 
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Core Infection II");
-			Description.SetDefault("Your very core is severely infected");
+			//.setdefault("Core Infection II");
+			////.setdefault("Your very core is severely infected");
 
 			Main.debuff[Type] = true;
 			Main.pvpBuff[Type] = true;
@@ -84,30 +84,35 @@ namespace Divergency.Content.Buffs
 
 
 		}
-		public override void OnHitByItem(NPC npc, Player player, Item item, int damage, float knockback, bool crit)
-		{
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+     
 			if (item.DamageType == DamageClass.Summon && Infected)
 			{
-				npc.StrikeNPC(5, 0, 0, true);
+				npc.SimpleStrikeNPC(10, 0, true);
+				//NetMessage.SendStrikeNPC(npc, hit);
 			}
 			if (item.DamageType == DamageClass.Summon && InfectedII)
 			{
-				npc.StrikeNPC(10, 0, 0, true);
-			}
-		}
-		public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
-		{
-			if (projectile.DamageType == DamageClass.Summon && Infected)
-			{
-				npc.StrikeNPC(5, 0, 0, true);
-			}
-            if (projectile.DamageType == DamageClass.Summon && InfectedII)
-            {
-                npc.StrikeNPC(10, 0, 0, true);
+                npc.SimpleStrikeNPC(5, 0, true);
             }
         }
-		  
-}
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+  
+		
+			if (projectile.DamageType == DamageClass.Summon && Infected)
+			{
+                npc.SimpleStrikeNPC(10, 0, true);
+            }
+            if (projectile.DamageType == DamageClass.Summon && InfectedII)
+            {
+                npc.SimpleStrikeNPC(5, 0, true);
+            }
+        }
+    
+
+    }
 
 
 

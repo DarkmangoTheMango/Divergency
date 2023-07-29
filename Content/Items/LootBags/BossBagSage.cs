@@ -18,8 +18,8 @@ namespace Divergency.Content.Items.LootBags
 
 		public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Treasure Bag");
-            Tooltip.SetDefault("{$CommonItemTooltip.RightClickToOpen}");
+            //.setdefault("Treasure Bag");
+            ////.setdefault("{$CommonItem//.RightClickToOpen}");
 
 			ItemID.Sets.BossBag[Type] = true;
 			ItemID.Sets.PreHardmodeLikeBossBag[Type] = true;

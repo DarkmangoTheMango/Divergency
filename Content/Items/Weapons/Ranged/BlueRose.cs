@@ -31,8 +31,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blue Rose");
-            Tooltip.SetDefault($"Press <right> to perform a Color Up, strengthening the next 3 shots [i:{ModContent.ItemType<BulletMarkIcon>()}]");
+            //.setdefault("Blue Rose");
+            ////.setdefault($"Press <right> to perform a Color Up, strengthening the next 3 shots [i:{ModContent.ItemType<BulletMarkIcon>()}]");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -143,7 +143,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blue Rose");
+            //.setdefault("Blue Rose");
         }
 
         public override void SetDefaults()
@@ -204,7 +204,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blue Rose");
+            //.setdefault("Blue Rose");
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
@@ -227,7 +227,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Projectile.extraUpdates = 5;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
 
@@ -284,7 +284,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blue Rose");
+            //.setdefault("Blue Rose");
         }
 
         public override void SetDefaults()
@@ -351,7 +351,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blue Rose");
+            //.setdefault("Blue Rose");
         }
 
         public override void SetDefaults()

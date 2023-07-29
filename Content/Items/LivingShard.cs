@@ -10,8 +10,8 @@ namespace Divergency.Content.Items
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Shard");
-            Tooltip.SetDefault("Used for crafting living core items");
+            //.setdefault("Living Shard");
+            ////.setdefault("Used for crafting living core items");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }

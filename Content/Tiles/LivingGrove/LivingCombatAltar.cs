@@ -95,7 +95,7 @@ namespace Divergency.Content.Tiles.LivingGrove
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("(Remove) Living Combat Altar");
+            //.setdefault("(Remove) Living Combat Altar");
         }
 
         public override void SetDefaults()

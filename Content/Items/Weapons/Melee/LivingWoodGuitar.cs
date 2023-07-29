@@ -15,9 +15,9 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            // DisplayName.SetDefault("Doorlauncher"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
-            Tooltip.SetDefault("'It sounds horrible'");
-            DisplayName.SetDefault("Nature's Serenade");
+            // //.setdefault("Doorlauncher"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
+            ////.setdefault("'It sounds horrible'");
+            //.setdefault("Nature's Serenade");
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
@@ -54,11 +54,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.rare = ItemRarityID.Green;
         }
 
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
-        {
-            //Projectile.NewProjectile(player.GetProjectileSource_Item(Item),target.position.X, target.position.Y, target.velocity.X, target.velocity.Y, ModContent.ProjectileType<MusicalCharge>(), Item.damage * 0, Item.knockBack * 0, player.whoAmI, 0, 0);
-        }
-
+        
         
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

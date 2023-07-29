@@ -20,7 +20,7 @@ namespace Divergency.Content.Tiles.LivingGrove
             Main.tileMergeDirt[Type] = true;
 
             DustType = ModContent.DustType<LivingShard>();
-            ItemDrop = ModContent.ItemType<LivingCrystalStoneItem>();
+            //ItemDrop = ModContent.ItemType<LivingCrystalStoneItem>();
             HitSound = SoundID.DD2_WitherBeastCrystalImpact;
 
             AddMapEntry(new Color(79, 214, 126));
@@ -38,8 +38,8 @@ namespace Divergency.Content.Tiles.LivingGrove
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Crystal Stone");
-            Tooltip.SetDefault("Used for crafting living core items");
+            //.setdefault("Living Crystal Stone");
+            ////.setdefault("Used for crafting living core items");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 100;
         }

@@ -24,7 +24,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Door");
+            //.setdefault("Door");
         }
 
         public override void SetDefaults()
@@ -116,7 +116,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Door");
+            //.setdefault("Door");
         }
 
         public override void SetDefaults()
@@ -155,9 +155,9 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
                 instanceHealSound = false;
 
-                if (healTime >= 30)
+                if (healTime >= 60)
                 {
-                    player.Heal(10);
+                    player.Heal(1);
 
                     healTime = 0;
                 }
@@ -237,7 +237,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mushroom");
+            //.setdefault("Mushroom");
 
             Main.projFrames[Projectile.type] = 5;
         }

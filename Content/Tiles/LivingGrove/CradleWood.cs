@@ -17,7 +17,7 @@ namespace Divergency.Content.Tiles.LivingGrove
             Main.tileBlockLight[Type] = true;
 
             DustType = ModContent.DustType<CradleWoodFurniture>();
-            ItemDrop = ModContent.ItemType<CradleWoodItem>();
+            //ItemDrop = ModContent.ItemType<CradleWoodItem>();
             HitSound = new SoundStyle("Divergency/Assets/Sounds/Tiles/CradleWoodHit") with { PitchVariance = 0.1f };
 
             AddMapEntry(new Color(81, 44, 57));
@@ -28,8 +28,8 @@ namespace Divergency.Content.Tiles.LivingGrove
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cradle Wood");
-            Tooltip.SetDefault("Used for crafting living core items");
+            //.setdefault("Cradle Wood");
+            ////.setdefault("Used for crafting living core items");
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 100;
         }
 

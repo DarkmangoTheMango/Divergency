@@ -31,7 +31,7 @@ namespace Divergency.Content.Projectiles.Hostile
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("i have taken your family hostage");
+            //.setdefault("i have taken your family hostage");
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25; // in SetStaticDefaults()
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;

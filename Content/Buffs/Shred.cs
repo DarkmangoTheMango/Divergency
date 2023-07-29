@@ -15,8 +15,8 @@ namespace Divergency.Content.Buffs
 
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Shred");
-			Description.SetDefault("Rapidly losing life");
+			//.setdefault("Shred");
+			////.setdefault("Rapidly losing life");
 
 			Main.debuff[Type] = true;
 			Main.pvpBuff[Type] = true;

@@ -14,7 +14,7 @@ namespace Divergency.Content.Projectiles.Magic
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shadowflame Effigy");
+            //.setdefault("Shadowflame Effigy");
 
             Main.projFrames[Projectile.type] = 4;
 

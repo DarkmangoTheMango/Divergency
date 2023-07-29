@@ -19,7 +19,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Door");
+            //.setdefault("Door");
         }
 
         public override void SetDefaults()

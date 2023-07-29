@@ -15,8 +15,8 @@ namespace Divergency.Content.Buffs
 
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Flesh Wound");
-			Description.SetDefault("Slowly losing life \nReduced defense");
+			//.setdefault("Flesh Wound");
+			////.setdefault("Slowly losing life \nReduced defense");
 
 			Main.debuff[Type] = true;
 			Main.pvpBuff[Type] = true;

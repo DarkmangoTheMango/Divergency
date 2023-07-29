@@ -23,7 +23,7 @@ namespace Divergency.Content.Biomes
 		//public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.Find<ModUndergroundBackgroundStyle>("ExampleMod/ExampleUndergroundBackgroundStyle");
 
 		// Select Music
-		public override int Music => MusicLoader.GetMusicSlot("DivergencyMod/Sounds/Music/LivingWoodTreeTheme");
+		public override int Music => MusicLoader.GetMusicSlot("Divergency/Assets/Sounds/Music/LivingTree");
 
 		// Sets how the Scene Effect associated with this biome will be displayed with respect to vanilla Scene Effects. For more information see SceneEffectPriority & its values.
 		public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh; // We have set the SceneEffectPriority to be BiomeLow for purpose of example, however default behavour is BiomeLow.
@@ -36,7 +36,7 @@ namespace Divergency.Content.Biomes
 		// Use SetStaticDefaults to assign the display name
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Example Underground");
+			//.setdefault("Example Underground");
 	       
 		}
 		public override ModWaterStyle WaterStyle => base.WaterStyle;

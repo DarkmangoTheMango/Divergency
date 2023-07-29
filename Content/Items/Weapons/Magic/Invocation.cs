@@ -20,8 +20,8 @@ namespace Divergency.Content.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Commandant's Guide To Invocation");
-            Tooltip.SetDefault("Chargable");
+            //.setdefault("Commandant's Guide To Invocation");
+            ////.setdefault("Chargable");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -174,12 +174,12 @@ namespace Divergency.Content.Items.Weapons.Magic
             Color textureColor = new Color(241, 150, 255);
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(default, BlendState.Additive);
+            Main.spriteBatch.Begin(default, BlendState.Additive, default, default, default, default, Main.GameViewMatrix.ZoomMatrix);
 
             Main.spriteBatch.Draw(texture, drawPosition, sourceRectangle, textureColor, Projectile.ai[0] * 0.02f, origin, Projectile.scale * (Projectile.ai[0] * 0.02f), SpriteEffects.None, 0f);
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(default, default);
+            Main.spriteBatch.Begin(default, default, default, default, default, default, default);
 
             return false;
         }

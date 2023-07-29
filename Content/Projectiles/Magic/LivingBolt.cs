@@ -29,7 +29,7 @@ namespace Divergency.Content.Projectiles.Magic
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.Size = new Vector2(54);
+            Projectile.Size = new Vector2(50);
             Projectile.scale = 1f;
 
             Projectile.tileCollide = true;
@@ -73,7 +73,7 @@ namespace Divergency.Content.Projectiles.Magic
             return true;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
 
@@ -131,7 +131,7 @@ namespace Divergency.Content.Projectiles.Magic
                 Main.EntitySpriteDraw(texture, position, sourceRectangle, color, 0, origin, Projectile.scale - (k * 0.05f) - 0.2f, SpriteEffects.None, 0);
             }
 
-            return true;
+            return false;
         }
     }
 }

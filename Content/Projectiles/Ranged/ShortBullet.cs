@@ -15,7 +15,7 @@ namespace Divergency.Content.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Shrapnel");
+            //.setdefault("Living Shrapnel");
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;

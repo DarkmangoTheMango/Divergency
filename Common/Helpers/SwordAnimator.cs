@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ParticleLibrary;
+using ReLogic.Content;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -18,9 +20,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using XPT.Core.Audio.MP3Sharp.Decoding.Decoders.LayerIII;
 
 namespace Divergency.Common.Helpers.SwordAnimator
 {
@@ -67,12 +72,12 @@ namespace Divergency.Common.Helpers.SwordAnimator
     }
     public class SwordAnimator : ModSystem
     {
-        public static int Swing(Player player, int itemID, int damage, float knockback)
+        public static int Swing<T>(Player player, int damage, float knockback) where T : SwordSwing, new()
         {
+            SwordSwing SS = new T();
+
             int projectileID = Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, new Vector2(player.direction, 0), ModContent.ProjectileType<SwordProjectile>(), damage, knockback, player.whoAmI);
             Projectile projectile = Main.projectile[projectileID];
-
-            ISwordSwing SS = (ModContent.GetModItem(itemID) as ISwordSwing);
 
             projectile.timeLeft = 2;
 
@@ -80,36 +85,21 @@ namespace Divergency.Common.Helpers.SwordAnimator
             projectile.localNPCHitCooldown = SS.NPCHitCooldown * SS.Updates; // maby change..?
 
             SwordProjectile projSword = projectile.ModProjectile as SwordProjectile;
-            projSword.baseItem = itemID;
+            projSword.SwingInfo = SS;
             projSword.AttackSpeed = player.GetTotalAttackSpeed(DamageClass.Melee); // idk how speed is calculated...
             // above might just work a-ok
-
-            projSword.Trails = new Trail[SS.SwordTrails.Length];
-
-            int longestTrail = 0;
-            for (int trailIDX = 0; trailIDX < SS.SwordTrails.Length; trailIDX++)
-            {
-                projSword.Trails[trailIDX] = SS.SwordTrails[trailIDX].MakeTrailFunc(projectile, SS.SwordTrails[trailIDX].Texture);
-                longestTrail = SS.SwordTrails[trailIDX].TrailLength;
-            }
-
-            if (longestTrail > 0)
-            {
-                projSword.trailPositions = new Vector2[longestTrail];
-                projSword.trailRotations = new float[longestTrail];
-            }
 
             projectile.netUpdate = true;
 
             return projectileID;
         }
 
-        public static int Swing(NPC npc, int itemID, int damage, float knockback, float attackspeed = 1)
+        public static int Swing<T>(NPC npc, int damage, float knockback, float attackspeed = 1) where T : SwordSwing, new()
         {
+            SwordSwing SS = new T();
+
             int projectileID = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, new Vector2(npc.direction, 0), ModContent.ProjectileType<SwordProjectile>(), damage, knockback);
             Projectile projectile = Main.projectile[projectileID];
-
-            ISwordSwing SS = (ModContent.GetModItem(itemID) as ISwordSwing);
 
             projectile.timeLeft = 2;
 
@@ -119,24 +109,9 @@ namespace Divergency.Common.Helpers.SwordAnimator
             projectile.friendly = false;
 
             SwordProjectile projSword = projectile.ModProjectile as SwordProjectile;
-            projSword.baseItem = itemID;
+            projSword.SwingInfo = SS;
             projSword.AttackSpeed = attackspeed;
             projSword.NPCOwned = npc.whoAmI;
-
-            projSword.Trails = new Trail[SS.SwordTrails.Length];
-
-            int longestTrail = 0;
-            for (int trailIDX = 0; trailIDX < SS.SwordTrails.Length; trailIDX++)
-            {
-                projSword.Trails[trailIDX] = SS.SwordTrails[trailIDX].MakeTrailFunc(projectile, SS.SwordTrails[trailIDX].Texture);
-                longestTrail = SS.SwordTrails[trailIDX].TrailLength;
-            }
-
-            if (longestTrail > 0)
-            {
-                projSword.trailPositions = new Vector2[longestTrail];
-                projSword.trailRotations = new float[longestTrail];
-            }
 
             projectile.netUpdate = true;
 
@@ -341,57 +316,173 @@ namespace Divergency.Common.Helpers.SwordAnimator
         Tip,
     }
     */
+
+    public enum TrailType
+    {
+        Raw,
+        Sqrt,
+    }
+    
     public class SwordTrail
     {
-        static Trail BaseFunction(Projectile proj, Texture2D Texture)
-        {
-            return new Trail(Texture, Trail.DefaultPass, (p) => new Vector2(200f), (p) => proj.GetAlpha(new Color(255, 255, 255, 255)));
-        }
 
-        public Texture2D Texture; // "Divergency/Assets/Textures/Trails/Stretched"
-        //public SwordTrailBase TrailBase; this might be worthless...
-        //public Vector2 TrailOffset; ^^
-        public Func<Projectile, Texture2D, Trail> MakeTrailFunc;
-        public int TrailLength;
+        public Texture2D Texture; // 1*x where x is sword height
 
-        public SwordTrail(string Texture, int TrailLenght, Func<Projectile, Texture2D, Trail> MakeTrailFunction = default)
+        public float trailMultiplier;
+        public float trailLimit;
+
+        public float height;
+
+        public TrailType TT;
+
+        public static Effect effect = ModContent.Request<Effect>("Divergency/Content/Effects/SwordTrailShader/Renderer", AssetRequestMode.ImmediateLoad).Value;
+
+        public SwordTrail(string Texture, float height, TrailType trailType = TrailType.Raw, float trailMultiplier = 80, float trailLimit = 1)
         {
             this.Texture = ModContent.Request<Texture2D>(Texture).Value;
-            //this.TrailBase = TrailBase;
-            //this.TrailOffset = Offset;
-            this.MakeTrailFunc = MakeTrailFunc == null ? BaseFunction : MakeTrailFunc;
-            this.TrailLength = TrailLenght;
+
+            this.trailMultiplier = trailMultiplier;
+            this.trailLimit = trailLimit;
+
+            this.TT = trailType;
+
+            this.height = height;
         }
 
-        /*
-        Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Stretched").Value;
-
-        if (trail == null)
+        public void DrawSwordTrail(Vector2 worldPos, float scale, int dir, float rotation, float lastRot) // float speed and max speed to scale TrailLength width
         {
-            trail = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(20f), (p) => Projectile.GetAlpha(new Color(255, 108, 23, 100)));
-            trail.drawOffset = Projectile.Size / 2f;
+            int _height = (int)(height * scale);
+            float len = MathF.Min(((rotation - lastRot) * trailMultiplier) * dir, trailLimit);
 
-            whiteTrail = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(10f), (p) => Projectile.GetAlpha(new Color(255, 247, 179, 100)));
-            whiteTrail.drawOffset = Projectile.Size / 2f;
+            effect.Parameters.GetParameterBySemantic("rot").SetValue(rotation - MathF.PI/ 2f);
+            effect.Parameters.GetParameterBySemantic("len").SetValue(len);
+            effect.Parameters.GetParameterBySemantic("mlen").SetValue(trailLimit);
+            effect.Parameters.GetParameterBySemantic("dir").SetValue(dir);
+
+            effect.Parameters.GetParameterBySemantic("type").SetValue((int)TT+1);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
+
+            Main.spriteBatch.Draw(Texture, new Rectangle((int)worldPos.X - _height, (int)worldPos.Y - _height, _height * 2, _height * 2), Color.White);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,null, null, null, null, Main.GameViewMatrix.TransformationMatrix);
         }
-        */
+    }
+    public class SwordGlowColor // Color animation
+    {
+        public bool loop;
+        public List<Color> colors;
+        public List<int> colorTimers;
+        public float loopTime;
+
+        public SwordGlowColor(List<Color> colors, List<int> colorTimers)
+        {
+            this.colors = colors;
+            this.colorTimers = colorTimers;
+            this.loop = false;
+            this.loopTime = 0f;
+        }
+        public SwordGlowColor(List<Color> colors, float loopTime)
+        {
+            this.colors = colors;
+            this.loopTime = loopTime;
+            this.loop = true;
+            this.colorTimers = null;
+        }
+
+        public Color GetColor(float time)
+        {
+            if (colors.Count == 1)
+                return colors[1];
+            else if (colors.Count == 0)
+                return Color.White;
+
+            if (loop)
+            {
+                float colorCalculation = (time / loopTime) % colors.Count;
+                int color = (int)Math.Ceiling(colorCalculation) - 1;
+                float transition = colorCalculation % 1f;
+
+                int otherColor = (color - 1) % colors.Count;
+                if (otherColor < 0) otherColor += colors.Count;
+
+                Console.WriteLine(colors[otherColor] + ", " + colors[color] + ", " + transition + " => " + Color.Lerp(colors[otherColor], colors[color], transition));
+
+                return Color.Lerp(colors[otherColor], colors[color], transition);
+            }
+            else
+            {
+                int curTime = 0;
+
+                for (int i = 0; i < colorTimers.Count; i++)
+                {
+                    if (curTime + colorTimers[i] > time)
+                    {
+                        float progress = time - curTime;
+                        float percentProgress = progress / colorTimers[i];
+
+                        int otherColor = i - 1;
+                        if (otherColor == -1) otherColor = 0;
+
+                        return Color.Lerp(colors[otherColor], colors[i], percentProgress);
+                    }
+
+                    curTime = curTime + colorTimers[i];
+                }
+
+                return colors[colors.Count-1];
+            }
+        }
     }
 
-    public interface ISwordSwing
+    public class SwordGlow
     {
-        public float Width { get; }
-        public string SwordTexture { get; }
-        public Keyframes SwordFrames { get; }
-        public float Height { get { return -1; } } // height based off of texture
-        public Vector2 Pivot { get { return default; } }
-        public Func<Projectile, bool> PreDraw { get { return null; } }
-        public Func<Projectile, Vector2, bool> OnHitTile { get { return null; } }
-        public Action<Projectile, NPC, int, float, bool> OnHitNPC { get { return null; } }
-        public TimedFunction[] SwingFunctions { get { return new TimedFunction[] { }; } }
-        public int Updates { get { return 1; } }
-        public int NPCHitCooldown { get { return 10; } }
-        public SwordTrail[] SwordTrails { get { return new SwordTrail[] {}; } }
-        public Action<Projectile, Trail[], Vector2[], float[]> DrawTrails { get { return null; } }
+        public string Path;
+        public SwordGlowColor Color;
+        public float Scale;
+        public bool InFront;
+
+        public SwordGlow(SwordGlowColor color, float scale = 1f, bool inFront = true, string path = "")
+        {
+            Path = path;
+            Color = color;
+            Scale = scale;
+            InFront = inFront;
+        }
+
+        //texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f)
+        public void Draw(string tex, Vector2 position, Rectangle rec, float rotation, Vector2 offset, Vector2 scale, SpriteEffects spriteEffects, float time)
+        {
+            string path = Path;
+            if (path == "") { path = tex + "Glow"; }
+
+            Texture2D texture = ModContent.Request<Texture2D>(path).Value;
+
+            Console.WriteLine(Color.GetColor(time));
+
+            Main.spriteBatch.Draw(texture, position, rec, Color.GetColor(time), rotation, offset, Scale*scale, spriteEffects, 1f);
+        }
+    }
+
+    public abstract class SwordSwing
+    {
+        public abstract float Width { get; }
+        public abstract string SwordTexture { get; }
+        public abstract Keyframes SwordFrames { get; }
+        public virtual float Height { get { return -1; } } // height based off of texture
+        public virtual Vector2 Pivot { get { return default; } }
+        public virtual Func<Projectile, bool> PreDraw { get { return null; } }
+        public virtual Func<Projectile, Vector2, bool> OnHitTile { get { return null; } }
+        public virtual Action<Projectile, NPC, int, float, bool> OnHitNPC { get { return null; } }
+        public virtual TimedFunction[] SwingFunctions { get { return new TimedFunction[] { }; } }
+        public virtual int Updates { get { return 1; } }
+        public virtual int NPCHitCooldown { get { return 10; } }
+        public virtual SwordTrail SwordTrail { get { return null; } }
+        public virtual Action<Projectile, Trail[], Vector2[], float[]> DrawTrails { get { return null; } }
+        public virtual SwordGlow[] Glows { get { return new SwordGlow[] { }; } }
+        public virtual bool SlantingSword { get { return true; } }
     }
 
 
@@ -404,7 +495,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             return a * (1.0f - f) + (b * f);
         }
 
-        public int baseItem; // getting synced (i hope...)
+        public SwordSwing SwingInfo; // getting synced (i hope...)
         public float AttackSpeed = 0; // getting synced (i hope...)
         public float FramesPassed = 0; // getting synced (i hope...) (maby dosent need to?, probably does... (if so, it needs to be every frame...)
 
@@ -415,15 +506,20 @@ namespace Divergency.Common.Helpers.SwordAnimator
         // pass values from update into draw, i assume update runs on all clients
         //private float Rotation;
         //private Vector2 Position;
+        private Vector2 TrailPosition;
         private Vector2 Scale;
-
-        public Trail[] Trails; // probably dosent need to be synced, needs to sync creation though...
-        public Vector2[] trailPositions;
-        public float[] trailRotations;
 
         //private bool Flipped;
 
         // private int freeze ?
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+
+            base.SetStaticDefaults();
+        }
 
         public override void SetDefaults()
         {
@@ -442,8 +538,6 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
         public override void AI()
         {
-            ISwordSwing SwingInfo = ModContent.GetModItem(baseItem) as ISwordSwing;
-            
             Projectile.timeLeft = 2;
 
             float curTime = FramesPassed * AttackSpeed;
@@ -554,6 +648,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             {
                 NPC npc = Main.npc[NPCOwned];
 
+                TrailPosition = npc.Center + localOffset.RotatedBy(Rotation) + globalOffset;
                 Position = npc.Center - pivot.RotatedBy(Rotation) + globalOffset;
 
                 npc.direction = direction;
@@ -562,19 +657,17 @@ namespace Divergency.Common.Helpers.SwordAnimator
             {
                 Player player = Main.player[Projectile.owner];
 
+                Console.WriteLine(pivot.RotatedBy(Rotation));
+                TrailPosition = player.Center + localOffset.RotatedBy(Rotation) + globalOffset;
                 Position = player.Center - pivot.RotatedBy(Rotation) + globalOffset;
 
-                player.heldProj = Projectile.whoAmI;
+                player.heldProj = Projectile.whoAmI;    
 
                 player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Rotation - direction * MathF.PI);
                 player.ChangeDir(direction);
             }
 
             Projectile.Center = Position;
-
-            int len = trailPositions.Length;
-            trailPositions = trailPositions.Prepend(Position).Take(len).ToArray(); // heres where i might add more things for stuff...
-            trailRotations = trailRotations.Prepend(Rotation+MathF.PI/2f).Take(len).ToArray();
         }
 
         public override bool PreKill(int timeLeft)
@@ -587,28 +680,50 @@ namespace Divergency.Common.Helpers.SwordAnimator
             int direction = Projectile.velocity.X > 0 ? 1 : -1;
             bool flipped = Projectile.spriteDirection == 1 ? true : false;
 
-            ISwordSwing SwingInfo = ModContent.GetModItem(baseItem) as ISwordSwing;
+            SwordTrail ST = SwingInfo.SwordTrail;
 
-            if (SwingInfo.DrawTrails != null)
+            List<SwordGlow> frontGlow = new List<SwordGlow>();
+            List<SwordGlow> backGlow = new List<SwordGlow>();
+
+            foreach (SwordGlow glow in SwingInfo.Glows)
             {
-                SwingInfo.DrawTrails(Projectile, Trails, trailPositions, trailRotations);
-            }
-            else
-            {
-                for (int trailIDX = 0; trailIDX < SwingInfo.SwordTrails.Length; trailIDX++)
-                {
-                    SwordTrail ST = SwingInfo.SwordTrails[trailIDX];
-                    Trails[trailIDX].Draw(trailPositions.Take(ST.TrailLength).ToArray(), trailRotations.Take(ST.TrailLength).ToArray());
-                }
+                if (glow.InFront)
+                    frontGlow.Add(glow);
+                else
+                    backGlow.Add(glow);
             }
 
             Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
 
-            SpriteEffects spriteEffects = direction * (flipped ? -1 : 1) == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+            Player player = Main.player[Projectile.owner];
+            if (ST != null)
+            {
+                float h = texture.Height * Scale.Y;
+                float w = texture.Width * Scale.X;
+                ST.DrawSwordTrail(TrailPosition - Main.screenPosition, Scale.Y, direction * -Projectile.spriteDirection, Projectile.oldRot[0], Projectile.oldRot[1]);
+            }
 
-            float rotation = (Projectile.rotation - (direction == 1 ? (MathF.PI / 4) : (MathF.PI / 4*3)));
+            SpriteEffects spriteEffects;
+            float rotation;
+            
+            if (SwingInfo.SlantingSword)
+            {
+                spriteEffects = direction * (flipped ? -1 : 1) == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
-            rotation += (flipped ? (direction == 1 ? MathF.PI * 1.5f : MathF.PI/2f) : 0);
+                rotation = (Projectile.rotation - (direction == 1 ? (MathF.PI / 4) : (MathF.PI / 4 * 3)));
+
+                rotation += (flipped ? (direction == 1 ? MathF.PI * 1.5f : MathF.PI / 2f) : 0);
+
+            }
+            else
+            {
+                spriteEffects = SpriteEffects.None;
+
+                rotation = Projectile.rotation;
+
+            }
+
+            float curTime = FramesPassed * AttackSpeed;
 
             if (texture != null)
             {
@@ -616,7 +731,17 @@ namespace Divergency.Common.Helpers.SwordAnimator
                     if (!SwingInfo.PreDraw(Projectile)) // values to pass in
                         return false;
 
+                foreach (SwordGlow glow in backGlow)
+                {
+                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
+                }
+
                 Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
+
+                foreach (SwordGlow glow in frontGlow)
+                {
+                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
+                }
             }
 
             return false;
@@ -624,25 +749,20 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            ISwordSwing SwingInfo = ModContent.GetModItem(baseItem) as ISwordSwing;
-
             if (SwingInfo.OnHitTile != null)
                 return SwingInfo.OnHitTile(Projectile, oldVelocity);
 
             return false;
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            ISwordSwing SwingInfo = ModContent.GetModItem(baseItem) as ISwordSwing;
-
             if (SwingInfo.OnHitNPC != null)
-                SwingInfo.OnHitNPC(Projectile, target, damage, knockback, crit);
+                SwingInfo.OnHitNPC(Projectile, target, hit.Damage, hit.Knockback, hit.Crit);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            ISwordSwing SwingInfo = ModContent.GetModItem(baseItem) as ISwordSwing;
             Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
             float collisionPoint = 0f;
 

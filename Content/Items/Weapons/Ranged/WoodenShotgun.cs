@@ -11,9 +11,9 @@ namespace Divergency.Content.Items.Weapons.Ranged
     {
         public override void SetStaticDefaults()
         {
-            // DisplayName.SetDefault("Doorlauncher"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
-            Tooltip.SetDefault("'Physics is for wimps'"
-                + "\nUses Wooden Bullets as ammo!'");
+            // //.setdefault("Doorlauncher"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
+            ////.setdefault("'Physics is for wimps'"
+              //  + "\nUses Wooden Bullets as ammo!'");
         }
 
         public override void SetDefaults()

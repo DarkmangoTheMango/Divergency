@@ -1,0 +1,404 @@
+
+Mods: {
+	Divergency: {
+		Projectiles: {
+			CirclePulse_Visual.: Pulse
+			Explosion_Visual.: Explosion
+			Ring_Visual.: Ring
+			SwordProjectile.: Sword Projectile
+			AcornProj.: Acorn
+			CoreShardProj.: Core Shard Proj
+			LivingCoreSpearDamage.: Living Core Spear
+			LivingCoreSpearPro.: Living Core Spear
+			LivingCoreSpearPro2.: Living Core Spear
+			MuscoreBullet.: Muscore Bullet
+			MuscorePro.: Muscore
+			CoreFlame.: Core Flame
+			InvocationHoldout.: Invocation Holdout
+			SorcerersSecretProj.: Oculomeye
+			CommandantsBladePro.: Commandant's Blade
+			EnforcerOrb.: Life Orb
+			EnforcerPro.: Enforcer
+			NaturesWrathPro.: Nature's Wrath
+			ShadowbrandArc.: Shadowbrand
+			ShadowbrandFlash.: Shadowbrand
+			ShadowbrandPro.: Shadowbrand
+			BlueRoseFlash.: Blue Rose
+			BlueRoseFlash2.: Blue Rose
+			BlueRosePro.: Blue Rose
+			DoorLauncherPro.: Door Launcher
+			HighShot.: Blue Rose
+			LivingShardSlayerExplosion.: Living Shard Slayer
+			LivingShardSlayerPro.: Living Shard Slayer
+			LivingWoodBullet.: Forest Ripper
+			LivingCoreWhipProj.: Living Core Whip Proj
+			SageDeathBomb.: Sage Death Bomb
+			CoreBeam2.: Core Beam
+			DirectionalAttack.: skill issue
+			DirectionalAttack2.: i have taken your family hostage
+			FloatingBalls.: BALLS HAHA SEX PENIS HAHA HA SEX
+			GuardianBeam.: Guardian Beam
+			LuminaryBeam.: Core Beam
+			SageBeam.: Sage Beam
+			LifeOrb.: Life Orb
+			LivingBolt.: Living Bolt
+			ShadowflameEffigy.: Shadowflame Effigy
+			BlueRoseWave.: Blue Rose Wave
+			LivingBranch.: Living Branch
+			LivingResonance.: BewitchedSpikyBall
+			LivingResonance2.: BewitchedSpikyBall
+			SaraishiPlusSlash.: Aku Saraishi Slash
+			SaraishiSlash.: Saraishi Slash
+			SaraishiStrike.: Saraishi Strike
+			BoneDoor.: Door
+			BoneDoorBone.: Door
+			BorealDoor.: Door
+			MushroomDoor.: Door
+			MushroomDoorMushroom.: Mushroom
+			MushroomDoorWave.: Door
+			WoodenDoor.: Door
+			LivingCoreShrapnel.: Living Shrapnel
+			SapphireBullet.: Sapphire Bullet
+			WoodenBulletProj.: BewitchedSpikyBall
+			SavageDagger.: Savage Dagger
+			CoreprismProj.: Coreprism Proj
+			Corewhack_Summon.: Corewhack_ Summon
+			Corewhack_Summon_Shot.: Corewhack_ Summon_ Shot
+			RetinazerLaser.: Retinazer
+			RetinazerMinion.: Retinazer
+			SpazmatismMinion.: Spazmatism
+			GateProjectile.: Living Core Blast
+			PodestProjectile.: Living Core Blast
+		}
+
+		Biomes: {
+			LivingCoreBiome.: Living Core Biome
+			LivingWoodTreeBiome.: Example Underground
+		}
+
+		Buffs: {
+			Ace: {
+				: Ace
+				//:
+					'''
+					Major decrease to all stats 
+					Cannot regenerate life
+					'''
+			}
+
+			BulletMark: {
+				: Bullet Mark
+				//: Deadly Napalm is stuck to you
+			}
+
+			CoreInfection: {
+				: Core Infection
+				//: Your very core is infected
+			}
+
+			CoreInfectionII: {
+				: Core Infection II
+				//: Your very core is severely infected
+			}
+
+			Deuce: {
+				: Deuce
+				//: You are defended by two probes
+			}
+
+			Earrape: {
+				: Earraped
+				//: I can't hear you it's to dark in here!
+			}
+
+			FleshWound: {
+				: Flesh Wound
+				//:
+					'''
+					Slowly losing life 
+					Reduced defense
+					'''
+			}
+
+			Shred: {
+				: Shred
+				//: Rapidly losing life
+			}
+
+			CorewhackBuff: {
+				: Corewhack Buff
+				//: " -- || --"
+			}
+
+			SpazmatismBuff: {
+				: Spazmatism
+				//: Spazmatism will fight for you
+			}
+		}
+
+		Items: {
+			BulletMarkIcon.: Bullet Mark Icon
+			CoreInfectionIcon.: Core Infection Icon
+			FleshWoundIcon.: Flesh Wound Icon
+			ShredIcon.: Shred Icon
+
+			AcornRepellentSpray: {
+				: Acorn Repellent Spray
+				//: "'Being annoyed by noisy Acorns? Then this is what you were searching for! Favorite to activate its effects.'"
+			}
+
+			AttackSpeeder: {
+				: Rapidity Glove
+				//:
+					'''
+					Doubles your ranged weapons fire rate and enables Auto-Shoot, however ranged damage is decreased by 50% 
+					'Fire quicker than your own shadow!'
+					'''
+			}
+
+			CoreShard: {
+				: Core Drain
+				//: Summons Core Crystals when struck \n Increases defense by 2
+			}
+
+			LivingCoreConductor: {
+				: Living Core Conductor
+				//: Combines the powers of heart and conductor
+			}
+
+			LivingCoreHeart: {
+				: Living Core Heart
+				//: Magic attacks summon Life Orbs upon striking enemies
+			}
+
+			LivingWoodConductor: {
+				: Living Wood Conductor
+				//: Magic attacks summon healing Acorns upon striking enemies
+			}
+
+			LuckyDice.: Lucky Dice
+
+			PortableTree: {
+				: Portable Tree
+				//: Decreases movement speed by 60%
+			}
+
+			SavageTalisman: {
+				: Savage Talisman
+				//:
+					'''
+					Critical strikes inflict Shred [i:5198] 
+					7% increased critical strike chance
+					'''
+			}
+
+			SageMask.: Sage Mask
+
+			LivingShard: {
+				: Living Shard
+				//: Used for crafting living core items
+			}
+
+			BossBagSage: {
+				: Treasure Bag
+				//: "{$CommonItem//.RightClickToOpen}"
+			}
+
+			Coreprism.: Coreprism
+
+			Corewhack: {
+				: Corewhack
+				//: Stuff
+			}
+
+			LivingBolt: {
+				: Living Bolt
+				//: AW FUCK
+			}
+
+			LivingCoreSpear: {
+				: Living Core Spear
+				//: Hold <left> to charge the spear
+			}
+
+			LivingCoreSword: {
+				: Commandant's Blade
+				//: Inflicts Flesh Wound [i:5197]
+			}
+
+			Muscore.: Muscore
+
+			CoreScorcher: {
+				: Core Scorcher
+				//:
+					'''
+					Fires a deadly Living Core flame
+					Inflicts the Dryads buffs/debuffs on enemy/player contact
+					'''
+			}
+
+			Invocation: {
+				: Commandant's Guide To Invocation
+				//: Chargable
+			}
+
+			SorcerersSecret: {
+				: Oculomancy Tome
+				//: "'Eye for an eye'"
+			}
+
+			CommandantsBlade: {
+				: Commandant's Blade
+				//: Inflicts Flesh Wound [i:5197]
+			}
+
+			Enforcer: {
+				: Life Enforcer
+				//: Direct hits deploy orbs, right click in order to call them back to the playerOrb daamage scales with your current health stat (not maximum)
+			}
+
+			LivingWoodGuitar: {
+				: Nature's Serenade
+				//: "'It sounds horrible'"
+			}
+
+			NaturesWrath: {
+				: Nature's Wrath
+				//:
+					'''
+					<right> to throw a branch 
+					hitting branches with your fists amplifies your damage
+					'''
+			}
+
+			Shadowbrand: {
+				: Shadowbrand
+				//: Striking enemies increases the blade's power
+			}
+
+			BlueRose: {
+				: Blue Rose
+				//: Press <right> to perform a Color Up, strengthening the next 3 shots [i:5195]
+			}
+
+			CommandantsBow: {
+				: Commandant's Bow
+				//: "'Heavy. Too heavy.'"
+			}
+
+			DoorLauncher: {
+				: Door Launcher
+				//: Uses doors as ammo
+			}
+
+			LivingShardSlayer: {
+				: Living Core Slayer
+				//:
+					'''
+					Overheats when used enough
+					<right> to throw the gun when overheated, detonating it on impact
+					'''
+			}
+
+			LivingWoodShotgun: {
+				: Living Wood Shotgun
+				//:
+					'''
+					Converts Wooden Bullets to Living Wood Bullets
+					'The confusing sequal!'
+					'''
+			}
+
+			WoodenBullet: {
+				: Wooden Bullet
+				//: "'Quite janky'"
+			}
+
+			WoodenShotgun: {
+				: Wooden Shotgun
+				//:
+					'''
+					'Physics is for wimps'
+					Uses Wooden Bullets as ammo!'
+					'''
+			}
+
+			LivingCoreWhip: {
+				: Living Core Whip
+				//:
+					'''
+					Attacks inflict Core Infection [i:5196] 
+					7% Infected enemies receive additional damage from attacks with summons
+					'''
+			}
+
+			SuperDummySpawner: {
+				: Super Dummy
+				//: Summons a Super Dummy
+			}
+
+			PlasticChairItem: {
+				: Plastic Chair Item
+				//: Forsakened, I am awakened...
+			}
+
+			ANDCore.: A N D Core
+			CoreDoublerDownLeft.: Core Doubler Down Left
+			CoreDoublerLeftUp.: Core Doubler Left Up
+			CoreDoublerRightDown.: Core Doubler Right Down
+			CoreDoublerUpRight.: Core Doubler Up Right
+			CoreMirrorDown.: Core Mirror Down
+			CoreMirrorLeft.: Core Mirror Left
+			CoreMirrorRight.: Core Mirror Right
+			CoreMirrorUp.: Core Mirror Up
+			CoreReset.: Core Reset
+			CoreResetDrop2.: Core Reset Drop2
+			CoreResetDrop3.: Core Reset Drop3
+			CoreRoots.: Core Roots
+			CoreRoots1.: Core Roots1
+			CoreRoots2.: Core Roots2
+			LivingCorePodestLeft.: Living Core Podest Left
+			LivingCorePodestRight.: Living Core Podest Right
+			LivingCorePodestUp.: Living Core Podest Up
+			XORCore.: X O R Core
+
+			CradleWoodItem: {
+				: Cradle Wood
+				//: Used for crafting living core items
+			}
+
+			FancyCoreCrystalItem.: fance
+			LivingCombatAltarItem.: (Remove) Living Combat Altar
+
+			LivingCrystalStoneItem: {
+				: Living Crystal Stone
+				//: Used for crafting living core items
+			}
+
+			LivingCrystalTestItem.: Living Crystal Test Item
+			LivingCrystalTestItem2.: Living Crystal Test Item 2
+			LivingCrystalTestItem3.: Living Crystal Test Item 3
+			LivingCrystalTestItem4.: Living Crystal Test Item 4
+			LivingCrystalTestItem5.: Living Crystal Test Item 5
+			LivingCoreAltar.: Living Core Altar
+
+			LivingCorePortal: {
+				: Living Core Portal
+				//: Used for crafting living core items
+			}
+		}
+
+		NPCs: {
+			Acrid.: Acrid
+			DoordealerFirstEncounter.: Mystery Man
+			Coreling.: Coreling
+			Corelossus.: Corelossus
+			CoreSage.: Core Sage
+			LivingCoreSaw.: "Living Core Saw "
+			Sage.: Core Sage
+			SageDeath.: Core Sage
+			SuperDummy.: Super Dummy
+			LivingCoreEventHandler.: Living Core Event Handler
+		}
+	}
+}

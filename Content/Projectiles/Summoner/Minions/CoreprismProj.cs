@@ -21,7 +21,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Coreprism");
+            //.setdefault("Coreprism");
             Main.projPet[Projectile.type] = true;
             ProjectileID.Sets.DontAttachHideToAlpha[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
@@ -47,6 +47,8 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
         int frameTimer;
         int timer;
         int timer2;
+        int soundtimer = 9;
+
         private bool collided;
 
         public override void AI()
@@ -57,31 +59,43 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
             for (int io = 0; io < Main.maxNPCs; io++)
             {
                 NPC target = Main.npc[io];
-                if (target.Distance(Projectile.Center) < 500 && !target.HasBuff(ModContent.BuffType<CoreInfection>()) && !target.HasBuff(ModContent.BuffType<CoreInfectionII>()))
+                if (target.Distance(Projectile.Center) < 450 && !target.HasBuff(ModContent.BuffType<CoreInfection>()) && !target.HasBuff(ModContent.BuffType<CoreInfectionII>()))
                 {
                     target.AddBuff(ModContent.BuffType<CoreInfection>(), 5);
                 }
             }
             if (player != null)
-            Projectile.spriteDirection = (int)Projectile.ai[0];
+                Projectile.spriteDirection = (int)Projectile.ai[0];
             Projectile.velocity.Y += 1;
             if (!CheckActive(owner))
                 return;
             if (collided)
             {
+
+
+
                 timer++;
                 if (timer == 200)
                 {
                     timer = 0;
-                   DivergencyDraw.SpawnCirclePulse(Projectile.Center, Color.LimeGreen, 0.5f);
+                    DivergencyDraw.SpawnCirclePulse(Projectile.Center, Color.LimeGreen, 0.5f);
+                    SoundEngine.PlaySound(SoundID.DD2_WitherBeastAuraPulse, Projectile.Center);
+                    for (int i = 0; i < 20; i++)
+                    {
+                        Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
+
+                        ParticleManager.NewParticle(Projectile.Center, speed * Main.rand.NextFloat(10, 25), ParticleManager.NewInstance<StarParticle>(), new Color(0, 200, 0, 0), 0.4f, Projectile.whoAmI, Layer: Particle.Layer.BeforeNPCs);
+
+                    }
+
                 }
                 timer2++;
                 if (timer2 == 30)
                 {
-                    ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.3f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer:Particle.Layer.BeforeProjectiles);
+                    ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.3f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
                     ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.5f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
                     ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.2f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
-                    ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12,12),0), new Vector2(0,-0.7f) , ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
+                    ParticleManager.NewParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(-12, 12), 0), new Vector2(0, -0.7f), ParticleManager.NewInstance<BloomParticle2>(), new Color(0.50f, 2f, 0.5f, 0), Main.rand.NextFloat(0.008f, 0.015f), Layer: Particle.Layer.BeforeProjectiles);
 
                     timer2 = 0;
                 }
@@ -94,6 +108,8 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
                 {
                     Projectile.frame++;
                     frameTimer = 0;
+                    SoundEngine.PlaySound(SoundID.WormDig, Projectile.Center);
+
                 }
 
 
@@ -107,6 +123,8 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
                     player.AddBuff(BuffID.Summoning, 1);
                 }
             }
+
+
         }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
@@ -122,6 +140,11 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
         {
             if (oldVelocity.Y > 0)
                 Projectile.velocity.Y = 0;
+            Projectile.velocity.X = 0;
+            if (collided == false)
+            {
+                SoundEngine.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, Projectile.Center);
+            }
             collided = true;
             return false;
         }
@@ -134,6 +157,18 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 
             return true;
         }
+        public Trail trail;
+
+        public Trail trail2;
+
+        float radius = 0;
+
+        float timer3 = 0;
+
+        public float timer4 = 0;
+
+        float width = 10;
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
@@ -145,8 +180,42 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
             Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Color color = Projectile.GetAlpha(lightColor);
+            Color color1 = new Color(0.50f / 2, 2f / 3, 0.5f / 2, 0);
 
-            Main.EntitySpriteDraw(texture, position - new Vector2(0,10), sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, position - new Vector2(0, 10), sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+
+            Main.EntitySpriteDraw(texture, position - new Vector2(0, 10), sourceRectangle, color1, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
+
+
+            Texture2D texture2 = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Default").Value;
+
+            if (trail == null)
+            {
+                trail = new Trail(texture2, Trail.DefaultPass, (p) => new Vector2(width), (p) => Projectile.GetAlpha(new Color(0, 255 / 1.2f, 0, 200)));
+                trail.drawOffset = Projectile.Size / 2f;
+
+                //trail2 = new Trail(texture2, Trail.DefaultPass, (p) => new Vector2(width / 1.9f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 100)));
+                //trail2.drawOffset = Projectile.Size / 2f;
+            }
+
+            int parts = 30;
+            Vector2[] tests = new Vector2[parts];
+            float[] rotations = new float[parts];
+
+            for (int point = 0; point < parts; point++)
+            {
+                float rad = ((float)point / (parts - 1)) * MathHelper.TwoPi;
+
+                tests[point] = Projectile.position + new Vector2(MathF.Cos(rad) * radius, MathF.Sin(rad) * radius);
+                rotations[point] = rad;
+            }
+
+            timer3 -= 0.01f;
+
+            trail.Draw(tests, rotations, timer3);
+            // trail2.Draw(tests, rotations, timer3);
+
+
             return false;
         }
 

@@ -12,7 +12,7 @@ namespace Divergency.Content.Projectiles.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("BewitchedSpikyBall");
+            //.setdefault("BewitchedSpikyBall");
             Main.projFrames[Projectile.type] = 7;
         }
 

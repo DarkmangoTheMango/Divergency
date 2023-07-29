@@ -39,7 +39,7 @@ namespace Divergency.Content.Biomes
         // Use SetStaticDefaults to assign the display name
         public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Living Core Biome");
+			//.setdefault("Living Core Biome");
 	        
 		}
 		

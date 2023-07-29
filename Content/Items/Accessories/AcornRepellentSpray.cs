@@ -11,7 +11,7 @@ namespace Divergency.Content.Items.Accessories
 
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("'Being annoyed by noisy Acorns? Then this is what you were searching for! Favorite to activate its effects.'");
+			////.setdefault("'Being annoyed by noisy Acorns? Then this is what you were searching for! Favorite to activate its effects.'");
 
 			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
 		}

@@ -165,7 +165,7 @@
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Core Blast");
+            //.setdefault("Living Core Blast");
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;

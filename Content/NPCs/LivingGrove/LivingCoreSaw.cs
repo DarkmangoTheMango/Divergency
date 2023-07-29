@@ -23,7 +23,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Core Saw ");
+            //.setdefault("Living Core Saw ");
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.TrailCacheLength[NPC.type] = 50;
             NPCID.Sets.TrailingMode[NPC.type] = 2;

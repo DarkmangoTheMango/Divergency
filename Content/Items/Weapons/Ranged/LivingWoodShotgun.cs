@@ -15,10 +15,10 @@ namespace Divergency.Content.Items.Weapons.Ranged
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Living Wood Shotgun");
+            //.setdefault("Living Wood Shotgun");
 
-            Tooltip.SetDefault("Converts Wooden Bullets to Living Wood Bullets"
-                + "\n'The confusing sequal!'");
+            ////.setdefault("Converts Wooden Bullets to Living Wood Bullets"
+              //  + "\n'The confusing sequal!'");
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
@@ -101,7 +101,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Forest Ripper");
+            //.setdefault("Forest Ripper");
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 35; // The length of old position to be recorded
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2; // The recording mode
         }

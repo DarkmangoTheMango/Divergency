@@ -15,7 +15,7 @@ namespace Divergency.Content.Projectiles
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Savage Dagger");
+            //.setdefault("Savage Dagger");
 
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
@@ -56,7 +56,7 @@ namespace Divergency.Content.Projectiles
             if (Projectile.alpha >= 255) { Projectile.Kill(); }
         }
 
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(SoundID.DD2_SkeletonHurt, Projectile.Center);
 
