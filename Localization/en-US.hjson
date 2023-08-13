@@ -975,6 +975,7 @@ Mods: {
 			}
 
 			CorelingCutscene.DisplayName: Coreling Cutscene
+			CoreElemental.DisplayName: Core Elemental
 		}
 
 		"Keybinds.Reload the current weapon.DisplayName": Reload the current weapon

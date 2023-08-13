@@ -50,7 +50,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         {
             NPC.lifeMax = 100;
             NPC.damage = 30;
-            NPC.defense = 20;
+            NPC.defense = 5;
             NPC.knockBackResist = 0.2f;
 
             NPC.noTileCollide = true;
