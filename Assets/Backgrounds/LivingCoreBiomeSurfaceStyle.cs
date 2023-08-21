@@ -83,7 +83,7 @@ namespace Divergency.Assets.Backgrounds
                 float scAdj = typeof(Main).GetFieldValue<float>("scAdj", Main.instance);
                 int bgStart = (int)(-Math.IEEERemainder(Main.screenPosition.X * bgParallax[i], bgW) - (bgW / 2));
                 int bgStartMid = (int)(-Math.IEEERemainder(Main.screenPosition.X * 0.2f, bgW) - (bgW / 2));
-                int bgStartClose = (int)(-Math.IEEERemainder(Main.screenPosition.X * 0.2f, bgW) - (bgW / 2));
+                int bgStartClose = (int)(-Math.IEEERemainder(Main.screenPosition.X * 0.37f, bgW) - (bgW / 2));
 
                 int bgTop = (int)((-Main.screenPosition.Y + screenOff / 2f) / (Main.worldSurface * 16.0) * a + b) + (int)scAdj - (length * 150);
                 if (Main.gameMenu)

@@ -330,7 +330,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void AI()
         {
-            if (NPC.ai[0] >= 120f)
+            if (NPC.ai[0] >= 60f)
             {
                 NPC.velocity.Y += 0.1f;
             }
@@ -342,16 +342,14 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPC.ai[0]++;
             NPC.ai[1]++;
 
-            if (NPC.ai[0] == 179f)
-            {
-                NPC.friendly = false;
-            }
-            if (NPC.ai[0] == 180f)
+           
+            if (NPC.ai[0] == 120f)
             {
                 DivergencyDraw.SpawnExplosion(NPC.Center, Color.LimeGreen, ModContent.DustType<Glow>(), 7);
                 DivergencyDraw.SpawnRing(NPC.Center,Color.LimeGreen, 0.13f * 1.18f,0.9f * 1.18f, 2* 1.18f);
                 DivergencyDraw.SpawnRing(NPC.Center, Color.LimeGreen, 0.13f * 1.1f, 0.9f * 1.1f, 2 * 1.1f);
                 DivergencyDraw.SpawnRing(NPC.Center, Color.LimeGreen, 0.13f * 1.05f, 0.9f * 1.05f, 2 * 1.05f);
+                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0), ModContent.ProjectileType<CoreElementalDeathProj>(), 120, 2f);
                 float radius = 2;
                 int numberOfDusts = 20;
                 
@@ -394,6 +392,23 @@ namespace Divergency.Content.NPCs.LivingGrove
             spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
             return false;
         }
+    }
+    public class CoreElementalDeathProj : ModProjectile
+    {
+        public override string Texture => "Divergency/Assets/Textures/Empty";
+
+        public override void SetDefaults()
+        {
+            Projectile.friendly = false;
+            Projectile.hostile = true;
+
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
+            Projectile.Size = new Vector2(400, 400);
+            Projectile.aiStyle = -1;
+            Projectile.timeLeft = 2;
+        }        
+
     }
 }
     
