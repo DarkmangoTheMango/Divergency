@@ -448,6 +448,10 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void AI()
         {
+            if (Projectile.ai[1] == 1)
+            {
+                Projectile.scale = 0.4f;
+            }
             Projectile.rotation = Projectile.ai[0];
             Projectile.scale += 0.01f;
 

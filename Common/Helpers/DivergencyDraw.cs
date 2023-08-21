@@ -216,7 +216,7 @@ namespace Divergency.Common.Helpers
             if (Glow)
             {
                 GlowTimer += 3;
-                if (GlowTimer > 60)
+                if (GlowTimer > 120)
                 {
                     Glow = false;
                     GlowTimer = 0;
@@ -260,7 +260,7 @@ namespace Divergency.Common.Helpers
                     }
                 }
             }
-            if (Projectile.localAI[0] >= 20)
+            if (Projectile.localAI[0] >= 40)
                 Projectile.Kill();
         }
         public override void PostDraw(Color lightColor)

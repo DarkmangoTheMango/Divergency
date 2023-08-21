@@ -346,6 +346,7 @@ Mods: {
 			CircleBounceAttack.DisplayName: Circle Bounce Attack
 			CoreTurbineCore.DisplayName: Core Turbine Core
 			CoreTurbineProj.DisplayName: Core Turbine Proj
+			CoreElementalTrail.DisplayName: Core Elemental Trail
 		}
 
 		Biomes: {
@@ -910,6 +911,11 @@ Mods: {
 				DisplayName: Cradle Wood Wall
 				Tooltip: ""
 			}
+
+			CoreTorch: {
+				DisplayName: Core Torch
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
@@ -976,6 +982,9 @@ Mods: {
 
 			CorelingCutscene.DisplayName: Coreling Cutscene
 			CoreElemental.DisplayName: Core Elemental
+			CoreElementalHand.DisplayName: Core Elemental Hand
+			CoreElementalBody.DisplayName: Core Elemental Body
+			CoreElementalDeath.DisplayName: Core Elemental Death
 		}
 
 		"Keybinds.Reload the current weapon.DisplayName": Reload the current weapon

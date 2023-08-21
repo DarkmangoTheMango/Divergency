@@ -11,6 +11,10 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Divergency.Common;
+using static ParticleLibrary.Particle;
+using Divergency.Content.Items.Weapons.LivingCore;
+using Divergency.Content.Projectiles;
+using Divergency.Common.Helpers;
 
 namespace Divergency.Content.NPCs.LivingGrove
 {
@@ -23,7 +27,10 @@ namespace Divergency.Content.NPCs.LivingGrove
             dash,
             death
         }
-        State state = State.moving;
+        State state = State.spawn;
+
+        public int dashcooldown { get; private set; }
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.TrailCacheLength[NPC.type] = 5;
@@ -44,7 +51,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPC.HitSound = SoundID.DD2_WitherBeastHurt;
             NPC.DeathSound = SoundID.DD2_WitherBeastDeath;
             NPC.value = Item.sellPrice(0, 0, 0, 0);
-
+            
             NPC.aiStyle = -1;
             NPC.noGravity = true;
         }
@@ -59,22 +66,76 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void AI()
         {
+            Player target = Main.player[NPC.target];
+            if (NPC.Center.Distance(target.Center) < 150)
+            {
+                NPC.knockBackResist = 2;
+                NPC.defense = 0;
+            }
+            else
+            {
+                NPC.knockBackResist = 0.6f;
+                NPC.defense = 15;
+            } ;
             if (state == State.spawn)
             {
                 //spawm limbs
+                NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalBody>(), 0);
+                NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalHand>(), 0);
+                NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalHand>(), 0, 1);
+                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0), ModContent.ProjectileType<CoreElementalTrail>(), 0, 0);
                 state = State.moving;
 
             }
+            if (state == State.moving && NPC.velocity.X < 0.2f && dashcooldown == 0)
+            {
+                state = State.dash;
+            }
             if (state == State.moving)
             {
-                Player target = Main.player[NPC.target];
-
+                NPC.ai[0] = 0;
                 NPC.TargetClosest(true);
-                NPC.Move(target.Center, 10f, 100);
+                NPC.Move(target.Center, 17f, 50);
                 NPC.rotation = NPC.velocity.X * 0.1f;
+                if(dashcooldown > 0)
+                dashcooldown--;
+            }
+            
+            if (state == State.dash)
+            {
+                
+                NPC.rotation = NPC.velocity.X * 0.1f;
+                NPC.TargetClosest(true);
+                NPC.ai[0]++;
+                Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
+                Dust dust = Dust.NewDustPerfect(NPC.Center + (velocity * 80f), ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.7f);
+                dust.noGravity = true;
+                if (NPC.ai[0] < 80)
+                NPC.velocity /= 1.2f;
+                if (NPC.ai[0] == 80)
+                {
+                
+                    NPC.velocity += NPC.Center.DirectionTo(target.Center) * 17;
+                    dashcooldown = 120;
+                    state = State.moving;
+
+                }
+            }
+        }
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                return;
             }
 
+
+            if (NPC.life <= 0)
+            {
+                NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalDeath>());
+            }
         }
 
 
@@ -88,8 +149,252 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            return false;
+        }
+    }
+
+    public class CoreElementalHand : ModNPC
+    {
+        public bool spawned { get; private set; }
+        public Projectile cachedProjectile { get; private set; }
+        public NPC cachedNPC { get; private set; }
+
+        public override void SetDefaults()
+        {
+            NPC.aiStyle = -1;
+            NPC.lifeMax = 1;
+            NPC.damage = 0;
+            NPC.defense = 5;
+            NPC.knockBackResist = 0f;
+            NPC.width = 10;
+            NPC.height = 50;
+            NPC.value = Item.buyPrice(0, 1, 0, 0);
+            NPC.dontTakeDamage = true;
+            NPC.friendly = false;
+            NPC.lavaImmune = true;
+            NPC.noGravity = true;
+            NPC.noTileCollide = true;
+            NPC.dontTakeDamageFromHostiles = true;
+            NPC.behindTiles = false;
+            NPC.ShowNameOnHover = false;
+
+        }
+        public override void AI()
+        {
+           
+            if (!spawned)
+            {
+                for (int k = 0; k < Main.maxNPCs; k++)
+                {
+                    NPC taggedNPC = Main.npc[k];
+
+                    if (taggedNPC.active && taggedNPC.ModNPC is CoreElemental)
+                    {
+                        cachedNPC = taggedNPC;
+                    }
+                }
+
+                spawned = true;
+            }
+
+            if (!cachedNPC.active)
+            {
+                NPC.active = false;
+            }
+            if (spawned)
+            {
+                NPC.rotation = NPC.velocity.X * 0.1f;
+
+                if (NPC.ai[0] == 0)
+                {
+                    NPC.Move(cachedNPC.Center + new Vector2(-18, 12), 25f, 20);
+
+                }
+                else
+                {
+                    NPC.Move(cachedNPC.Center + new Vector2(18, 12), 25f, 20);
+
+                }
+            }
+        }
+       
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CoreElementalHandGlow").Value;
+
+            Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY);
+            Color color = Color.White;
+
+            SpriteEffects spriteEffects = NPC.ai[0] > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+           // spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
             return true;
         }
     }
+    public class CoreElementalBody : ModNPC
+    {
+        public bool spawned { get; private set; }
+        public Projectile cachedProjectile { get; private set; }
+        public NPC cachedNPC { get; private set; }
+
+        public override void SetDefaults()
+        {
+            NPC.aiStyle = -1;
+            NPC.lifeMax = 1;
+            NPC.damage = 0;
+            NPC.defense = 5;
+            NPC.knockBackResist = 0f;
+            NPC.width = 10;
+            NPC.height = 50;
+            NPC.value = Item.buyPrice(0, 1, 0, 0);
+            NPC.dontTakeDamage = true;
+            NPC.friendly = false;
+            NPC.lavaImmune = true;
+            NPC.noGravity = true;
+            NPC.noTileCollide = true;
+            NPC.dontTakeDamageFromHostiles = true;
+            NPC.behindTiles = false;
+            NPC.ShowNameOnHover = false;
+
+        }
+        public override void AI()
+        {
+
+            if (!spawned)
+            {
+                for (int k = 0; k < Main.maxNPCs; k++)
+                {
+                    NPC taggedNPC = Main.npc[k];
+
+                    if (taggedNPC.active && taggedNPC.ModNPC is CoreElemental)
+                    {
+                        cachedNPC = taggedNPC;
+                    }
+                }
+
+                spawned = true;
+            }
+
+            if (!cachedNPC.active)
+            {
+                NPC.active = false;
+            }
+            if (spawned)
+            {
+                NPC.rotation = NPC.velocity.X * 0.1f;
+
+                
+                    NPC.Move(cachedNPC.Center + new Vector2(0, 18), 30f, 20);
+
+                
+                
+            }
+        }
+        
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CoreElementalBodyGlow").Value;
+
+            Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY);
+            Color color = Color.White;
+
+            SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+           // spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            return true;
+        }
+    }
+    public class CoreElementalDeath : ModNPC
+    {
+        public override string Texture => "Divergency/Content/NPCs/LivingGrove/CoreElemental";
+        public override void SetDefaults()
+        {
+            NPC.lifeMax = 1;
+            NPC.knockBackResist = 0f;
+            NPC.immortal = true;
+            NPC.dontTakeDamage = true;
+
+            NPC.noTileCollide = true;
+            NPC.damage = 100;
+            NPC.scale = 1f;
+            NPC.Size = new Vector2(0, 0);
+            NPC.friendly = true;
+            NPC.HitSound = SoundID.NPCHit49;
+            NPC.DeathSound = SoundID.NPCDeath51;
+            NPC.value = Item.sellPrice(0, 0, 0, 0);
+
+            NPC.aiStyle = -1;
+            NPC.noGravity = true;
+        }
+
+        public override void AI()
+        {
+            if (NPC.ai[0] >= 120f)
+            {
+                NPC.velocity.Y += 0.1f;
+            }
+            NPC.TargetClosest(true);
+
+            NPC.spriteDirection = NPC.direction;
+            NPC.rotation = NPC.velocity.X * 0.05f;
+
+            NPC.ai[0]++;
+            NPC.ai[1]++;
+
+            if (NPC.ai[0] == 179f)
+            {
+                NPC.friendly = false;
+            }
+            if (NPC.ai[0] == 180f)
+            {
+                DivergencyDraw.SpawnExplosion(NPC.Center, Color.LimeGreen, ModContent.DustType<Glow>(), 7);
+                DivergencyDraw.SpawnRing(NPC.Center,Color.LimeGreen, 0.13f * 1.18f,0.9f * 1.18f, 2* 1.18f);
+                DivergencyDraw.SpawnRing(NPC.Center, Color.LimeGreen, 0.13f * 1.1f, 0.9f * 1.1f, 2 * 1.1f);
+                DivergencyDraw.SpawnRing(NPC.Center, Color.LimeGreen, 0.13f * 1.05f, 0.9f * 1.05f, 2 * 1.05f);
+                float radius = 2;
+                int numberOfDusts = 20;
+                
+                for (int i = 0; i < 30; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 25, 0, default, 2f);
+                    Dust.NewDustPerfect(NPC.Center, ModContent.DustType<Glow>(), Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, new Color(109, 223, 94), 1.4f);
+
+                    dust.noGravity = true;
+                }
+
+                NPC.active = false;
+            }
+
+          
+            else
+            {
+                if (NPC.ai[1] >= 5f)
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        Dust.NewDustPerfect(NPC.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, Color.LimeGreen, 0.7f);
+                    }
+                    SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, NPC.Center);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (Main.rand.NextVector2Circular(1f, 1f) * 40f), Vector2.Zero, ModContent.ProjectileType<SageDeathBomb>(), 0, 0f, 0, Main.rand.NextFloat(0f, 360f), 1f);
+
+                    NPC.ai[1] = 0f;
+                }
+            }
+        }
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CoreElemental").Value;
+
+            Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
+            Color color = Color.White;
+
+            SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            spriteBatch.Draw(texture, position, NPC.frame, color, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            return false;
+        }
+    }
 }
+    
+    
