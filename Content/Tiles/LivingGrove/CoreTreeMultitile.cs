@@ -25,11 +25,11 @@ namespace Divergency.Content.Tiles.LivingGrove
 
             TileObjectData.newTile.Width = 18;
             TileObjectData.newTile.Height = 19;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19 };
+            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 };
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.Origin = new Point16(2, 1);
-            TileObjectData.newTile.DrawYOffset = 10;
+            TileObjectData.newTile.Origin = new Point16(1, 3);
+            TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             DustType = ModContent.DustType<LivingShard>();
             HitSound = SoundID.ScaryScream;

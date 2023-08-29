@@ -15,6 +15,7 @@ using static ParticleLibrary.Particle;
 using Divergency.Content.Items.Weapons.LivingCore;
 using Divergency.Content.Projectiles;
 using Divergency.Common.Helpers;
+using Divergency.Common.Players;
 
 namespace Divergency.Content.NPCs.LivingGrove
 {
@@ -110,13 +111,15 @@ namespace Divergency.Content.NPCs.LivingGrove
                 Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
                 Dust dust = Dust.NewDustPerfect(NPC.Center + (velocity * 80f), ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.7f);
+                //SoundEngine.PlaySound(SoundID.DD2_DarkMageAttack, NPC.Center); NEED SUITABLE SOUND 
+         
                 dust.noGravity = true;
                 if (NPC.ai[0] < 80)
                 NPC.velocity /= 1.2f;
                 if (NPC.ai[0] == 80)
                 {
-                
-                    NPC.velocity += NPC.Center.DirectionTo(target.Center) * 17;
+                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/Dash") with { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, NPC.Center);
+                    NPC.velocity += NPC.Center.DirectionTo(target.Center) * 18;
                     dashcooldown = 120;
                     state = State.moving;
 
@@ -335,6 +338,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 NPC.velocity.Y += 0.1f;
             }
             NPC.TargetClosest(true);
+            Player target = Main.player[NPC.target];
 
             NPC.spriteDirection = NPC.direction;
             NPC.rotation = NPC.velocity.X * 0.05f;
@@ -352,7 +356,8 @@ namespace Divergency.Content.NPCs.LivingGrove
                 Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0), ModContent.ProjectileType<CoreElementalDeathProj>(), 120, 2f);
                 float radius = 2;
                 int numberOfDusts = 20;
-                
+                target.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 10;
+
                 for (int i = 0; i < 30; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(NPC.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 25, 0, default, 2f);
@@ -367,6 +372,7 @@ namespace Divergency.Content.NPCs.LivingGrove
           
             else
             {
+
                 if (NPC.ai[1] >= 5f)
                 {
                     for (int i = 0; i < 3; i++)

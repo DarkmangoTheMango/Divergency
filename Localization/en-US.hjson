@@ -348,6 +348,9 @@ Mods: {
 			CoreTurbineProj.DisplayName: Core Turbine Proj
 			CoreElementalTrail.DisplayName: Core Elemental Trail
 			CoreElementalDeathProj.DisplayName: Core Elemental Death Proj
+			LivingCoreArrow.DisplayName: Living Core Arrow
+			MuscoreProj.DisplayName: Muscore Proj
+			DiceProj.DisplayName: Dice Proj
 		}
 
 		Biomes: {
@@ -412,6 +415,36 @@ Mods: {
 			PipedDown: {
 				DisplayName: Piped Down
 				Description: Mods.Divergency.Buffs.PipedDown.Description
+			}
+
+			Dice1: {
+				DisplayName: Dice1
+				Description: Mods.Divergency.Buffs.Dice1.Description
+			}
+
+			Dice2: {
+				DisplayName: Dice2
+				Description: Mods.Divergency.Buffs.Dice2.Description
+			}
+
+			Dice3: {
+				DisplayName: Dice3
+				Description: Mods.Divergency.Buffs.Dice3.Description
+			}
+
+			Dice4: {
+				DisplayName: Dice4
+				Description: Mods.Divergency.Buffs.Dice4.Description
+			}
+
+			Dice5: {
+				DisplayName: Dice5
+				Description: Mods.Divergency.Buffs.Dice5.Description
+			}
+
+			Dice6: {
+				DisplayName: Dice6
+				Description: Mods.Divergency.Buffs.Dice6.Description
 			}
 		}
 
@@ -915,6 +948,16 @@ Mods: {
 
 			CoreTorch: {
 				DisplayName: Core Torch
+				Tooltip: ""
+			}
+
+			LivingCoreBow: {
+				DisplayName: Living Core Bow
+				Tooltip: ""
+			}
+
+			LuckyDie: {
+				DisplayName: Lucky Die
 				Tooltip: ""
 			}
 		}
