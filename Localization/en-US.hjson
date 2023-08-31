@@ -1029,6 +1029,7 @@ Mods: {
 			CoreElementalHand.DisplayName: Core Elemental Hand
 			CoreElementalBody.DisplayName: Core Elemental Body
 			CoreElementalDeath.DisplayName: Core Elemental Death
+			Corennector.DisplayName: Hideo
 		}
 
 		"Keybinds.Reload the current weapon.DisplayName": Reload the current weapon
