@@ -35,7 +35,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item.crit = 10;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<LivingCoreArrow>();
-            Item.shootSpeed = 20f;
+            Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Arrow;
             // Item.scale = 1.4f;
         }
