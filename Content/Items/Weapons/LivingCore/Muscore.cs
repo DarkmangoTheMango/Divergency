@@ -21,13 +21,13 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 {
     public class Muscore : ModItem, IReloadWeapon
     {
-        int shotsLeft = 3;
+        int shotsLeft = 6;
 
         public string BulletTexture => "Divergency/Common/UI/MuscoreUI_Bullet";
 
         public int GetRemainingBullets() => shotsLeft;
 
-        public void Reload() => shotsLeft = 3;
+        public void Reload() => shotsLeft = 6;
 
         public override void SetStaticDefaults()
         {
@@ -84,13 +84,13 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
     public class MuscoreProj : ModProjectile, IReloadWeapon
     {
-        int shotsLeft = 3;
+        int shotsLeft = 6;
 
         public string BulletTexture { get { return "DivergencyMod/Items/Weapons/Ranged/Muscore/Bullet"; } }
         public int GetRemainingBullets() { return shotsLeft; }
         public void Reload()
         {
-            shotsLeft = 3;
+            shotsLeft = 6;
         }
         private float MovementFactor = 24f;
         //public override string Texture => "DivergencyMod/Items/Weapons/Ranged/Muscore/Bullet";
@@ -102,7 +102,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void SetDefaults()
         {
-            Projectile.damage = 50;
+            Projectile.damage = 1;
 
             Projectile.width = 0;
             Projectile.height = 0;
@@ -477,7 +477,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item weapon = plr.HeldItem;
 
             itemReloading = weapon;
-            timeTillReload = secondsToReload * (60 / (int)plr.GetAttackSpeed(DamageClass.Ranged));
+            timeTillReload = secondsToReload * (100 / (int)plr.GetAttackSpeed(DamageClass.Ranged));
             bulletsOnReload = (weapon.ModItem as IReloadWeapon).GetRemainingBullets();
         }
     }

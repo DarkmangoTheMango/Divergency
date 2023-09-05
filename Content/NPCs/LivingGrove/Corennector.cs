@@ -1,3 +1,4 @@
+using Divergency.Common.Helpers;
 using Divergency.Content.Dusts;
 using Divergency.Content.Projectiles.Hostile;
 using Divergency.Content.Projectiles.Magic;
@@ -42,6 +43,9 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         State state = State.Connect;
 
+        public bool TargetFound { get; private set; }
+        public NPC cachedNPC { get; private set; }
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 1;
@@ -79,6 +83,9 @@ namespace Divergency.Content.NPCs.LivingGrove
         public override void AI()
         {
             Player target = Main.player[NPC.target];
+            Vector2 VinePosTop = NPC.Top;
+            Vector2 VinePosBottomRight = NPC.BottomRight;
+            Vector2 VinePosBottomLeft = NPC.BottomRight;
 
             NPC.TargetClosest(true);
 
@@ -88,7 +95,29 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (state == State.Connect)
             {
-                //spawn 3 projectiles to the nearest enemies from 3 different points (up
+                //spawn 3 projectiles to the nearest enemies from 3 different points 
+            
+                    if (!TargetFound)
+                    {
+                        for (int k = 0; k < Main.maxNPCs; k++)
+                        {
+                            NPC taggedNPC = Main.npc[k];
+
+                            if (taggedNPC.active && taggedNPC.ModNPC is not Corennector)
+                            {
+                                cachedNPC = taggedNPC;
+                            }
+                        }
+
+                        TargetFound = true;
+                    }
+                if (TargetFound)
+                {
+                    NPC.rotation += NPC.velocity.X * 0.1f;
+                   // NPC.Move(cachedNPC.Center + new Vector2(0, 18), 30f, 20);
+
+                }
+
             }
         }
 
