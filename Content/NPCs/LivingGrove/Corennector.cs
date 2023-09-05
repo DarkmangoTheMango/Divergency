@@ -1,11 +1,7 @@
-using Divergency.Common.Helpers;
 using Divergency.Content.Dusts;
 using Divergency.Content.Projectiles.Hostile;
-using Divergency.Content.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ParticleLibrary;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -35,9 +31,9 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         enum State
         {
-          Connect,
-          Idle,
-          Death
+            Connect,
+            Idle,
+            Death
 
         }
 
@@ -45,6 +41,10 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public bool TargetFound { get; private set; }
         public NPC cachedNPC { get; private set; }
+        public NPC cachedNPC2 { get; private set; }
+        public NPC cachedNPC3 { get; private set; }
+
+        public int counter { get; private set; }
 
         public override void SetStaticDefaults()
         {
@@ -59,7 +59,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPC.knockBackResist = 0.2f;
 
             NPC.noTileCollide = true;
-            
+
             NPC.scale = 0.5f;
             NPC.Size = new Vector2(44f, 54f);
 
@@ -95,33 +95,87 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (state == State.Connect)
             {
-                //spawn 3 projectiles to the nearest enemies from 3 different points 
-            
-                    if (!TargetFound)
-                    {
-                        for (int k = 0; k < Main.maxNPCs; k++)
-                        {
-                            NPC taggedNPC = Main.npc[k];
-
-                            if (taggedNPC.active && taggedNPC.ModNPC is not Corennector)
-                            {
-                                cachedNPC = taggedNPC;
-                            }
-                        }
-
-                        TargetFound = true;
-                    }
-                if (TargetFound)
+                 //START FINDING ENEMYS TO CONNECT
+                if (counter == 0)
                 {
-                    NPC.rotation += NPC.velocity.X * 0.1f;
-                   // NPC.Move(cachedNPC.Center + new Vector2(0, 18), 30f, 20);
+                    for (int k = 0; k < Main.maxNPCs; k++)
+                    {
+                        NPC taggedNPC = Main.npc[k];
 
+                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000)
+                        {
+                            cachedNPC = taggedNPC;
+                        }
+                    } 
+
+                    counter++;
                 }
+                if (counter == 1)
+                {
+                    for (int k = 0; k < Main.maxNPCs; k++)
+                    {
+                        NPC taggedNPC = Main.npc[k];
 
+                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000 && taggedNPC != cachedNPC)
+                        {
+                            cachedNPC2 = taggedNPC;
+                        }
+                    }
+                    counter++;
+                }
+                if (counter == 2)
+                {
+                    for (int k = 0; k < Main.maxNPCs; k++)
+                    {
+                        NPC taggedNPC = Main.npc[k];
+
+                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000 && taggedNPC != cachedNPC2 && taggedNPC != cachedNPC)
+                        {
+                            cachedNPC3 = taggedNPC;
+                        }
+                    }
+                    counter++;
+                }
+                if (counter == 3)
+                {
+                    // NPC.Move(cachedNPC.Center + new Vector2(0, 18), 30f, 20);
+                    
+                        Main.NewText(cachedNPC);
+                    Main.NewText(cachedNPC2);
+                    Main.NewText(cachedNPC3);
+                    counter++;
+                }
+                //FOUND ENEMIES END
+
+                //START CONNECTING
+                if (counter == 4)
+                {
+                    NPC.ai[0]++;//general ai timer
+                    if (NPC.ai[0] == 20)
+                    {
+                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
+
+                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosTop, NPC.DirectionTo(cachedNPC.Center) * 10, ModContent.ProjectileType<GuardianBeam>(), 0, 0);
+                    }
+                    if (NPC.ai[0] == 40)
+                    {
+                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
+
+                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosBottomRight, NPC.DirectionTo(cachedNPC2.Center) * 10, ModContent.ProjectileType<GuardianBeam>(), 0, 0);
+                    }
+                    if (NPC.ai[0] == 60)
+                    {
+                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
+
+                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosBottomLeft, NPC.DirectionTo(cachedNPC3.Center) * 10, ModContent.ProjectileType<GuardianBeam>(), 0, 0);
+                    }
+                }
             }
+         
+
         }
 
-            
+
         public override void OnKill()
         {
             for (int i = 0; i < 5; i++)
@@ -130,13 +184,13 @@ namespace Divergency.Content.NPCs.LivingGrove
                 Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
             }
 
-           // if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); }
+            // if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); }
         }
 
-       
 
-           
-        
+
+
+
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
@@ -147,9 +201,9 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-           // spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            // spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
             return true;
         }
     }
-   
+
 }
