@@ -1,9 +1,14 @@
+using Divergency.Common.Helpers;
 using Divergency.Content.Dusts;
+using Divergency.Content.Items.Weapons.LivingCore;
 using Divergency.Content.Projectiles.Hostile;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -48,20 +53,24 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 1;
+            Main.npcFrameCount[NPC.type] = 5;
+            NPCID.Sets.TrailCacheLength[NPC.type] = 5;
+            NPCID.Sets.TrailingMode[NPC.type] = 0;
         }
+
+        List<NPC> cachedNPCs = new List<NPC>();
 
         public override void SetDefaults()
         {
-            NPC.lifeMax = 100;
-            NPC.damage = 30;
-            NPC.defense = 5;
+            NPC.lifeMax = 1;
+            NPC.damage = 0;
+            NPC.defense = 0;
             NPC.knockBackResist = 0.2f;
-
+            NPC.immortal = true;
             NPC.noTileCollide = true;
 
-            NPC.scale = 0.5f;
-            NPC.Size = new Vector2(44f, 54f);
+            NPC.scale = 0.9f;
+            NPC.Size = new Vector2(116f);
 
             NPC.HitSound = SoundID.DD2_WitherBeastHurt;
             NPC.DeathSound = SoundID.DD2_WitherBeastDeath;
@@ -79,13 +88,26 @@ namespace Divergency.Content.NPCs.LivingGrove
                 new FlavorTextBestiaryInfoElement("The most annoying creature in the groves :kojima:")
             });
         }
-
+        public override void FindFrame(int frameHeight)
+        {
+            NPC.spriteDirection = NPC.direction;
+            NPC.frameCounter++;
+            if (NPC.frameCounter >= 10)
+            {
+                NPC.frameCounter = 0;
+                NPC.frame.Y += frameHeight;
+                if (NPC.frame.Y >= frameHeight * 5)
+                    NPC.frame.Y = 0;
+            }
+        }
         public override void AI()
         {
             Player target = Main.player[NPC.target];
-            Vector2 VinePosTop = NPC.Top;
-            Vector2 VinePosBottomRight = NPC.BottomRight;
-            Vector2 VinePosBottomLeft = NPC.BottomRight;
+            Vector2 VinePosTop = NPC.Center;
+            Vector2 VinePosBottomRight = NPC.Center;
+            Vector2 VinePosBottomLeft = NPC.Center;
+
+            Vector2 MiddlePoint;
 
             NPC.TargetClosest(true);
 
@@ -95,7 +117,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (state == State.Connect)
             {
-                 //START FINDING ENEMYS TO CONNECT
+                 //START FINDING ENEMYS TO CORENNECT
                 if (counter == 0)
                 {
                     for (int k = 0; k < Main.maxNPCs; k++)
@@ -105,6 +127,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                         if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000)
                         {
                             cachedNPC = taggedNPC;
+
                         }
                     } 
 
@@ -119,6 +142,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                         if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000 && taggedNPC != cachedNPC)
                         {
                             cachedNPC2 = taggedNPC;
+
                         }
                     }
                     counter++;
@@ -140,9 +164,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 {
                     // NPC.Move(cachedNPC.Center + new Vector2(0, 18), 30f, 20);
                     
-                        Main.NewText(cachedNPC);
-                    Main.NewText(cachedNPC2);
-                    Main.NewText(cachedNPC3);
+ 
                     counter++;
                 }
                 //FOUND ENEMIES END
@@ -155,20 +177,25 @@ namespace Divergency.Content.NPCs.LivingGrove
                     {
                         SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
 
-                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosTop, NPC.DirectionTo(cachedNPC.Center) * 10, ModContent.ProjectileType<GuardianBeam>(), 0, 0);
+                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosTop, NPC.DirectionTo(cachedNPC.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: 1);
                     }
                     if (NPC.ai[0] == 40)
                     {
                         SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
 
-                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosBottomRight, NPC.DirectionTo(cachedNPC2.Center) * 10, ModContent.ProjectileType<GuardianBeam>(), 0, 0);
+                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosBottomRight, NPC.DirectionTo(cachedNPC2.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: 2);
                     }
                     if (NPC.ai[0] == 60)
                     {
                         SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
 
-                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosBottomLeft, NPC.DirectionTo(cachedNPC3.Center) * 10, ModContent.ProjectileType<GuardianBeam>(), 0, 0);
+                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosBottomLeft, NPC.DirectionTo(cachedNPC3.Center) * 2   , ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: 3);
                     }
+
+                    NPC.rotation += NPC.velocity.X * 0.04f;
+
+                    MiddlePoint = (cachedNPC.Center + cachedNPC2.Center + cachedNPC3.Center) / 3;
+                    NPC.velocity += NPC.Center.DirectionTo(MiddlePoint) / 100;
                 }
             }
          
@@ -194,16 +221,175 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Coreling").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Corennector").Value;
+            Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CorennectorGlow").Value;
+
 
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
             Color color = Color.White;
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            // spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
-            return true;
+            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            spriteBatch.Draw(glow, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+
+            return false;
         }
     }
+    public class CorennectorProj : ModProjectile
+    {
+        private const string ChainTexturePath = "Divergency/Content/NPCs/LivingGrove/CorennectorChain"; // The folder path to the flail chain sprite
+        private const string ChainTextureExtraPath = "Divergency/Content/NPCs/LivingGrove/CorennectorChainExtra";  // This texture and related code is optional and used for a unique effect
 
+        public bool spawned { get; private set; }
+        public NPC cachedNPC { get; private set; }
+        public bool targetfound { get; private set; }
+        public Vector2 destination;
+
+        private NPC cachedTarget;
+        private NPC cachedTarget2;
+
+        public override void SetStaticDefaults()
+        {
+            // These lines facilitate the trail drawing
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+
+            ProjectileID.Sets.HeldProjDoesNotUsePlayerGfxOffY[Type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.netImportant = true;
+            Projectile.width = 1;
+            Projectile.height = 1;
+            Projectile.hostile = true;
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Generic;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 10;
+            Projectile.timeLeft = 999999999;
+            Projectile.hide = true;
+        }
+        public override void AI()
+        {
+
+
+            if (!spawned)
+            {
+                for (int k = 0; k < Main.maxNPCs; k++)
+                {
+                    NPC taggedNPC = Main.npc[k];
+
+                    if (taggedNPC.active && taggedNPC.ModNPC is Corennector)
+                    {
+                        cachedNPC = taggedNPC;
+                    }
+                }
+
+                spawned = true;
+            }
+            
+            if (!cachedNPC.active)
+            {
+                Projectile.Kill();
+            }
+            if (!targetfound)
+            {
+                for (int k = 0; k < Main.maxNPCs; k++)
+                {
+                    NPC target = Main.npc[k];
+
+                    if (target.active && target.ModNPC is not Corennector && Projectile.Hitbox.Intersects(target.Hitbox))
+                    {
+                        targetfound = true;
+                        cachedTarget = target;
+                    }
+                  
+
+
+                }
+            }
+            if (targetfound)
+            {
+                Projectile.Center = cachedTarget.Center;
+                
+            }
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Vector2 Origin = Vector2.Zero;
+            if (Projectile.ai[0] == 1)
+            {
+                Origin = cachedNPC.Center; //determine where the chains spawns TODO offsets
+            }
+            if (Projectile.ai[0] == 2)
+            {
+                Origin = cachedNPC.Center;
+            }
+            if (Projectile.ai[0] == 3)
+            {
+                Origin = cachedNPC.Center;
+            }
+            // This fixes a vanilla GetPlayerArmPosition bug causing the chain to draw incorrectly when stepping up slopes. The flail itself still draws incorrectly due to another similar bug. This should be removed once the vanilla bug is fixed.
+
+
+            Asset<Texture2D> chainTexture = ModContent.Request<Texture2D>(ChainTexturePath);
+            Asset<Texture2D> chainTextureExtra = ModContent.Request<Texture2D>(ChainTextureExtraPath); // This texture and related code is optional and used for a unique effect
+
+            Rectangle? chainSourceRectangle = null;
+            // Drippler Crippler customizes sourceRectangle to cycle through sprite frames: sourceRectangle = asset.Frame(1, 6);
+            float chainHeightAdjustment = 0f; // Use this to adjust the chain overlap. 
+
+            Vector2 chainOrigin = chainSourceRectangle.HasValue ? (chainSourceRectangle.Value.Size() / 2f) : (chainTexture.Size() / 2f);
+            Vector2 chainDrawPosition = Projectile.Center; /// top bottom etc ------------------------------------------------------------------ TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOO __________________________________________
+            Vector2 vectorFromProjectileToPlayerArms = Origin.MoveTowards(chainDrawPosition, 4f) - chainDrawPosition;
+            Vector2 unitVectorFromProjectileToPlayerArms = vectorFromProjectileToPlayerArms.SafeNormalize(Vector2.Zero);
+            float chainSegmentLength = (chainSourceRectangle.HasValue ? chainSourceRectangle.Value.Height : chainTexture.Height()) + chainHeightAdjustment;
+            if (chainSegmentLength == 0)
+            {
+                chainSegmentLength = 32; // When the chain texture is being loaded, the height is 0 which would cause infinite loops.
+            }
+            float chainRotation = unitVectorFromProjectileToPlayerArms.ToRotation() + MathHelper.PiOver2;
+            int chainCount = 0;
+            float chainLengthRemainingToDraw = vectorFromProjectileToPlayerArms.Length() + chainSegmentLength / 2f;
+
+            // This while loop draws the chain texture from the projectile to the player, looping to draw the chain texture along the path
+            while (chainLengthRemainingToDraw > 0f)
+            {
+                // This code gets the lighting at the current tile coordinates
+                Color chainDrawColor = Lighting.GetColor((int)chainDrawPosition.X / 16, (int)(chainDrawPosition.Y / 16f));
+
+                // Flaming Mace and Drippler Crippler use code here to draw custom sprite frames with custom lighting.
+                // Cycling through frames: sourceRectangle = asset.Frame(1, 6, 0, chainCount % 6);
+                // This example shows how Flaming Mace works. It checks chainCount and changes chainTexture and draw color at different values
+
+              
+                
+
+                // Here, we draw the chain texture at the coordinates
+                Main.spriteBatch.Draw(chainTexture.Value, chainDrawPosition - Main.screenPosition, chainSourceRectangle, chainDrawColor, chainRotation, chainOrigin, 1f, SpriteEffects.None, 0f);
+
+                // chainDrawPosition is advanced along the vector back to the player by the chainSegmentLength
+                chainDrawPosition += unitVectorFromProjectileToPlayerArms * chainSegmentLength;
+                chainCount++;
+                chainLengthRemainingToDraw -= chainSegmentLength;
+            }
+
+        
+            return false;
+        }
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
+        {
+            behindNPCs.Add(index);
+        }
+    }
+    public class CorennectorNPC : GlobalNPC
+    {
+       
+    }
 }
+
+
+
+

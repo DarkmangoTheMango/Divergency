@@ -351,6 +351,7 @@ Mods: {
 			LivingCoreArrow.DisplayName: Living Core Arrow
 			MuscoreProj.DisplayName: Muscore Proj
 			DiceProj.DisplayName: Dice Proj
+			CorennectorProj.DisplayName: Corennector Proj
 		}
 
 		Biomes: {
