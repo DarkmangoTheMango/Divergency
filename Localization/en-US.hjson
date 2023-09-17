@@ -351,6 +351,8 @@ Mods: {
 			LivingCoreArrow.DisplayName: Living Core Arrow
 			MuscoreProj.DisplayName: Muscore Proj
 			DiceProj.DisplayName: Dice Proj
+			CorennectorProj.DisplayName: Corennector Proj
+			CorennectorVisuals.DisplayName: Corennector Visuals
 		}
 
 		Biomes: {
@@ -1029,6 +1031,7 @@ Mods: {
 			CoreElementalHand.DisplayName: Core Elemental Hand
 			CoreElementalBody.DisplayName: Core Elemental Body
 			CoreElementalDeath.DisplayName: Core Elemental Death
+			Corennector.DisplayName: Hideo
 		}
 
 		"Keybinds.Reload the current weapon.DisplayName": Reload the current weapon
