@@ -14,7 +14,14 @@
     <Compile Remove="Common\Players\DivergencyPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Common\Systems\SkillNodes\SquareGlow.png" />
     <None Remove="Localization\en-US.hjson" />
+    <None Remove="TestStuff\Back_Body_Sheet.png" />
+    <None Remove="TestStuff\Back_L_Legs_Sheet.png" />
+    <None Remove="TestStuff\Back_R_Legs_Sheet.png" />
+    <None Remove="TestStuff\Front_Body_Sheet.png" />
+    <None Remove="TestStuff\Front_L_Legs_Sheet.png" />
+    <None Remove="TestStuff\Front_R_Legs_Sheet.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />
