@@ -352,6 +352,7 @@ Mods: {
 			MuscoreProj.DisplayName: Muscore Proj
 			DiceProj.DisplayName: Dice Proj
 			CorennectorProj.DisplayName: Corennector Proj
+			CorennectorVisuals.DisplayName: Corennector Visuals
 		}
 
 		Biomes: {

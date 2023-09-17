@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -50,16 +52,16 @@ namespace Divergency.Content.NPCs.LivingGrove
         public NPC cachedNPC3 { get; private set; }
 
         public int counter { get; private set; }
+        public Vector2 NPCCenter { get; private set; }
 
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 5;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 5;
+            NPCID.Sets.TrailCacheLength[NPC.type] = 6;
             NPCID.Sets.TrailingMode[NPC.type] = 0;
         }
-
         List<NPC> cachedNPCs = new List<NPC>();
-
+        Vector2 MiddlePoint;
         public override void SetDefaults()
         {
             NPC.lifeMax = 1;
@@ -102,12 +104,15 @@ namespace Divergency.Content.NPCs.LivingGrove
         }
         public override void AI()
         {
+            if (NPC.ai[0] == 20)
+            {
+              //      NPC.ai[0] = 0;
+            }
             Player target = Main.player[NPC.target];
             Vector2 VinePosTop = NPC.Center;
             Vector2 VinePosBottomRight = NPC.Center;
             Vector2 VinePosBottomLeft = NPC.Center;
 
-            Vector2 MiddlePoint;
 
             NPC.TargetClosest(true);
 
@@ -117,7 +122,6 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (state == State.Connect)
             {
-                 //START FINDING ENEMYS TO CORENNECT
                 if (counter == 0)
                 {
                     for (int k = 0; k < Main.maxNPCs; k++)
@@ -126,76 +130,70 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                         if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000)
                         {
-                            cachedNPC = taggedNPC;
-
-                        }
-                    } 
-
-                    counter++;
-                }
-                if (counter == 1)
-                {
-                    for (int k = 0; k < Main.maxNPCs; k++)
-                    {
-                        NPC taggedNPC = Main.npc[k];
-
-                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000 && taggedNPC != cachedNPC)
-                        {
-                            cachedNPC2 = taggedNPC;
-
+                            cachedNPCs.Add(taggedNPC);
+                            
                         }
                     }
                     counter++;
-                }
-                if (counter == 2)
-                {
-                    for (int k = 0; k < Main.maxNPCs; k++)
-                    {
-                        NPC taggedNPC = Main.npc[k];
 
-                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000 && taggedNPC != cachedNPC2 && taggedNPC != cachedNPC)
-                        {
-                            cachedNPC3 = taggedNPC;
-                        }
-                    }
-                    counter++;
                 }
-                if (counter == 3)
-                {
-                    // NPC.Move(cachedNPC.Center + new Vector2(0, 18), 30f, 20);
-                    
- 
-                    counter++;
-                }
+
+
                 //FOUND ENEMIES END
 
                 //START CONNECTING
-                if (counter == 4)
+                if (counter == 1)
                 {
-                    NPC.ai[0]++;//general ai timer
+                    NPC.ai[0]++;
+
                     if (NPC.ai[0] == 20)
                     {
-                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
+                        foreach (NPC targetNPC in cachedNPCs)
+                        {
+                            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
 
-                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosTop, NPC.DirectionTo(cachedNPC.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: 1);
-                    }
-                    if (NPC.ai[0] == 40)
-                    {
-                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
-
-                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosBottomRight, NPC.DirectionTo(cachedNPC2.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: 2);
-                    }
-                    if (NPC.ai[0] == 60)
-                    {
-                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
-
-                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), VinePosBottomLeft, NPC.DirectionTo(cachedNPC3.Center) * 2   , ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: 3);
+                            Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(targetNPC.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: 1);
+                        }
                     }
 
                     NPC.rotation += NPC.velocity.X * 0.04f;
+                    var averagePos = Vector2.Zero;
 
-                    MiddlePoint = (cachedNPC.Center + cachedNPC2.Center + cachedNPC3.Center) / 3;
-                    NPC.velocity += NPC.Center.DirectionTo(MiddlePoint) / 100;
+
+                    List<Vector2> Points = new List<Vector2>() { NPCCenter };
+
+                    foreach (var npc in cachedNPCs)
+                    {
+                        averagePos += npc.Center;
+                    }
+                        
+                    if (cachedNPCs.Count > 0)
+                    {
+                        // check if count is NOT 0 otherwise it'll crash
+                        averagePos /= cachedNPCs.Count;
+                    }
+
+                    float[] Lengths = new float[Points.Count];
+
+                        for (int i = 0; i < Points.Count; i++)
+                            Lengths[i] = (Points[i] - averagePos).Length();
+
+                        float maxLength = Lengths.Max();
+                        Vector2 RPCenter = new Vector2();
+
+                        float totalWeight = 0;
+
+                        for (int i = 0; i < Points.Count; i++)
+                        {
+                            RPCenter += Points[i] * (Lengths[i] / maxLength);
+                            totalWeight += (Lengths[i] / maxLength);
+                        }
+
+                        RPCenter /= totalWeight;
+
+
+                    NPC.velocity += NPC.DirectionTo(averagePos) / 70;
+
                 }
             }
          
@@ -221,18 +219,27 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
+
+            Texture2D tex = Terraria.GameContent.TextureAssets.Npc[Type].Value;
+            var fadeMult = 1f / NPCID.Sets.TrailCacheLength[Type];
+            for (int i = 0; i < NPC.oldPos.Length; i++)
+            {
+                Main.spriteBatch.Draw(tex, NPC.oldPos[i] - Main.screenPosition + NPC.Size / 2, NPC.frame, Color.DarkGreen * (1f - fadeMult * i), NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, SpriteEffects.None, 0f);
+            }
+
             Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Corennector").Value;
             Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CorennectorGlow").Value;
 
 
-            Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
             Color color = Color.White;
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
-            spriteBatch.Draw(glow, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
-
+            spriteBatch.Draw(texture, NPC.position - Main.screenPosition + NPC.Size / 2, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            spriteBatch.Draw(glow, NPC.position - Main.screenPosition + NPC.Size / 2, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            //trail
+          
             return false;
         }
     }
@@ -304,6 +311,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     {
                         targetfound = true;
                         cachedTarget = target;
+                        target.GetGlobalNPC<CorennectorNPC>().connected = true;
                     }
                   
 
@@ -323,14 +331,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             {
                 Origin = cachedNPC.Center; //determine where the chains spawns TODO offsets
             }
-            if (Projectile.ai[0] == 2)
-            {
-                Origin = cachedNPC.Center;
-            }
-            if (Projectile.ai[0] == 3)
-            {
-                Origin = cachedNPC.Center;
-            }
+     
             // This fixes a vanilla GetPlayerArmPosition bug causing the chain to draw incorrectly when stepping up slopes. The flail itself still draws incorrectly due to another similar bug. This should be removed once the vanilla bug is fixed.
 
 
@@ -386,7 +387,29 @@ namespace Divergency.Content.NPCs.LivingGrove
     }
     public class CorennectorNPC : GlobalNPC
     {
-       
+        public bool connected;
+        public override bool InstancePerEntity => true;
+
+        public override void AI(NPC npc)
+        {
+            if (connected)
+            {
+                npc.immortal = true;
+            }
+        }
+
+    }
+    public class CorennectorVisuals : ModProjectile
+    {
+        public override string Texture => "Divergency/Assets/Textures/Empty";
+        //emit those rings and make the glow
+    }
+    public class CorennectorDust : ModDust
+    {
+        public override string Texture => "Divergency/Assets/Textures/Empty";
+
+        //todo
+        //1. make them spin in random angles
     }
 }
 
