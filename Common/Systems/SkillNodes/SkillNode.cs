@@ -6,55 +6,194 @@ using System.IO.Pipelines;
 using Terraria;
 using Terraria.ModLoader;
 using ReLogic.Content;
+using static Terraria.ModLoader.PlayerDrawLayer;
+using System.Linq;
+using Terraria.GameContent;
+using Terraria.UI.Chat;
+using Mono.Cecil;
+using Divergency.Content.Items.Weapons.Melee;
+using Steamworks;
 
 namespace Divergency.Common.Systems.Skills
 {
     public abstract class SkillNode
     {
-        private Vector2 offset = Vector2.Zero;
+        private static List<SkillInteractor> AllInteractors = new List<SkillInteractor>();
+        private static List<SkillNode> AllSkills = new List<SkillNode>();
 
-        public bool learnt;
+        public static void ClearAll() { AllSkills.Clear(); AllInteractors.Clear(); }
 
-        private List<SkillNode> branchingSkills = new List<SkillNode>();
-        private List<SkillNode> parentSkills = new List<SkillNode>();
+        public Vector2 position = Vector2.Zero;
 
-        public abstract int Size { get; }
-        public abstract string Name { get; }
-        public abstract string Description { get; }
-
-
-        public SkillNode AddBS(SkillNode skill, float rotation) // AddBranchingSkill
+        private struct SkillInteractor
         {
-            skill.offset = rotation.ToRotationVector2() * ((float)skill.Size + (float)Size);
-            branchingSkills.Add(skill);
-            skill.parentSkills.Add(this);
-            return skill;
-        }
-        public SkillNode AddBS(SkillNode skill, Vector2 skillOffset) // AddBranchingSkill
-        {
-            skill.offset = skillOffset;
-            branchingSkills.Add(skill);
-            skill.parentSkills.Add(this);
-            return skill;
-        }
 
-        private static Texture2D Pixel = ModContent.Request<Texture2D>("Divergency/Assets/Textures/WhitePixel", AssetRequestMode.ImmediateLoad).Value;
-        private static Texture2D Square = ModContent.Request<Texture2D>("Divergency/Common/Systems/SkillNodes/SquareGlow", AssetRequestMode.ImmediateLoad).Value;
-        public void Draw(SpriteBatch spriteBatch, Vector2 position)
-        {
-            foreach (SkillNode skill in branchingSkills)
+            public SkillNode skillNode1;
+            public SkillNode skillNode2;
+
+            public SkillInteractor(SkillNode skillNode1, SkillNode skillNode2)
             {
-                int xS = (int)(skill.offset).Length();
+                this.skillNode1 = skillNode1;
+                this.skillNode2 = skillNode2;
+
+                SkillNode.AllInteractors.Add(this);
+            }
+
+            public SkillNode GetOtherNode(SkillNode oneSkill)
+            {
+                if (skillNode1 == oneSkill)
+                    return skillNode2;
+                else if (skillNode2 == oneSkill)
+                    return skillNode1;
+
+                return null;
+            }
+
+            public void Draw(SpriteBatch spriteBatch, Vector2 offset)
+            {
+                Vector2 Line = skillNode1.position - skillNode2.position;
+
+                int xS = (int)Line.Length();
                 int yS = 4;
 
                 Vector2 lineSize = new Vector2(xS, yS);
 
-                spriteBatch.Draw(Pixel, position + skill.offset / 2f, new Rectangle(0, 0, xS, yS), Color.White, skill.offset.ToRotation(), lineSize / 2f, 1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(Pixel, skillNode2.position + Line / 2f + offset, new Rectangle(0, 0, xS, yS), Color.White, Line.ToRotation(), lineSize / 2f, 1f, SpriteEffects.None, 0f);
+            }
+        }
 
-                skill.Draw(spriteBatch, position + skill.offset);
+        private List<SkillInteractor> touchingSkills = new List<SkillInteractor>();
+
+        public virtual string Texture => "Divergency/Common/Systems/SkillNodes/SquareGlow";
+
+        public abstract int Size { get; }
+        public abstract string Name { get; }
+        public abstract string Description { get; }
+        private string[] DescLines;
+
+        public bool Learned = false;
+
+        public SkillNode()
+        {
+            SkillNode.AllSkills.Add(this);
+        }
+
+        public static void DrawLines(SpriteBatch spriteBatch, Vector2 offset)
+        {
+            foreach (SkillInteractor si in AllInteractors)
+            {
+                si.Draw(spriteBatch, offset);
+            }
+        }
+
+        public static SkillNode GetSkillMousedOver(Vector2 offset, Vector2 m)
+        {
+            foreach (SkillNode s in AllSkills)
+            {
+                Vector2 p = s.position + offset - new Vector2(s.Size, s.Size) / 2f;
+                if (m.X > p.X && m.X < p.X+s.Size && m.Y > p.Y && m.Y < p.Y + s.Size)
+                {
+                    return s;
+                }
             }
 
-            spriteBatch.Draw(Square, position - new Vector2(Size, Size) / 2f, null, Color.White, 0f, Vector2.Zero, (float)Size/ Square.Width, SpriteEffects.None, 0f);
+            return null;
+        }
+
+        public static void DrawSkills(SpriteBatch spriteBatch, Vector2 offset)
+        {
+            foreach (SkillNode s in AllSkills)
+            {
+                s.Draw(spriteBatch, offset);
+            }
+        }
+
+        public bool IsUnlockable()
+        {
+            if (touchingSkills.Count == 0)
+                return true;
+
+            foreach (SkillInteractor SI in touchingSkills)
+            {
+                if (SI.GetOtherNode(this).Learned)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public void DrawDesc(SpriteBatch spriteBatch, Vector2 mousePos)
+        {
+            mousePos += new Vector2(20f, 20f);
+            Vector2 DescSize = Vector2.Zero;
+
+            Vector2 Border = new Vector2(6f, 6f);
+
+            float extraLineWidth = 0; // seems to not be needed
+            Color baseColor = Color.White;
+
+            int X = (int)MathF.Ceiling(mousePos.X + Border.X);
+            int Y = (int)MathF.Ceiling(mousePos.Y + Border.Y);
+
+            float NameHeight = ChatManager.GetStringSize(FontAssets.MouseText.Value, Name, Vector2.One, -1f).Y;
+            NameHeight *= 1.2f;
+
+            if (DescLines == null)
+                DescLines = Description.Split("\n");
+
+            foreach (string line in DescLines)
+            {
+                Vector2 stringSize = ChatManager.GetStringSize(FontAssets.MouseText.Value, line, Vector2.One, -1f);
+                if (stringSize.X > DescSize.X)
+                {
+                    DescSize.X = stringSize.X;
+                }
+                DescSize.Y += stringSize.Y + extraLineWidth;
+            }
+
+            DescSize += Border * 2f;
+            DescSize.Y += NameHeight;
+
+            Rectangle DescBG = new Rectangle((int)MathF.Ceiling(mousePos.X), (int)MathF.Ceiling(mousePos.Y), (int)MathF.Ceiling(DescSize.X), (int)MathF.Ceiling(DescSize.Y));
+
+            spriteBatch.Draw(Pixel, DescBG, Color.Orange);
+
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, Name, new Vector2(X, Y), baseColor, 0f, Vector2.Zero, Vector2.One, -1f, 2f);
+
+            Y += (int)MathF.Ceiling(NameHeight);
+
+            foreach (string line in DescLines)
+            {
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, line, new Vector2(X, Y), baseColor, 0f, Vector2.Zero, Vector2.One, -1f, 2f);
+                Y += (int)(FontAssets.MouseText.Value.MeasureString(line).Y + extraLineWidth);
+            }
+        }
+
+        public SkillNode AddBS(SkillNode skill, float rotation) // AddBranchingSkill
+        {
+            return AddBS(skill, rotation.ToRotationVector2() * ((float)skill.Size + (float)Size));
+        }
+
+        public SkillNode AddBS(SkillNode skill, Vector2 skillOffset) // AddBranchingSkill
+        {
+            skill.position = position + skillOffset;
+
+            return Connect(skill);
+        }
+        public SkillNode Connect(SkillNode skill) // Meant as path to get to the skill...
+        {
+            SkillInteractor SI = new SkillInteractor(this, skill);
+
+            touchingSkills.Add(SI);
+            skill.touchingSkills.Add(SI);
+            return skill;
+        }
+
+        private static Texture2D Pixel = ModContent.Request<Texture2D>("Divergency/Assets/Textures/WhitePixel", AssetRequestMode.ImmediateLoad).Value;
+        public void Draw(SpriteBatch spriteBatch, Vector2 offset)
+        {
+            Texture2D DrawTexture = ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value;
+            spriteBatch.Draw(DrawTexture, position - new Vector2(Size, Size) / 2f + offset, null, Learned ? Color.White : Color.Gray, 0f, Vector2.Zero, (float)Size / DrawTexture.Width, SpriteEffects.None, 0f);
         }
 
         virtual public void PostUpdateEquipment() { }

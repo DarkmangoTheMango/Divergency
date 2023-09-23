@@ -11,6 +11,6 @@ namespace Divergency.Common.Systems.Skills
     {
         public override int Size => 32;
         public override string Name => "Test";
-        public override string Description => "A test skill node thingy.\n Gives +20% Damage.";
+        public override string Description => "A test skill node thingy.\nGives +20% Damage.";
     }
 }

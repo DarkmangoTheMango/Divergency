@@ -14,18 +14,100 @@ using Terraria.GameInput;
 using Terraria.GameContent.UI.Elements;
 using ReLogic.Content;
 using static Terraria.GameContent.Animations.On_Actions.Sprites;
+using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static System.Net.WebRequestMethods;
 
 namespace Divergency.Common.Systems
 {
     public class SkillTreePlayer : ModPlayer
     {
+        private int SkillPointTotal = 100;
+        private int SkillPointsUsed = 0;
+
+        public int SkillPoints
+        {
+            get { return SkillPointTotal - SkillPointsUsed; }
+        }
+
+        public void GetSkill(SkillNode skill)
+        {
+            skill.Learned = true;
+            SkillPointsUsed++;
+        }
+
         public override void PreUpdate()
         {
 
         }
+
         public override void UpdateEquips()
         {
-            //Player.GetDamage(DamageClass.Generic) *= 10f;
+
+        }
+    }
+
+    public class SkillTreeHelper
+    {
+        SkillNode curNode;
+
+        List<SkillNode> nodeHistory = new List<SkillNode>();
+
+        Dictionary<string, int> label = new Dictionary<string, int>();
+
+        Dictionary<string, SkillNode> savedAs = new Dictionary<string, SkillNode>();
+
+        public SkillTreeHelper(SkillNode curNode)
+        {
+            this.curNode = curNode;
+            nodeHistory.Add(curNode);
+        }
+
+        public void AddNSet(SkillNode skill, float rotation)
+        {
+            nodeHistory.Add(skill);
+            curNode = curNode.AddBS(skill, rotation);
+        }
+
+        public void AddNSet(SkillNode skill, Vector2 skillOffset)
+        {
+            nodeHistory.Add(skill);
+            curNode = curNode.AddBS(skill, skillOffset);
+        }
+
+        public void Connect(string s)
+        {
+            savedAs[s].Connect(curNode);
+        }
+
+        public void GOTOLabel(string s)
+        {
+            int traceTo = label[s];
+
+            TrackeBack(nodeHistory.Count - traceTo);
+
+            foreach (var pair in label)
+            {
+                if (pair.Value > nodeHistory.Count)
+                    label.Remove(pair.Key);
+            }
+        }
+
+        public void TrackeBack(int length)
+        {
+            nodeHistory.RemoveRange(nodeHistory.Count - length, length);
+
+            curNode = nodeHistory.Last<SkillNode>();
+        }
+
+        public void SetLabel(string s)
+        {
+            label.Add(s, nodeHistory.Count);
+        }
+
+        public void SaveAs(string s)
+        {
+            savedAs.Add(s, curNode);
         }
     }
 
@@ -39,6 +121,7 @@ namespace Divergency.Common.Systems
         bool IsSkillTreeActive = false;
         public Vector2 offset;
         public Vector2 prevMousePos;
+        public SkillNode tryClickNode;
         public bool MouseIsDown;
 
         public SkillNode CoreSkill;
@@ -47,35 +130,43 @@ namespace Divergency.Common.Systems
         {
             ToggleSkillTree = KeybindLoader.RegisterKeybind(Mod, "Toggle Skill Tree", "P");
 
+            SkillNode.ClearAll();
+
             CoreSkill = new TestSkill();
+            CoreSkill.Learned = true;
 
-            {
-                SkillNode skill1 = CoreSkill.AddBS(new TestSkillSmol(), new Vector2(1f, 0f).ToRotation());
-                {
-                    SkillNode skill1_1 = skill1.AddBS(new TestSkill(), -MathF.PI / 4f);
-                    SkillNode skill1_2 = skill1.AddBS(new TestSkillSmol(), 0f);
-                    SkillNode skill1_3 = skill1.AddBS(new TestSkill(), MathF.PI / 4f);
-                }
-            }
+            SkillTreeHelper STH = new SkillTreeHelper(CoreSkill);
+            STH.SetLabel("Core");
 
-            {
-                SkillNode skill1 = CoreSkill.AddBS(new TestSkillSmol(), new Vector2(-1f, 0f).ToRotation());
-                {
-                    SkillNode skill1_1 = skill1.AddBS(new TestSkill(), MathF.PI - MathF.PI / 4f);
-                    SkillNode skill1_2 = skill1.AddBS(new TestSkillSmol(), MathF.PI);
-                    SkillNode skill1_3 = skill1.AddBS(new TestSkill(), MathF.PI + MathF.PI / 4f);
-                }
-            }
+            STH.AddNSet(new TestSkillSmol(), new Vector2(1f, 0f).ToRotation());
+                STH.AddNSet(new TestSkill(), -MathF.PI / 4f);
+                    STH.TrackeBack(1);
+                STH.AddNSet(new TestSkillSmol(), 0f);
+                    STH.TrackeBack(1);
+                STH.AddNSet(new TestSkill(), MathF.PI / 4f);
+                    STH.GOTOLabel("Core"); // STH.TrackeBack(2);
 
-            {
-                SkillNode skill1 = CoreSkill.AddBS(new TestSkill(), new Vector2(0f, -1f).ToRotation());
-                {
-                    SkillNode skill1_1 = skill1.AddBS(new TestSkill(), new Vector2(0f, -1f).ToRotation());
-                    {
-                        SkillNode skill1_1_1 = skill1_1.AddBS(new TestSkill(), new Vector2(0f, -1f).ToRotation());
-                    }
-                }
-            }
+            STH.AddNSet(new TestSkillSmol(), new Vector2(-1f, 0f).ToRotation());
+                STH.AddNSet(new TestSkillSmol(), MathF.PI);
+                    STH.AddNSet(new TestSkillSmol(), MathF.PI);
+                        STH.SaveAs("LeftThingy");
+                        STH.TrackeBack(2);
+                STH.AddNSet(new TestSkill(), MathF.PI - MathF.PI / 4f);
+                    STH.Connect("LeftThingy");
+                    STH.TrackeBack(1);
+                STH.AddNSet(new TestSkill(), MathF.PI + MathF.PI / 4f);
+                    STH.Connect("LeftThingy");
+                    STH.GOTOLabel("Core");
+
+            STH.AddNSet(new TestSkill(), new Vector2(0f, -1f).ToRotation());
+                STH.AddNSet(new TestSkill(), new Vector2(1, -1f).ToRotation());
+                    STH.AddNSet(new TestSkill(), new Vector2(0f, -1f).ToRotation());
+                        STH.AddNSet(new TestSkill(), new Vector2(-1f, -1f).ToRotation());
+                            STH.SaveAs("Test");
+                            STH.TrackeBack(3);
+                STH.AddNSet(new TestSkill(), new Vector2(-1f, -1f).ToRotation());
+                    STH.AddNSet(new TestSkill(), new Vector2(0, -1f).ToRotation());
+                        STH.Connect("Test");
         }
         public override void Unload()
         {
@@ -98,17 +189,43 @@ namespace Divergency.Common.Systems
 
             if (Main.mouseLeft && Main.mouseLeftRelease && GetTreeRectangle().Contains(Main.mouseX, Main.mouseY))
             {
-                Load();
-                Console.WriteLine("Click");
+                //Load();
                 MouseIsDown = true;
                 prevMousePos = new Vector2(Main.mouseX, Main.mouseY);
+
+                Vector2 Center = Main.ScreenSize.ToVector2() / 2f - offset;
+                tryClickNode = SkillNode.GetSkillMousedOver(Center, new Vector2(Main.mouseX, Main.mouseY));
             }
 
             if (Main.mouseLeft && MouseIsDown)
             {
-                Vector2 newMousePos = new Vector2(Main.mouseX, Main.mouseY);
-                offset = offset + (prevMousePos - newMousePos);
-                prevMousePos = newMousePos;
+                if (tryClickNode == null)
+                {
+                    Vector2 newMousePos = new Vector2(Main.mouseX, Main.mouseY);
+
+                    offset = offset + (prevMousePos - newMousePos);
+                    prevMousePos = newMousePos;
+                }
+            }
+            else if (!Main.mouseLeft && MouseIsDown)
+            {
+                MouseIsDown = false;
+
+                Vector2 Center = Main.ScreenSize.ToVector2() / 2f - offset;
+                SkillNode curHover = SkillNode.GetSkillMousedOver(Center, new Vector2(Main.mouseX, Main.mouseY));
+
+                Console.WriteLine("node");
+                if (tryClickNode != null && curHover == tryClickNode)
+                {
+                    SkillTreePlayer STP = Main.LocalPlayer.GetModPlayer<SkillTreePlayer>();
+
+                    Console.WriteLine(tryClickNode.IsUnlockable() + " - " + (STP.SkillPoints > 0));
+
+                    if (tryClickNode.IsUnlockable() && STP.SkillPoints > 0)
+                    {
+                        STP.GetSkill(tryClickNode);
+                    }
+                }
             }
             else
                 MouseIsDown = false;
@@ -158,7 +275,7 @@ namespace Divergency.Common.Systems
             Console.WriteLine("START");
             foreach (var layer in layers)
             {
-                Console.WriteLine(layer.Name);
+                Console.WriteLine(layer.Name);  
             }
             Console.WriteLine("END");
             */
@@ -176,6 +293,7 @@ namespace Divergency.Common.Systems
 
             Rectangle clippingRectangle = GetTreeRectangle();
             spriteBatch.Draw(Pixel, clippingRectangle, Color.SaddleBrown);
+
             /*
             Rectangle rec = new Rectangle(0, 0, size, size);
             Vector2 origin = new Vector2(size/2f, size/2f);
@@ -185,17 +303,24 @@ namespace Divergency.Common.Systems
             Rectangle scissorRectangle = spriteBatch.GraphicsDevice.ScissorRectangle;
             SamplerState anisotropicClamp = SamplerState.AnisotropicClamp;
 
+            Vector2 mousePos = new Vector2(Main.mouseX, Main.mouseY);
+            SkillNode curHover = SkillNode.GetSkillMousedOver(Center, mousePos);
+
             spriteBatch.End();
             spriteBatch.GraphicsDevice.ScissorRectangle = clippingRectangle;
             spriteBatch.GraphicsDevice.RasterizerState = OverflowHiddenRasterizerState;
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, anisotropicClamp, DepthStencilState.None, OverflowHiddenRasterizerState);
 
-            CoreSkill.Draw(spriteBatch, Center);
+            SkillNode.DrawLines(spriteBatch, Center);
+            SkillNode.DrawSkills(spriteBatch, Center);
 
             spriteBatch.End();
             spriteBatch.GraphicsDevice.ScissorRectangle = scissorRectangle;
             spriteBatch.GraphicsDevice.RasterizerState = rasterizerState;
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, anisotropicClamp, DepthStencilState.None, rasterizerState, null, Main.UIScaleMatrix);
+
+            if (curHover != null)
+                curHover.DrawDesc(spriteBatch, mousePos);
 
             /*
             // draw lines
