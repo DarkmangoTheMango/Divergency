@@ -4,20 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Terraria;
 using Terraria.ModLoader;
+using Terraria;
 
 namespace Divergency.Common.Systems.Skills
 {
-    public class TestSkillSmol : SkillNode
+    public class SpeedSkill : SkillNode
     {
         public override int Size => 16;
-        public override string Name => "+1 Damage";
-        public override string Description => "Adds +1 flat damage.";
+        public override string Name => "Swing faster";
+        public override string Description => "Adds +2% attack speed.";
 
+        // and then you just make it like v that v...
         public void UpdateEquips(Player player)
         {
-            player.GetDamage(DamageClass.Generic).Flat += 1f;
+            player.GetAttackSpeed(DamageClass.Generic) += 0.02f;
         }
     }
 }

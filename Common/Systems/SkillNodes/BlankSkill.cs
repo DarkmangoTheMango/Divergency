@@ -4,20 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Terraria;
 using Terraria.ModLoader;
+using Terraria;
 
 namespace Divergency.Common.Systems.Skills
 {
-    public class TestSkillSmol : SkillNode
+    public class BlankSkill : SkillNode
     {
         public override int Size => 16;
-        public override string Name => "+1 Damage";
-        public override string Description => "Adds +1 flat damage.";
+        public override string Name => "Blank Skill nr: " + idx;
+        public override string Description => "";
+        private int idx;
+        public static int _idx;
 
-        public void UpdateEquips(Player player)
+        public BlankSkill()
         {
-            player.GetDamage(DamageClass.Generic).Flat += 1f;
+            _idx++;
+            idx = _idx;
         }
     }
 }
