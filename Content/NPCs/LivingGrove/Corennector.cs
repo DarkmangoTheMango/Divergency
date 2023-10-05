@@ -2,9 +2,11 @@ using Divergency.Common.Helpers;
 using Divergency.Content.Dusts;
 using Divergency.Content.Items.Weapons.LivingCore;
 using Divergency.Content.Projectiles.Hostile;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -47,9 +49,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         State state = State.Connect;
 
         public bool TargetFound { get; private set; }
-        public NPC cachedNPC { get; private set; }
-        public NPC cachedNPC2 { get; private set; }
-        public NPC cachedNPC3 { get; private set; }
+    
 
         public int counter { get; private set; }
         public Vector2 NPCCenter { get; private set; }
@@ -61,6 +61,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPCID.Sets.TrailingMode[NPC.type] = 0;
         }
         List<NPC> cachedNPCs = new List<NPC>();
+        List<float> floats = new List<float>();
         Vector2 MiddlePoint;
         public override void SetDefaults()
         {
@@ -122,41 +123,51 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (state == State.Connect)
             {
-                if (counter == 0)
-                {
+                    NPC.ai[0]++;
                     for (int k = 0; k < Main.maxNPCs; k++)
                     {
                         NPC taggedNPC = Main.npc[k];
 
-                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000)
+                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000 && !cachedNPCs.Contains(taggedNPC) && NPC.ai[0] == 20)
                         {
                             cachedNPCs.Add(taggedNPC);
-                            
-                        }
-                    }
-                    counter++;
-
-                }
-
-
-                //FOUND ENEMIES END
-
-                //START CONNECTING
-                if (counter == 1)
-                {
-                    NPC.ai[0]++;
-
-                    if (NPC.ai[0] == 20)
-                    {
                         foreach (NPC targetNPC in cachedNPCs)
                         {
                             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
 
-                            Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(targetNPC.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: 1);
+                            Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(targetNPC.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: cachedNPCs.Count);
+                            if (targetNPC.GetGlobalNPC<CorennectorNPC>().ShieldHP <= 0)
+                            {
+                                NPC.active = false;
+                            }
                         }
+                        NPC.ai[0] = 0;
+                        counter++;
+                        break;
+
+                 
+
+                    }
+                    }
+                    counter++;
+
+                if (AllSheildsDown())
+                {
+                    NPC.immortal = false;
+                    NPC.StrikeInstantKill();
+                }
+            }
+
+            
+            //FOUND ENEMIES END
+            NPC.ai[1]++;
+                    if (NPC.ai[1] == 120)
+                    {
+                        DivergencyDraw.SpawnRing(NPC.Center, Color.LightGreen);
+                    NPC.ai[1] = 0;
                     }
 
-                    NPC.rotation += NPC.velocity.X * 0.04f;
+                    NPC.rotation += NPC.velocity.X * 0.05f;
                     var averagePos = Vector2.Zero;
 
 
@@ -166,7 +177,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     {
                         averagePos += npc.Center;
                     }
-                        
+
                     if (cachedNPCs.Count > 0)
                     {
                         // check if count is NOT 0 otherwise it'll crash
@@ -175,30 +186,44 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                     float[] Lengths = new float[Points.Count];
 
-                        for (int i = 0; i < Points.Count; i++)
-                            Lengths[i] = (Points[i] - averagePos).Length();
+                    for (int i = 0; i < Points.Count; i++)
+                        Lengths[i] = (Points[i] - averagePos).Length();
 
-                        float maxLength = Lengths.Max();
-                        Vector2 RPCenter = new Vector2();
+                    float maxLength = Lengths.Max();
+                    Vector2 RPCenter = new Vector2();
 
-                        float totalWeight = 0;
+                    float totalWeight = 0;
 
-                        for (int i = 0; i < Points.Count; i++)
-                        {
-                            RPCenter += Points[i] * (Lengths[i] / maxLength);
-                            totalWeight += (Lengths[i] / maxLength);
-                        }
+                    for (int i = 0; i < Points.Count; i++)
+                    {
+                        RPCenter += Points[i] * (Lengths[i] / maxLength);
+                        totalWeight += (Lengths[i] / maxLength);
+                    }
 
-                        RPCenter /= totalWeight;
+                    RPCenter /= totalWeight;
 
 
-                    NPC.velocity += NPC.DirectionTo(averagePos) / 70;
-
-                }
-            }
+                    NPC.velocity += NPC.DirectionTo(averagePos) / 100;
+                
+               
          
-
         }
+
+
+        private bool AllSheildsDown()
+        {
+            if (cachedNPCs.Count == 0)
+                return false;
+
+            foreach (NPC npc in cachedNPCs)
+            {
+                if (npc.GetGlobalNPC<CorennectorNPC>().ShieldHP > 0) // or however you do it 
+                    return false;
+            }
+
+            return true;
+        }
+
 
 
         public override void OnKill()
@@ -247,6 +272,7 @@ namespace Divergency.Content.NPCs.LivingGrove
     {
         private const string ChainTexturePath = "Divergency/Content/NPCs/LivingGrove/CorennectorChain"; // The folder path to the flail chain sprite
         private const string ChainTextureExtraPath = "Divergency/Content/NPCs/LivingGrove/CorennectorChainExtra";  // This texture and related code is optional and used for a unique effect
+        private const string ChainDryTexturePath = "Divergency/Content/NPCs/LivingGrove/CorennectorChainDry"; // The folder path to the flail chain sprite
 
         public bool spawned { get; private set; }
         public NPC cachedNPC { get; private set; }
@@ -255,6 +281,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         private NPC cachedTarget;
         private NPC cachedTarget2;
+        private bool dried;
 
         public override void SetStaticDefaults()
         {
@@ -280,7 +307,6 @@ namespace Divergency.Content.NPCs.LivingGrove
         }
         public override void AI()
         {
-
 
             if (!spawned)
             {
@@ -312,8 +338,10 @@ namespace Divergency.Content.NPCs.LivingGrove
                         targetfound = true;
                         cachedTarget = target;
                         target.GetGlobalNPC<CorennectorNPC>().connected = true;
+                        target.GetGlobalNPC<CorennectorNPC>().ShieldHP = 150;
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(),target.Center, new Vector2(0), ModContent.ProjectileType<CorennectorVisuals>(), 0, 0);
                     }
-                  
+
 
 
                 }
@@ -321,23 +349,30 @@ namespace Divergency.Content.NPCs.LivingGrove
             if (targetfound)
             {
                 Projectile.Center = cachedTarget.Center;
-                
+                if (cachedTarget.GetGlobalNPC<CorennectorNPC>().ShieldHP <= 0)
+                {
+                    dried = true;
+                }
             }
+          
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 Origin = Vector2.Zero;
-            if (Projectile.ai[0] == 1)
-            {
+      
                 Origin = cachedNPC.Center; //determine where the chains spawns TODO offsets
-            }
-     
+            
+
             // This fixes a vanilla GetPlayerArmPosition bug causing the chain to draw incorrectly when stepping up slopes. The flail itself still draws incorrectly due to another similar bug. This should be removed once the vanilla bug is fixed.
 
-
             Asset<Texture2D> chainTexture = ModContent.Request<Texture2D>(ChainTexturePath);
-            Asset<Texture2D> chainTextureExtra = ModContent.Request<Texture2D>(ChainTextureExtraPath); // This texture and related code is optional and used for a unique effect
 
+            Asset<Texture2D> chainTextureExtra = ModContent.Request<Texture2D>(ChainTextureExtraPath); // This texture and related code is optional and used for a unique effect
+            if (dried)
+            {
+                chainTexture = ModContent.Request<Texture2D>(ChainDryTexturePath);
+
+            }
             Rectangle? chainSourceRectangle = null;
             // Drippler Crippler customizes sourceRectangle to cycle through sprite frames: sourceRectangle = asset.Frame(1, 6);
             float chainHeightAdjustment = 0f; // Use this to adjust the chain overlap. 
@@ -388,6 +423,7 @@ namespace Divergency.Content.NPCs.LivingGrove
     public class CorennectorNPC : GlobalNPC
     {
         public bool connected;
+        public float ShieldHP =  1; //trololo
         public override bool InstancePerEntity => true;
 
         public override void AI(NPC npc)
@@ -395,23 +431,175 @@ namespace Divergency.Content.NPCs.LivingGrove
             if (connected)
             {
                 npc.immortal = true;
+
+    
+            }
+
+        }
+        public override bool PreAI(NPC npc)
+        {
+            if (connected)
+            {
+                Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
+
+                Dust dust = Dust.NewDustPerfect(npc.Center + (velocity * 50f), ModContent.DustType<Glow>(), velocity * -3f, 0, Color.LimeGreen, 0.6f);
+                dust.noGravity = true;
+            }
+            return base.PreAI(npc);
+        }
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            if (connected)
+            {
+                ShieldHP -= hit.Damage;
+                if (projectile.DamageType == DamageClass.Melee && projectile.DamageType == DamageClass.SummonMeleeSpeed)
+                {
+                    ShieldHP -= hit.Damage * 2;
+
+                }
+            }
+        }
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            ShieldHP -= hit.Damage;
+            if (item.DamageType == DamageClass.Melee)
+            {
+                ShieldHP -= hit.Damage * 2;
             }
         }
 
     }
     public class CorennectorVisuals : ModProjectile
     {
-        public override string Texture => "Divergency/Assets/Textures/Empty";
-        //emit those rings and make the glow
-    }
-    public class CorennectorDust : ModDust
-    {
-        public override string Texture => "Divergency/Assets/Textures/Empty";
 
-        //todo
-        //1. make them spin in random angles
+       // public override string Texture => "Divergency/Assets/Textures/Shockwave";
+
+        public override string Texture => "Divergency/Assets/Textures/Ring";
+
+        public bool spawned { get; private set; }
+        public NPC cachedNPC { get; private set; }
+
+        public override bool ShouldUpdatePosition() => false;
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+        }
+        public Trail trail3;
+
+        public Trail trail4;
+        float radius = 0;
+
+        float timer = 0;
+
+        float width = 40;
+        public override void SetDefaults()
+        {
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.friendly = true;
+            Projectile.hostile = false;
+
+            Projectile.scale = 0f;
+            Projectile.Size = new Vector2(2);
+            Projectile.alpha = 0;
+
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = false;
+
+            Projectile.aiStyle = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+        }
+
+        public override void AI()
+        {
+            if (!spawned)
+            {
+
+                spawned = true;
+              
+            }
+
+           
+            if (spawned)
+            {
+                radius += (90 - radius) / 4f;
+           
+            }
+            Projectile.scale += 0.05f;
+
+            Projectile.alpha += 10;
+            if (Projectile.alpha >= 255) { Projectile.Kill(); }
+        }
+        public Trail trail;
+        public Trail trail2;
+        private int initialDamage;
+        public float timer2;
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+
+
+
+            Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Default").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Default").Value;
+
+            for (int k = 0; k < 3; k++)
+            {
+                if (trail == null)
+                {
+                    trail = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(20f), (p) => Projectile.GetAlpha(new Color(30, 220, 30, 100)) * (float)Math.Pow(1f - p, 2f));
+                    trail.drawOffset = Projectile.Size / 2f;
+                }
+
+                trail.Draw(Projectile.oldPos, timer);
+                timer2 -= 0.01f;
+            }
+            if (trail2 == null)
+            {
+                trail2 = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(10f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 100)));
+                trail2.drawOffset = Projectile.Size / 2f;
+            }
+
+            trail.Draw(Projectile.oldPos);
+            trail2.Draw(Projectile.oldPos);
+
+            if (trail3 == null)
+            {
+                trail3 = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(width), (p) => Projectile.GetAlpha(new Color(0, 255, 0, 0)));
+                trail3.drawOffset = Projectile.Size / 2f;
+
+                trail4 = new Trail(texture, Trail.DefaultPass, (p) => new Vector2(width / 1.9f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 100)));
+                trail4.drawOffset = Projectile.Size / 2f;
+            }
+
+            int parts = 30;
+            Vector2[] tests = new Vector2[parts];
+            float[] rotations = new float[parts];
+
+            for (int point = 0; point < parts; point++)
+            {
+                float rad = ((float)point / (parts - 1)) * MathHelper.TwoPi;
+
+                tests[point] = Projectile.position + new Vector2(MathF.Cos(rad) * radius, MathF.Sin(rad) * radius);
+                rotations[point] = rad;
+            }
+
+            timer -= 0.01f;
+
+            trail3.Draw(tests, rotations, timer);
+            trail4.Draw(tests, rotations, timer);
+
+            return false;
+        }
     }
 }
+        
+
+
+
 
 
 
