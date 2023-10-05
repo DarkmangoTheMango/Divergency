@@ -1034,6 +1034,9 @@ Mods: {
 			Corennector.DisplayName: Hideo
 		}
 
-		"Keybinds.Reload the current weapon.DisplayName": Reload the current weapon
+		Keybinds: {
+			"Reload the current weapon.DisplayName": Reload the current weapon
+			"Toggle Skill Tree.DisplayName": Toggle  Skill  Tree
+		}
 	}
 }
