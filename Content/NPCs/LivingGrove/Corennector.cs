@@ -14,6 +14,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -63,9 +64,11 @@ namespace Divergency.Content.NPCs.LivingGrove
         List<NPC> cachedNPCs = new List<NPC>();
         List<float> floats = new List<float>();
         Vector2 MiddlePoint;
+        private float timer;
+
         public override void SetDefaults()
         {
-            NPC.lifeMax = 1;
+            NPC.lifeMax = 999;
             NPC.damage = 0;
             NPC.defense = 0;
             NPC.knockBackResist = 0.2f;
@@ -123,48 +126,56 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (state == State.Connect)
             {
+                if (AllSheildsDown())
+                {
+                    NPC.ai[3] = 1;
+                   
+                  
+                        NPC.immortal = false;
+                        NPC.StrikeInstantKill();
+                    
+
+                    foreach (NPC targetNPC in cachedNPCs)
+                    {
+                     
+                        targetNPC.GetGlobalNPC<CorennectorNPC>().connected = false;
+                        targetNPC.immortal = false;
+
+                    }
+
+                }
+                else
+                {
                     NPC.ai[0]++;
                     for (int k = 0; k < Main.maxNPCs; k++)
                     {
                         NPC taggedNPC = Main.npc[k];
 
-                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.Distance(NPC.Center) < 1000 && !cachedNPCs.Contains(taggedNPC) && NPC.ai[0] == 20)
+                        if (taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.ModNPC is not CoreElementalHand && taggedNPC.ModNPC is not Corennector && taggedNPC.ModNPC is not CoreElementalBody && taggedNPC.Distance(NPC.Center) < 1000 && !cachedNPCs.Contains(taggedNPC) && NPC.ai[0] == 20)
                         {
                             cachedNPCs.Add(taggedNPC);
-                        foreach (NPC targetNPC in cachedNPCs)
-                        {
-                            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
-
-                            Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(targetNPC.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: cachedNPCs.Count);
-                            if (targetNPC.GetGlobalNPC<CorennectorNPC>().ShieldHP <= 0)
+                            foreach (NPC targetNPC in cachedNPCs)
                             {
-                                NPC.active = false;
+                                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
+
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(targetNPC.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: cachedNPCs.Count);
+                                if (targetNPC.GetGlobalNPC<CorennectorNPC>().ShieldHP <= 0)
+                                {
+                                    NPC.active = false;
+                                }
                             }
+
+
+
                         }
-                        NPC.ai[0] = 0;
-                        counter++;
-                        break;
-
-                 
-
                     }
-                    }
-                    counter++;
 
-                if (AllSheildsDown())
-                {
-                    NPC.immortal = false;
-                    NPC.StrikeInstantKill();
-                }
-            }
 
-            
-            //FOUND ENEMIES END
-            NPC.ai[1]++;
+                    NPC.ai[1]++;
                     if (NPC.ai[1] == 120)
                     {
                         DivergencyDraw.SpawnRing(NPC.Center, Color.LightGreen);
-                    NPC.ai[1] = 0;
+                        NPC.ai[1] = 0;
                     }
 
                     NPC.rotation += NPC.velocity.X * 0.05f;
@@ -204,6 +215,15 @@ namespace Divergency.Content.NPCs.LivingGrove
 
 
                     NPC.velocity += NPC.DirectionTo(averagePos) / 100;
+                }
+               
+
+          
+            }
+
+            
+            //FOUND ENEMIES END
+            
                 
                
          
@@ -228,13 +248,20 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void OnKill()
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 20  ; i++)
             {
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
+              //  Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 8f, 0, default, 2f);
+                //Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 8f, 0, default, 2f);
+                Dust.NewDustPerfect(NPC.Center, DustID.PortalBoltTrail, Main.rand.NextVector2Circular(1f, 1f) * 20f, 0, Color.LimeGreen, 2f);
+
+            }
+            for (int ii = 0; ii < 40 ; ii++)
+            {
+                Dust.NewDustPerfect(NPC.Center, DustID.PortalBoltTrail, Main.rand.NextVector2Circular(1f, 1f) * 20f, 0, Color.LimeGreen, 1f);
+
             }
 
-            // if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); }
+            if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("CorennectorCorpse").Type, 0.9f); }
         }
 
 
@@ -244,7 +271,25 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            Texture2D Star = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
+
+            int frameHeight = Star.Height / Main.npcFrameCount[NPC.type];
+            int frameY = frameHeight * NPC.frame.Y;
+
+            Rectangle sourceRectangle = new Rectangle(0, frameY, Star.Width, frameHeight);
+
+            Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
+
+            Color color = NPC.GetAlpha(new Color(109, 223, 94, 0));
+
+
+            timer += 0.1f;
+
+            if (timer >= MathHelper.Pi)
+            {
+                timer = 0f;
+            }
 
             Texture2D tex = Terraria.GameContent.TextureAssets.Npc[Type].Value;
             var fadeMult = 1f / NPCID.Sets.TrailCacheLength[Type];
@@ -257,14 +302,15 @@ namespace Divergency.Content.NPCs.LivingGrove
             Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CorennectorGlow").Value;
 
 
-            Color color = Color.White;
+         
 
             SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             spriteBatch.Draw(texture, NPC.position - Main.screenPosition + NPC.Size / 2, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
             spriteBatch.Draw(glow, NPC.position - Main.screenPosition + NPC.Size / 2, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
-            //trail
-          
+            //eye
+   
+
             return false;
         }
     }
@@ -277,6 +323,8 @@ namespace Divergency.Content.NPCs.LivingGrove
         public bool spawned { get; private set; }
         public NPC cachedNPC { get; private set; }
         public bool targetfound { get; private set; }
+        public float timer { get; private set; }
+
         public Vector2 destination;
 
         private NPC cachedTarget;
@@ -333,7 +381,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 {
                     NPC target = Main.npc[k];
 
-                    if (target.active && target.ModNPC is not Corennector && Projectile.Hitbox.Intersects(target.Hitbox))
+                    if (target.active && target.ModNPC is not Corennector && target.ModNPC is not CoreElementalHand && target.ModNPC is not CoreElementalBody && Projectile.Hitbox.Intersects(target.Hitbox))
                     {
                         targetfound = true;
                         cachedTarget = target;
@@ -348,7 +396,15 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
             if (targetfound)
             {
-                Projectile.Center = cachedTarget.Center;
+                if(cachedNPC.ai[3] == 1)
+                {
+                  
+                     Projectile.Kill(); 
+                }
+                else
+                {
+                    Projectile.Center = cachedTarget.Center;
+                }
                 if (cachedTarget.GetGlobalNPC<CorennectorNPC>().ShieldHP <= 0)
                 {
                     dried = true;
@@ -358,6 +414,9 @@ namespace Divergency.Content.NPCs.LivingGrove
         }
         public override bool PreDraw(ref Color lightColor)
         {
+            
+
+
             Vector2 Origin = Vector2.Zero;
       
                 Origin = cachedNPC.Center; //determine where the chains spawns TODO offsets
@@ -432,8 +491,8 @@ namespace Divergency.Content.NPCs.LivingGrove
             {
                 npc.immortal = true;
 
-    
             }
+     
 
         }
         public override bool PreAI(NPC npc)
@@ -442,7 +501,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             {
                 Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                Dust dust = Dust.NewDustPerfect(npc.Center + (velocity * 50f), ModContent.DustType<Glow>(), velocity * -3f, 0, Color.LimeGreen, 0.6f);
+                Dust dust = Dust.NewDustPerfect(npc.Center + (velocity * 50f), DustID.PortalBoltTrail, velocity * -3f, 0, Color.LimeGreen, 0.6f);
                 dust.noGravity = true;
             }
             return base.PreAI(npc);
