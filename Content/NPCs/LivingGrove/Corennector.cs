@@ -129,11 +129,22 @@ namespace Divergency.Content.NPCs.LivingGrove
                 if (AllSheildsDown())
                 {
                     NPC.ai[3] = 1;
+<<<<<<< HEAD
                    
                   
                         NPC.immortal = false;
                         NPC.StrikeInstantKill();
                     
+=======
+                    NPC.ai[2]++;
+                    NPC.rotation *= 1.005f;
+                    NPC.velocity.Y -= 0.03f;
+                    if (NPC.ai[2] == 120)
+                    {
+                        NPC.immortal = false;
+                        NPC.StrikeInstantKill();
+                    }
+>>>>>>> e689c2a8cc5ec909e48be0a5c5e6aae6302834e3
 
                     foreach (NPC targetNPC in cachedNPCs)
                     {
