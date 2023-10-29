@@ -13,7 +13,6 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.NPCs.LivingGrove
 {
-    [AutoloadBossHead]
 
     public class Coreling : ModNPC
     {
@@ -48,7 +47,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void SetDefaults()
         {
-            NPC.lifeMax = 100;
+            NPC.lifeMax = 40;
             NPC.damage = 30;
             NPC.defense = 5;
             NPC.knockBackResist = 0.2f;
@@ -61,7 +60,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPC.HitSound = SoundID.DD2_WitherBeastHurt;
             NPC.DeathSound = SoundID.DD2_WitherBeastDeath;
             NPC.value = Item.sellPrice(0, 0, 0, 0);
-
+                
             NPC.aiStyle = -1;
             NPC.noGravity = true;
         }
@@ -100,7 +99,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 if (attacking)
                 {
                     SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(target.Center) * 10f, ModContent.ProjectileType<GuardianBeam>(), NPC.damage, 3f, 0);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(target.Center) * 5f, ModContent.ProjectileType<GuardianBeam>(), NPC.damage, 3f, 0);
 
                     NPC.velocity -= NPC.DirectionTo(target.Center) * 3f;
 
@@ -123,6 +122,16 @@ namespace Divergency.Content.NPCs.LivingGrove
             if (NPC.velocity.Y >= maxSpeed) { NPC.velocity.Y = maxSpeed; }
             if (NPC.velocity.Y <= -maxSpeed) { NPC.velocity.Y = -maxSpeed; }
 
+            float movePower = 1f;
+            foreach (NPC npc in Main.npc)
+            {
+                if ((npc.ModNPC as Coreling) != null && npc.ModNPC != this)
+                {
+                    Vector2 dist = npc.Center - NPC.Center;
+
+                    NPC.velocity += -Vector2.Normalize(dist) * (movePower / dist.Length());
+                }
+            }
             NPC.ai[0]++;
         }
 

@@ -13,7 +13,7 @@ namespace Divergency.Content.Events.LivingCore
 {
     public static class LivingCoreEvent
     {
-        // TODO: Make progress bar since BossBar may not work without an NPC
+        // TODO: Make progress bar since     may not work without an NPC
 
         public static Type[] lcrList = new Type[] // add future room to this
         {

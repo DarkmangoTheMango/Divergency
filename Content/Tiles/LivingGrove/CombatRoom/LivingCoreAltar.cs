@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Divergency.Common.Helpers;
 using Divergency.Content.Events.LivingCore;
+using System;
 
 namespace Divergency.Tiles.LivingTree
 {
@@ -44,10 +45,10 @@ namespace Divergency.Tiles.LivingTree
 
             return true;
         }
-
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/Tiles/LivingGrove/CombatRoom/LivingCoreAltar1").Value;
+            Color color = Lighting.GetColor(i,j);
 
             Tile tile = Framing.GetTileSafely(i, j);
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
@@ -56,7 +57,7 @@ namespace Divergency.Tiles.LivingTree
             {
                 if ((LivingCoreEvent.X != i && LivingCoreEvent.Y != j))
                 {
-                    spriteBatch.Draw(texture, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero + new Vector2(0, 15), Color.White);
+                    spriteBatch.Draw(texture, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero + new Vector2(0, 15), color);
                     Main.tileHammer[Type] = false;
                 }
             }
