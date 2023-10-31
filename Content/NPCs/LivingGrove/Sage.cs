@@ -13,7 +13,6 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.NPCs.LivingGrove
 {
-    [AutoloadBossHead]
 
     public class Sage : ModNPC
     {
