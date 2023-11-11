@@ -3,3 +3,7 @@ desktop.ini
 .vs
 bin
 obj
+/.vs/Divergency/DesignTimeBuild/.dtbcache.v2
+/obj/Debug/net6.0/Divergency.csproj.AssemblyReference.cache
+/.vs/Divergency/v17/.futdcache.v2
+/.vs/Divergency/v17/.suo
