@@ -20,7 +20,7 @@ namespace Divergency.Common.Systems.Skills
     public abstract class SkillNode
     {
         private static List<SkillInteractor> AllInteractors = new List<SkillInteractor>();
-        private static List<SkillNode> AllSkills = new List<SkillNode>();
+        public static List<SkillNode> AllSkills = new List<SkillNode>();
 
         public static float SkillTreeScale = 1f;
 
