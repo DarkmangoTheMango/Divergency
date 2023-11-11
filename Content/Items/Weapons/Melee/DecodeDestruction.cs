@@ -46,8 +46,8 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 130;
-            Item.knockBack = 4f;
+            Item.damage = 100;
+            Item.knockBack = 5f;
 
             Item.shoot = ModContent.ProjectileType<SwordProjectile>(); 
             Item.shootSpeed = 1f;
@@ -55,7 +55,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.width = Item.height = 96;
             Item.scale = 1.5f;
 
-            Item.useTime = Item.useAnimation = 30;
+            Item.useTime = Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -173,8 +173,8 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
 
             new SwordAnimation(-2f+MathF.PI/2, 0, Scale: new Vector2(1f, 1f)), // TimedFunction should be in here, not down below...
-            new SwordAnimation(2f+MathF.PI/2, 40, Scale: new Vector2(1f, 1f), FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-            new SwordAnimation(-2f+MathF.PI/2, 40, 4, Scale: new Vector2(1f, 1f), FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(2f+MathF.PI/2, 20, Scale: new Vector2(1f, 1f), FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+            new SwordAnimation(-2f+MathF.PI/2, 20, 4, Scale: new Vector2(1f, 1f), FrameFunctions: timedFunctions,Flipped: true, HoldToContinue: true, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
         });
@@ -566,7 +566,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             if (PointCounter == 120 && LinkDuration > 0 && Player.HeldItem.type == ModContent.ItemType<DecodeDestruction>())
             {
-                Player.GetAttackSpeed(DamageClass.Melee) += 0.1f;
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.33f;
                 Player.GetDamage(DamageClass.Melee) += 0.05f;
                 Player.GetCritChance(DamageClass.Melee) += 5;
 
@@ -575,7 +575,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
             if (PointCounter2 == 120 && LinkDuration2 > 0 && Player.HeldItem.type == ModContent.ItemType<DecodeDestruction>())
             {
-                Player.GetAttackSpeed(DamageClass.Melee) += 0.1f;
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.33f;
                 Player.GetDamage(DamageClass.Melee) += 0.05f;
                 Player.GetCritChance(DamageClass.Melee) += 5;
 
@@ -584,7 +584,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
             if (PointCounter3 == 120 && LinkDuration3 > 0 && Player.HeldItem.type == ModContent.ItemType<DecodeDestruction>())
             {
-                Player.GetAttackSpeed(DamageClass.Melee) += 0.1f;
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.33f;
                 Player.GetDamage(DamageClass.Melee) += 0.05f;
                 Player.GetCritChance(DamageClass.Melee) += 5;
 
