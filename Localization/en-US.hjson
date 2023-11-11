@@ -1032,6 +1032,7 @@ Mods: {
 			CoreElementalBody.DisplayName: Core Elemental Body
 			CoreElementalDeath.DisplayName: Core Elemental Death
 			Corennector.DisplayName: Hideo
+			BigGuy.DisplayName: Big Guy
 		}
 
 		Keybinds: {

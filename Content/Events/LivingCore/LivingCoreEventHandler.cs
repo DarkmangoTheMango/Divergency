@@ -29,7 +29,7 @@ namespace Divergency.Events.LivingCore
 			NPC.aiStyle = -1;
 			NPC.noGravity = true;
 			NPC.boss = true;
-			NPC.BossBar = ModContent.GetInstance<LivingCoreProgressBar>();
+			///NPC.BossBar = ModContent.GetInstance<LivingCoreProgressBar>();
 			NPC.ShowNameOnHover = false;
 			NPC.alpha = 255;
 		}
