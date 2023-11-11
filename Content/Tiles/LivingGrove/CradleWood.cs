@@ -63,7 +63,7 @@ namespace Divergency.Content.Tiles.LivingGrove
             }
             if (tile.Slope == 0 && !tile.IsHalfBlock)
             {
-                Main.spriteBatch.Draw(tex, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, height), Color.White * glowFactor * 2, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(tex, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, height), Color.White * glowFactor * 1f, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
            
 
