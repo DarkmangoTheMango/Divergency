@@ -1,3 +1,4 @@
+using Divergency.Content.Dusts;
 using Divergency.Content.Particles;
 using Divergency.Content.Projectiles.Hostile;
 using Divergency.Content.Projectiles.Summoner.Minions;
@@ -155,10 +156,12 @@ namespace Divergency.Content.NPCs.LivingGrove
             if (!NPC.hide)
             {
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+                Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/BigGuyGlow").Value;
 
-               
+
                 Texture2D a = TextureAssets.Npc[Type].Value;
                 Main.EntitySpriteDraw(a, NPC.VisualPosition - screenPos + new Vector2(-30, 34), NPC.frame, drawColor, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
+                Main.EntitySpriteDraw(glow, NPC.VisualPosition - screenPos + new Vector2(-30, 34), NPC.frame, Color.White, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
 
             }
             return false;
