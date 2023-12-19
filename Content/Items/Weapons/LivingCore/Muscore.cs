@@ -15,7 +15,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using static Divergency.Content.Projectiles.Magic.CorescillationProj;
-using static ParticleLibrary.Particle;
 
 namespace Divergency.Content.Items.Weapons.LivingCore
 {
@@ -86,7 +85,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
     {
         int shotsLeft = 6;
 
-        public string BulletTexture { get { return "DivergencyMod/Items/Weapons/Ranged/Muscore/Bullet"; } }
+        public string BulletTexture { get { return "Divergency/Common/UI/MuscoreUI_Bullet"; } }
         public int GetRemainingBullets() { return shotsLeft; }
         public void Reload()
         {
@@ -334,6 +333,15 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             target.GetGlobalNPC<MuscoreBulletNPC>().hitBullets++;
             target.GetGlobalNPC<MuscoreBulletNPC>().timer = 180;
 
+            for (int j = 0; j < 5; j++)
+            {
+                Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
+
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + (velocity), ModContent.DustType<Glow>(), velocity * 2f, 0, Color.LimeGreen, 1f);
+
+
+            }
+
         }
         public Trail trail;
         public Trail whiteTrail;
@@ -560,4 +568,5 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             }
         }
     }
+   
 }

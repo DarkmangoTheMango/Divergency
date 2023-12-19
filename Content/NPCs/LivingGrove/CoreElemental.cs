@@ -25,12 +25,14 @@ namespace Divergency.Content.NPCs.LivingGrove
         {
             spawn,
             moving, 
-            dash,
+            dashcharge,
+            dashing,
             death
         }
         State state = State.spawn;
 
         public int dashcooldown { get; private set; }
+        public int initialDamage { get; private set; }
 
         public override void SetStaticDefaults()
         {
@@ -67,6 +69,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void AI()
         {
+            Main.NewText(NPC.damage);
             Player target = Main.player[NPC.target];
             if (NPC.Center.Distance(target.Center) < 150)
             {
@@ -81,19 +84,22 @@ namespace Divergency.Content.NPCs.LivingGrove
             if (state == State.spawn)
             {
                 //spawm limbs
+               initialDamage = NPC.damage;
+
                 NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalBody>(), 0);
                 NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalHand>(), 0);
                 NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalHand>(), 0, 1);
                 Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0), ModContent.ProjectileType<CoreElementalTrail>(), 0, 0);
                 state = State.moving;
-
             }
             if (state == State.moving && NPC.velocity.X < 0.2f && dashcooldown == 0)
             {
-                state = State.dash;
+                state = State.dashcharge;
             }
             if (state == State.moving)
             {
+                NPC.damage = 0;
+
                 NPC.ai[0] = 0;
                 NPC.TargetClosest(true);
                 NPC.Move(target.Center, 17f, 50);
@@ -101,10 +107,25 @@ namespace Divergency.Content.NPCs.LivingGrove
                 if(dashcooldown > 0)
                 dashcooldown--;
             }
-            
-            if (state == State.dash)
+            if (state == State.dashing)
+            { 
+
+                NPC.ai[0]++;
+                NPC.TargetClosest(true);
+                NPC.Move(target.Center, 17f, 50);
+                NPC.rotation = NPC.velocity.X * 0.1f;
+                if (dashcooldown > 0)
+                    dashcooldown--;
+                if (NPC.ai[0] == 45) 
+                {
+                    state = State.moving;
+                }
+            }
+
+            if (state == State.dashcharge)
             {
-                
+                NPC.damage = initialDamage;
+
                 NPC.rotation = NPC.velocity.X * 0.1f;
                 NPC.TargetClosest(true);
                 NPC.ai[0]++;
@@ -121,9 +142,9 @@ namespace Divergency.Content.NPCs.LivingGrove
                     SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/Dash") with { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, NPC.Center);
                     NPC.velocity += NPC.Center.DirectionTo(target.Center) * 18;
                     dashcooldown = 120;
-                    state = State.moving;
-
-                }
+                    state = State.dashing;
+                    NPC.ai[0]= 0;
+                } 
             }
         }
         public override void HitEffect(NPC.HitInfo hit)

@@ -353,6 +353,8 @@ Mods: {
 			DiceProj.DisplayName: Dice Proj
 			CorennectorProj.DisplayName: Corennector Proj
 			CorennectorVisuals.DisplayName: Corennector Visuals
+			CoreBarrageBullet.DisplayName: Core Barrage Bullet
+			CoreBarrageProj.DisplayName: Core Barrage Proj
 		}
 
 		Biomes: {
@@ -960,6 +962,21 @@ Mods: {
 
 			LuckyDie: {
 				DisplayName: Lucky Die
+				Tooltip: ""
+			}
+
+			ParticleTester: {
+				DisplayName: Particle Tester
+				Tooltip: ""
+			}
+
+			EmitterKiller: {
+				DisplayName: Emitter Killer
+				Tooltip: ""
+			}
+
+			CoreBarrage: {
+				DisplayName: Core Barrage
 				Tooltip: ""
 			}
 		}
