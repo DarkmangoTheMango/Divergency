@@ -15,6 +15,8 @@ using static Terraria.ModLoader.ModContent;
 using Terraria.GameContent;
 using ReLogic.Content;
 using Divergency.Content.Tiles.LivingGrove;
+using Divergency.Content.Particles.ParticleSystems;
+using Divergency.Content.Events.LivingCore;
 
 namespace Divergency.Content.Biomes
 {
@@ -44,6 +46,9 @@ namespace Divergency.Content.Biomes
 		}
 		
         public override ModWaterStyle WaterStyle => ModContent.GetInstance<LivingCoreWater>();
+
+        public int timer { get; private set; }
+
         public override bool IsBiomeActive(Player player)
 		{
 			// Limit the biome height to be underground in either rock layer or dirt layer
@@ -51,7 +56,31 @@ namespace Divergency.Content.Biomes
 				// Check how many tiles of our biome are present, such that biome should be active
 				ModContent.GetInstance<BiomeTileCount>().BlockCount >= 100;
 		}
-	}
+        public override void OnInBiome(Player player)
+        {
+			timer++;
+		
+            Vector2 newVelocity = new Vector2(1).RotatedByRandom(MathHelper.ToRadians(360));
+
+            // Decrease velocity randomly for nicer visuals.
+            newVelocity *= 1f - Main.rand.NextFloat(0.7f, 1.5f);
+            if (timer == 30)
+            {
+				if (LivingCoreEvent.Active)
+				{
+               //     ParticleSystemManager.ExampleQuadSystem.NewParticle(player.position + (newVelocity * Main.rand.NextFloat(1000, 3000)), new Vector2(1) * 1.5f, ParticleSystemManager.QuadParticleTest);
+
+                }
+				{
+                    ParticleSystemManager.ExampleQuadSystem.NewParticle(player.position + (newVelocity * Main.rand.NextFloat(500, 2000)), new Vector2(1) * 20f, ParticleSystemManager.CoreGroveVisualBackGround);
+                    ParticleSystemManager.ExampleQuadSystem.NewParticle(player.position + (newVelocity * Main.rand.NextFloat(500, 2000)), new Vector2(1) * 1f, ParticleSystemManager.CoreGroveVisualForeground);
+
+                }
+                timer = 0;
+				
+            }
+        }
+    }
 	public class BiomeTileCount : ModSystem
 	{
 		public int BlockCount;

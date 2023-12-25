@@ -1050,6 +1050,7 @@ Mods: {
 			CoreElementalDeath.DisplayName: Core Elemental Death
 			Corennector.DisplayName: Hideo
 			BigGuy.DisplayName: Big Guy
+			Overseer.DisplayName: Overseer
 		}
 
 		Keybinds: {

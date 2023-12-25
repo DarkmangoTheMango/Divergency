@@ -69,7 +69,7 @@ namespace Divergency.Content.Items.Test
                 // Decrease velocity randomly for nicer visuals.
                 newVelocity *= 1f - Main.rand.NextFloat(0.7f);
 
-                ParticleSystemManager.ExampleQuadSystem.NewParticle(position + (newVelocity * Main.rand.NextFloat(500)), velocity * 1.5f, ParticleSystemManager.QuadParticleTest);
+                ParticleSystemManager.ExampleQuadSystem.NewParticle(position + (newVelocity * Main.rand.NextFloat(500)), velocity * 1.5f, ParticleSystemManager.CoreGroveVisualForeground);
                // ExampleParticleSystemManager.ExamplePointSystem.NewParticle(position + (velocity * Main.rand.NextFloat(500)), Main.rand.NextVector2Unit() * Main.rand.NextFloat(-8f, 8f + float.Epsilon), ExampleParticleSystemManager.ExamplePointParticle);
 
                 //NewParticleManager.NewParticle(position, newVelocity * 5, new ExampleParticle(), new Color(0.50f, 2f, 0.5f, 0), 0.2f);

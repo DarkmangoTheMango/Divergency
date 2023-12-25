@@ -20,8 +20,8 @@ public class ParticleSystemManager : ModSystem
 {
     public static QuadParticleSystem ExampleQuadSystem { get; private set; }
     public static QuadParticleSystemSettings ExampleQuadSettings { get; private set; }
-    public static QuadParticle QuadParticleTest { get; private set; }
-
+    public static QuadParticle CoreGroveVisualBackGround { get; private set; } //
+    public static QuadParticle CoreGroveVisualForeground { get; private set; } // core biome visuals
     public static PointParticleSystem ExamplePointSystem { get; private set; }
     public static PointParticleSystemSettings ExamplePointSettings { get; private set; }
     public static PointParticle ExamplePointParticle { get; private set; }
@@ -38,17 +38,33 @@ public class ParticleSystemManager : ModSystem
         // Demonstrates creating a Quad particle system.
         ExampleQuadSettings = new(ModContent.Request<Texture2D>("ParticleLibrary/Assets/Textures/Star", AssetRequestMode.ImmediateLoad).Value, 3000, 600, Layer.BeforeInterface, blendState: BlendState.AlphaBlend);
         ExampleQuadSystem = new QuadParticleSystem(ExampleQuadSettings);
-        QuadParticleTest = new()
+        CoreGroveVisualBackGround = new()
         {
-            StartColor = Color.White.WithAlpha(0f),
+            StartColor = Color.Transparent.WithAlpha(0f),
             EndColor = Color.LimeGreen.WithAlpha(0f),
-            Scale = new Vector2(1f),
+            Scale = new Vector2(Main.rand.NextFloat(0.5f, 1.5f)),
             Rotation = Main.rand.NextFloat(-MathHelper.Pi, MathHelper.Pi + float.Epsilon),
             RotationVelocity = Main.rand.NextFloat(-0.1f, 0.1f + float.Epsilon),
-            Depth = 1f + Main.rand.NextFloat(-0.1f, 0.1f + float.Epsilon),
-            DepthVelocity = Main.rand.NextFloat(-0.001f, 0.001f + float.Epsilon),
-            
-            
+            Depth = 1f + Main.rand.NextFloat(-0.2f, 0.2f + float.Epsilon),
+            DepthVelocity = Main.rand.NextFloat(-0.002f, 0.002f + float.Epsilon)
+
+
+        };
+
+
+        ExampleQuadSettings = new(ModContent.Request<Texture2D>("ParticleLibrary/Assets/Textures/Star", AssetRequestMode.ImmediateLoad).Value, 3000, 600, Layer.BeforeInterface, blendState: BlendState.AlphaBlend);
+        ExampleQuadSystem = new QuadParticleSystem(ExampleQuadSettings);
+        CoreGroveVisualForeground = new()
+        {
+            StartColor = Color.Transparent.WithAlpha(0f),
+            EndColor = Color.LimeGreen.WithAlpha(0f),
+            Scale = new Vector2(Main.rand.NextFloat(0.5f, 1.5f)),
+            Rotation = Main.rand.NextFloat(-MathHelper.Pi, MathHelper.Pi + float.Epsilon),
+            RotationVelocity = Main.rand.NextFloat(-0.1f, 0.1f + float.Epsilon),
+            Depth = 1f + Main.rand.NextFloat(-0.1f, 0.2f + float.Epsilon),
+            DepthVelocity = Main.rand.NextFloat(-0.001f, 0.001f + float.Epsilon)
+
+
         };
 
         // Demonstrates creating a Point particle system.
@@ -59,7 +75,7 @@ public class ParticleSystemManager : ModSystem
             StartColor = Color.White.WithAlpha(0f),
             EndColor = Color.Black.WithAlpha(0f),
             Depth = 1f + Main.rand.NextFloat(-0.1f, 0.1f + float.Epsilon),
-            DepthVelocity = Main.rand.NextFloat(-0.001f, 0.001f + float.Epsilon)
+            DepthVelocity = Main.rand.NextFloat(-0.001f, 0.001f - float.Epsilon)
         };
 
         // Demonstrates creating a wrapped particle system from a Quad particle system.
@@ -73,7 +89,7 @@ public class ParticleSystemManager : ModSystem
         ExampleQuadSystem?.Dispose();
         ExampleQuadSystem = null;
         ExampleQuadSettings = null;
-        QuadParticleTest = null;
+        CoreGroveVisualBackGround = null;
 
         ExamplePointSystem?.Dispose();
         ExamplePointSystem = null;
