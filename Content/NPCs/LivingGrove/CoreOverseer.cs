@@ -94,7 +94,9 @@ namespace Divergency.Content.NPCs.LivingGrove
             {
                 Player player = Main.player[NPC.target];
                 float addY = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 10;
-
+                float addY1 = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 11;
+                float addY2 = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3) * 10;
+                float addY3 = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4) * 9;
                 if (NPC.HasValidTarget && !player.dead)
                 {
 
@@ -114,7 +116,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     if (NPC.ai[0] == 120)
                     {
 
-                        player.KillMe(PlayerDeathReason.LegacyDefault(), 999, 0, false);
+                        player.KillMe(PlayerDeathReason.LegacyDefault(), 100, 0, false);
                         player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 35;
 
                         DivergencyDraw.SpawnExplosion(player.Center, Color.LimeGreen, DustID.PortalBoltTrail, 0);
@@ -157,19 +159,19 @@ namespace Divergency.Content.NPCs.LivingGrove
                 {
                     Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(LeftPoint + new Vector2 (0,addY) , ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.2f);
+                    Dust dust = Dust.NewDustPerfect(LeftPoint + new Vector2 (0, -10 + addY1) , ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.2f);
                 }
                 if (NPC.ai[0] > 60)
                 {
                     Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(RightPoint + new Vector2(0, addY), ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.2f);
+                    Dust dust = Dust.NewDustPerfect(RightPoint + new Vector2(0,-10 + addY2), ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.2f);
                 }
                 if (NPC.ai[0] > 90)
                 {
                     Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(MiddlePoint + new Vector2(0, addY), ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.2f);
+                    Dust dust = Dust.NewDustPerfect(MiddlePoint + new Vector2(0, -10 + addY3), ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.2f);
                 }
 
             }
@@ -198,23 +200,54 @@ namespace Divergency.Content.NPCs.LivingGrove
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (!NPC.hide)
-            {
-                var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerGlow").Value;
-                float addY = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 10;
+            {                //base textures
 
+                Texture2D a = TextureAssets.Npc[Type].Value; 
+                Texture2D Sigil1 = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerSigil1").Value;
+                Texture2D Sigil2 = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerSigil2").Value;
+                Texture2D Sigil3 = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerSigil3").Value;
+                Texture2D Podest = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerPodest").Value;
 
-                Texture2D a = TextureAssets.Npc[Type].Value;
                 Vector2 drawOrigin = new(a.Width / 2, a.Height / 2);
+                Vector2 drawOriginSigils = new (Sigil1.Width / 2, Sigil1.Height/ 2);
+                Vector2 drawOriginPodest = new(Podest.Width / 2, Podest.Height / 2);
+                var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+          
+
+                float addY = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 3;
+                float addY1 = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 11;
+                float addY2 = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3) * 10;
+                float addY3 = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4) * 9;
+
+                Main.EntitySpriteDraw(Sigil1, NPC.Center - Main.screenPosition + new Vector2(0, - 10 + addY1), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(Sigil2, NPC.Center - Main.screenPosition + new Vector2(0, - 10 + addY2), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(Sigil3, NPC.Center - Main.screenPosition + new Vector2(0, -10 + addY3), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(Podest, NPC.Center - Main.screenPosition + new Vector2(0,  -16 + addY), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                // glow textures
+
+                Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerGlow").Value;
+                Texture2D SigilGlow1 = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerSigilGlow1").Value;
+                Texture2D SigilGlow2 = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerSigilGlow2").Value;
+                Texture2D SigilGlow3 = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerSigilGlow3").Value;
+                Texture2D PodestGlow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/OverseerPodestGlow").Value;
+
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 
-                Main.EntitySpriteDraw(a, NPC.Center - Main.screenPosition + new Vector2(0,addY), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
-
                 Main.EntitySpriteDraw(glow, NPC.Center - Main.screenPosition + new Vector2(0, addY), null, Color.White, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(SigilGlow1, NPC.Center - Main.screenPosition + new Vector2(0, -10 + addY1), null, Color.White, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(SigilGlow2, NPC.Center - Main.screenPosition + new Vector2(0, -10 + addY2), null, Color.White, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(SigilGlow3, NPC.Center - Main.screenPosition + new Vector2(0, -10 + addY3), null, Color.White, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(PodestGlow, NPC.Center - Main.screenPosition + new Vector2(0, -16 + addY), null, Color.White, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                //Main.EntitySpriteDraw(glow, NPC.Center - Main.screenPosition + new Vector2(0, addY), null, Color.White, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+
+                //base
+
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+                Main.EntitySpriteDraw(a, NPC.Center - Main.screenPosition + new Vector2(0, addY), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(Podest, NPC.Center - Main.screenPosition + new Vector2(0, -16 + addY), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
 
             }
             return false;
