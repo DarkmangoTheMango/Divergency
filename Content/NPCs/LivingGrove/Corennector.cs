@@ -159,7 +159,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                             {
                                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
 
-                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(targetNPC.Center) * 2, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: cachedNPCs.Count);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(targetNPC.Center) * 5, ModContent.ProjectileType<CorennectorProj>(), 0, 0, ai0: cachedNPCs.Count);
                                 if (targetNPC.GetGlobalNPC<CorennectorNPC>().ShieldHP <= 0)
                                 {
                                     NPC.active = false;
