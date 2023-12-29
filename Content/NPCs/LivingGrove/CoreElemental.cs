@@ -69,7 +69,6 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void AI()
         {
-            Main.NewText(NPC.damage);
             Player target = Main.player[NPC.target];
             if (NPC.Center.Distance(target.Center) < 150)
             {
