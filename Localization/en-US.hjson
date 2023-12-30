@@ -1051,6 +1051,7 @@ Mods: {
 			Corennector.DisplayName: Hideo
 			BigGuy.DisplayName: Big Guy
 			Overseer.DisplayName: Overseer
+			Underseer.DisplayName: Underseer
 		}
 
 		Keybinds: {
