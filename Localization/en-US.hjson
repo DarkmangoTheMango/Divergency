@@ -355,6 +355,8 @@ Mods: {
 			CorennectorVisuals.DisplayName: Corennector Visuals
 			CoreBarrageBullet.DisplayName: Core Barrage Bullet
 			CoreBarrageProj.DisplayName: Core Barrage Proj
+			CoreBomb.DisplayName: Core Bomb
+			ExplosionIndicator.DisplayName: Explosion Indicator
 		}
 
 		Biomes: {
@@ -1052,6 +1054,8 @@ Mods: {
 			BigGuy.DisplayName: Big Guy
 			Overseer.DisplayName: Overseer
 			Underseer.DisplayName: Underseer
+			CoreBomber.DisplayName: Core Bomber
+			CoreRottenBlossom.DisplayName: Core Rotten Blossom
 		}
 
 		Keybinds: {

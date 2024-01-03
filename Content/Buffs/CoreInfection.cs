@@ -2,8 +2,10 @@
 using Divergency.Content.Dusts;
 using Divergency.Content.Projectiles;
 using Microsoft.Xna.Framework;
+using System.Security.Cryptography.X509Certificates;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,8 +17,11 @@ namespace Divergency.Content.Buffs
 		{
 			npc.GetGlobalNPC<CoreInfectionNPC>().Infected = true;
 		}
-
-		public override void SetStaticDefaults()
+        public override void Update(Player player, ref int buffIndex)
+        {
+            player.GetModPlayer<CoreInfectionPlayer>().Infected = true;
+        }
+        public override void SetStaticDefaults()
 		{
 			//.setdefault("Core Infection");
 			////.setdefault("Your very core is infected");
@@ -110,7 +115,62 @@ namespace Divergency.Content.Buffs
                 npc.SimpleStrikeNPC(5, 0, true);
             }
         }
+
+		
     
+
+    }
+	public class CoreInfectionPlayer : ModPlayer
+	{
+        public bool Infected;
+		public bool InfectedII;
+        public int damage;
+        public override void ResetEffects()
+        {
+            Infected = false;
+        }
+
+
+        public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
+        {
+    
+            if (Infected)
+            {
+                if (Main.rand.NextBool(4)) { Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.GemEmerald, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 0, default, 1f).noGravity = true; }
+
+                Lighting.AddLight(Player.Center, 0.2f, 2.00f, 0.08f);
+            }
+            if (InfectedII)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+
+                    if (Main.rand.NextBool(4)) { Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.GemEmerald, Player.velocity.X * 1f, Player.velocity.Y * 1f, 0, default, 2f).noGravity = true; }
+                    if (Main.rand.NextBool(4)) { Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.GreenTorch, Player.velocity.X * 1f, Player.velocity.Y * 1f, 0, default, 2f).noGravity = true; }
+
+                }
+
+                Lighting.AddLight(Player.Center, 0.2f, 2.00f, 0.08f);
+            }
+		
+
+
+        }
+        public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
+        {
+			if (Infected)
+            {
+                modifiers.FinalDamage *= 1.2f;
+            }
+        }
+        public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
+        {
+            if (Infected)
+            {
+                modifiers.FinalDamage *= 1.2f;
+            }
+        }
+
 
     }
 

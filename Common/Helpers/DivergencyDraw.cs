@@ -68,6 +68,16 @@ namespace Divergency.Common.Helpers
                 (Main.projectile[p].ModProjectile as CirclePulse_Visual).entityTarget = target;
             }
         }
+        public static void SpawnExplosionIndicator(Vector2 center, Color color, float scale = 1, Entity target = null)
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                int p = Projectile.NewProjectile(null, center, Vector2.Zero, ModContent.ProjectileType<ExplosionIndicator>(), 0, 0,
+                    Main.myPlayer, scale);
+                (Main.projectile[p].ModProjectile as ExplosionIndicator).color = color;
+                (Main.projectile[p].ModProjectile as ExplosionIndicator).entityTarget = target;
+            }
+        }
         public static void SpawnExplosion(Vector2 center, Color color, int dustID, float shakeAmount = 7, int dustAmount = 30, float dustScale = 2, float scale = 4f, bool noDust = false, Texture2D tex = null, float rot = 0)
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -152,7 +162,7 @@ namespace Divergency.Common.Helpers
                     Projectile.Center = entityTarget.Center;
             }
 
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = 180;
             Projectile.velocity *= 0;
             Projectile.localAI[0]++;
             if (Projectile.localAI[0] < 300)
@@ -161,12 +171,11 @@ namespace Divergency.Common.Helpers
                     Projectile.alpha -= 5;
                 else
                     Projectile.alpha += 1;
-                Projectile.scale += 0.01f;
+
             }
             else
             {
                 Projectile.alpha = 255;
-                Projectile.scale = 1;
                 Projectile.Kill();
             }
         }
@@ -179,7 +188,7 @@ namespace Divergency.Common.Helpers
             Vector2 origin = new(texture.Width / 2f, texture.Height / 2f);
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-            Main.EntitySpriteDraw(texture, position, new Rectangle?(rect), Projectile.GetAlpha(color), Projectile.rotation, origin, Projectile.scale * Projectile.ai[0], SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, position, new Rectangle?(rect), Projectile.GetAlpha(color), Projectile.rotation, origin, Projectile.scale + Projectile.ai[0], SpriteEffects.None, 0);
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             return false;
@@ -285,5 +294,68 @@ namespace Divergency.Common.Helpers
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
-
+    public class ExplosionIndicator : ModProjectile
+    {
+        public override string Texture => "Divergency/Assets/Textures/GlowRing";
+        public override void SetStaticDefaults()
+        {
+            //.setdefault("Pulse");
+        }
+        public override void SetDefaults()
+        {
+            Projectile.width = 1;
+            Projectile.height = 1;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.friendly = false;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.alpha = 255;
+        }
+        public Entity entityTarget;
+        public override void AI()
+        {
+            if (entityTarget != null)
+            {
+                if (entityTarget.active)
+                    Projectile.Center = entityTarget.Center;
+            }
+            if (Projectile.timeLeft == 180)
+            {
+                Projectile.Kill();
+            }
+            Projectile.timeLeft = 300;
+            Projectile.velocity *= 0;
+            Projectile.localAI[0]++;
+            if (Projectile.localAI[0] < 300)
+            {
+                if (Projectile.localAI[0] < 30)
+                    Projectile.alpha -= 5;
+                else
+                    Projectile.alpha += 1;
+                Projectile.scale += 0.01f;
+            }
+            else
+            {
+                Projectile.alpha = 255;
+                Projectile.scale = 1;
+                Projectile.Kill();
+            }
+        }
+        public Color color;
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 position = Projectile.Center - Main.screenPosition;
+            Rectangle rect = new(0, 0, texture.Width, texture.Height);
+            Vector2 origin = new(texture.Width / 2f, texture.Height / 2f);
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.EntitySpriteDraw(texture, position, new Rectangle?(rect), Projectile.GetAlpha(color), Projectile.rotation, origin, Projectile.scale * Projectile.ai[0], SpriteEffects.None, 0);
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            return false;
+        }
+    }
 }
+

@@ -24,7 +24,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         enum State
         {
             spawn,
-            moving, 
+            moving,
             dashcharge,
             dashing,
             death
@@ -54,7 +54,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPC.HitSound = SoundID.DD2_WitherBeastHurt;
             NPC.DeathSound = SoundID.DD2_WitherBeastDeath;
             NPC.value = Item.sellPrice(0, 0, 0, 0);
-            
+
             NPC.aiStyle = -1;
             NPC.noGravity = true;
         }
@@ -79,11 +79,11 @@ namespace Divergency.Content.NPCs.LivingGrove
             {
                 NPC.knockBackResist = 0.6f;
                 NPC.defense = 15;
-            } ;
+            };
             if (state == State.spawn)
             {
                 //spawm limbs
-               initialDamage = NPC.damage;
+                initialDamage = NPC.damage;
 
                 NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalBody>(), 0);
                 NPC.NewNPCDirect(NPC.GetSource_FromAI(), NPC.Center, ModContent.NPCType<CoreElementalHand>(), 0);
@@ -101,21 +101,21 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                 NPC.ai[0] = 0;
                 NPC.TargetClosest(true);
-                NPC.Move(target.Center, 17f, 50);
-                NPC.rotation = NPC.velocity.X * 0.1f;
-                if(dashcooldown > 0)
-                dashcooldown--;
-            }
-            if (state == State.dashing)
-            { 
-
-                NPC.ai[0]++;
-                NPC.TargetClosest(true);
-                NPC.Move(target.Center, 17f, 50);
+                NPC.Move(target.Center, 9f, 50);
                 NPC.rotation = NPC.velocity.X * 0.1f;
                 if (dashcooldown > 0)
                     dashcooldown--;
-                if (NPC.ai[0] == 45) 
+            }
+            if (state == State.dashing)
+            {
+
+                NPC.ai[0]++;
+                NPC.TargetClosest(true);
+                NPC.Move(target.Center, 9f, 50);
+                NPC.rotation = NPC.velocity.X * 0.1f;
+                if (dashcooldown > 0)
+                    dashcooldown--;
+                if (NPC.ai[0] == 45)
                 {
                     state = State.moving;
                 }
@@ -132,18 +132,18 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                 Dust dust = Dust.NewDustPerfect(NPC.Center + (velocity * 80f), ModContent.DustType<Glow>(), velocity * -5f, 0, Color.LimeGreen, 0.7f);
                 //SoundEngine.PlaySound(SoundID.DD2_DarkMageAttack, NPC.Center); NEED SUITABLE SOUND 
-         
+
                 dust.noGravity = true;
                 if (NPC.ai[0] < 80)
-                NPC.velocity /= 1.2f;
+                    NPC.velocity /= 1.2f;
                 if (NPC.ai[0] == 80)
                 {
                     SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/Dash") with { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, NPC.Center);
-                    NPC.velocity += NPC.Center.DirectionTo(target.Center) * 18;
+                    NPC.velocity += NPC.Center.DirectionTo(target.Center) * 12;
                     dashcooldown = 120;
                     state = State.dashing;
-                    NPC.ai[0]= 0;
-                } 
+                    NPC.ai[0] = 0;
+                }
             }
         }
         public override void HitEffect(NPC.HitInfo hit)

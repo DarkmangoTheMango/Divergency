@@ -3,6 +3,7 @@ using Divergency.Content.Projectiles.Hostile;
 using Divergency.Content.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoMod.Core.Utils;
 using ParticleLibrary;
 using System;
 using Terraria;
@@ -13,7 +14,6 @@ using Terraria.ModLoader;
 
 namespace Divergency.Content.NPCs.LivingGrove
 {
-    [AutoloadBossHead]
 
     public class Corelossus : ModNPC
     {
@@ -38,6 +38,9 @@ namespace Divergency.Content.NPCs.LivingGrove
         }
 
         State state = 0;
+
+        public bool initialize { get; private set; }
+        public int initialDamage { get; private set; }
 
         public override void SetStaticDefaults()
         {
@@ -78,55 +81,63 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void AI()
         {
-            Player target = Main.player[NPC.target];
-
-            NPC.TargetClosest(true);
-
-            NPC.rotation = NPC.velocity.X * 0.1f;
-
-            Lighting.AddLight(NPC.Center, new Color(79, 214, 126).ToVector3());
-
-            if (NPC.ai[0] >= 360f)
+            if (!initialize)
             {
-                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 0.5f }, NPC.Center);
+                initialize = true;
+                initialDamage = NPC.damage;
+            }
+            if (initialize)
+            {
+                Player target = Main.player[NPC.target];
 
-                for (int i = 0; i < 3; i++)
+                NPC.TargetClosest(true);
+
+                NPC.rotation = NPC.velocity.X * 0.1f;
+
+                Lighting.AddLight(NPC.Center, new Color(79, 214, 126).ToVector3());
+
+                if (NPC.ai[0] >= 360f)
                 {
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, (NPC.DirectionTo(target.Center) * 10f).RotatedByRandom(0.3f), ModContent.ProjectileType<GuardianBeam>(), NPC.damage, 3f, 0);
+                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 0.5f }, NPC.Center);
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, (NPC.DirectionTo(target.Center) * 10f).RotatedByRandom(0.3f), ModContent.ProjectileType<GuardianBeam>(), initialDamage, 3f, 0);
+                    }
+
+                    NPC.velocity -= NPC.DirectionTo(target.Center) * 3f;
+
+                    NPC.ai[0] = 0f;
+                }
+                else if (NPC.ai[0] >= 240f)
+                {
+                    state = State.attacking;
+
+                    Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
+
+                    Dust dust = Dust.NewDustPerfect(NPC.Center + (velocity * 100f), DustID.TerraBlade, velocity * -5f, 0, default, 1f);
+                    dust.noGravity = true;
+
+                    NPC.velocity *= 0.98f;
+                }
+                else
+                {
+                    state = State.moving;
+
+                    if (NPC.Distance(target.Center) >= 400f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
+                    else if (NPC.Distance(target.Center) <= 200f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
+                    else { NPC.velocity *= 0.98f; }
+
+                    if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 1f; }
                 }
 
-                NPC.velocity -= NPC.DirectionTo(target.Center) * 3f;
+                if (NPC.velocity.X >= maxSpeed) { NPC.velocity.X = maxSpeed; }
+                if (NPC.velocity.X <= -maxSpeed) { NPC.velocity.X = -maxSpeed; }
+                if (NPC.velocity.Y >= maxSpeed) { NPC.velocity.Y = maxSpeed; }
+                if (NPC.velocity.Y <= -maxSpeed) { NPC.velocity.Y = -maxSpeed; }
 
-                NPC.ai[0] = 0f;
+                NPC.ai[0]++;
             }
-            else if (NPC.ai[0] >= 240f)
-            {
-                state = State.attacking;
-
-                Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
-
-                Dust dust = Dust.NewDustPerfect(NPC.Center + (velocity * 100f), DustID.TerraBlade, velocity * -5f, 0, default, 1f);
-                dust.noGravity = true;
-
-                NPC.velocity *= 0.98f;
-            }
-            else
-            {
-                state = State.moving;
-
-                if (NPC.Distance(target.Center) >= 400f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
-                else if (NPC.Distance(target.Center) <= 200f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
-                else { NPC.velocity *= 0.98f; }
-
-                if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 1f; }
-            }
-
-            if (NPC.velocity.X >= maxSpeed) { NPC.velocity.X = maxSpeed; }
-            if (NPC.velocity.X <= -maxSpeed) { NPC.velocity.X = -maxSpeed; }
-            if (NPC.velocity.Y >= maxSpeed) { NPC.velocity.Y = maxSpeed; }
-            if (NPC.velocity.Y <= -maxSpeed) { NPC.velocity.Y = -maxSpeed; }
-
-            NPC.ai[0]++;
         }
 
         public override void OnKill()
