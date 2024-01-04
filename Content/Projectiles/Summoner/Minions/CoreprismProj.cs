@@ -59,7 +59,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
             for (int io = 0; io < Main.maxNPCs; io++)
             {
                 NPC target = Main.npc[io];
-                if (target.Distance(Projectile.Center) < 450 && !target.HasBuff(ModContent.BuffType<CoreInfection>()) && !target.HasBuff(ModContent.BuffType<CoreInfectionII>()))
+                if (target.Distance(Projectile.Center) < 500 && !target.HasBuff(ModContent.BuffType<CoreInfection>()) && !target.HasBuff(ModContent.BuffType<CoreInfectionII>()))
                 {
                     target.AddBuff(ModContent.BuffType<CoreInfection>(), 5);
                 }
@@ -78,7 +78,7 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
                 if (timer == 200)
                 {
                     timer = 0;
-                    DivergencyDraw.SpawnCirclePulse(Projectile.Center, Color.LimeGreen, 0.5f);
+                    DivergencyDraw.SpawnCirclePulse(Projectile.Center, Color.LimeGreen, 0.6f);
                     SoundEngine.PlaySound(SoundID.DD2_WitherBeastAuraPulse, Projectile.Center);
                     for (int i = 0; i < 20; i++)
                     {
