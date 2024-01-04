@@ -94,7 +94,11 @@ namespace Divergency.Content.NPCs.LivingGrove
                     Player target = Main.player[io];
                     if (target.Distance(NPC.Center) < 500 && !target.HasBuff(ModContent.BuffType<CoreInfection>()))
                     {
-                        target.AddBuff(ModContent.BuffType<CoreInfection>(), 180);
+                        if (!target.HasBuff(ModContent.BuffType<CoreInfectionII>()))
+                        {
+                            target.AddBuff(ModContent.BuffType<CoreInfection>(), 180);
+
+                        }
                         target.AddBuff(BuffID.Slow, 180);
                     }
                 }

@@ -37,8 +37,14 @@ namespace Divergency.Content.Buffs
 	public class CoreInfectionII : ModBuff
 	{
 		public override void Update(NPC npc, ref int buffIndex) => npc.GetGlobalNPC<CoreInfectionNPC>().InfectedII = true;
+		public override void Update(Player player, ref int buffIndex)
+		{
+            player.GetModPlayer<CoreInfectionPlayer>().InfectedII = true;
+			player.ClearBuff(ModContent.BuffType<CoreInfection>());
+        }
+    
 
-		public override void SetStaticDefaults()
+        public override void SetStaticDefaults()
 		{
 			//.setdefault("Core Infection II");
 			////.setdefault("Your very core is severely infected");
@@ -64,7 +70,7 @@ namespace Divergency.Content.Buffs
 			Infected = false;
 			InfectedII = false;
 		}
-
+		
 
 		public override void DrawEffects(NPC npc, ref Color drawColor)
 		{
@@ -128,12 +134,13 @@ namespace Divergency.Content.Buffs
         public override void ResetEffects()
         {
             Infected = false;
+			InfectedII = false;
         }
 
 
         public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
         {
-    
+
             if (Infected)
             {
                 if (Main.rand.NextBool(4)) { Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.GemEmerald, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 0, default, 1f).noGravity = true; }
@@ -162,6 +169,13 @@ namespace Divergency.Content.Buffs
             {
                 modifiers.FinalDamage *= 1.2f;
             }
+            else
+            {
+                if (InfectedII)
+                {
+                    modifiers.FinalDamage *= 1.3f;
+                }
+            }
         }
         public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
         {
@@ -169,6 +183,14 @@ namespace Divergency.Content.Buffs
             {
                 modifiers.FinalDamage *= 1.2f;
             }
+			else
+			{
+				if (InfectedII)
+				{
+                    modifiers.FinalDamage *= 1.3f;
+                }
+            }
+			
         }
 
 

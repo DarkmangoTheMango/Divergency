@@ -108,7 +108,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                 if (state == ActionState.Moving)
                 {
-                    NPC.Move(player.Center, 3, 100);
+                    NPC.Move(player.Center, 3, Main.rand.NextFloat(70, 130));
                     NPC.ai[0]++;
                     if (NPC.ai[0] == throwCounter)
                     {
