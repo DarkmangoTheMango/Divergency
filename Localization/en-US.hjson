@@ -355,6 +355,7 @@ Mods: {
 			CorennectorVisuals.DisplayName: Corennector Visuals
 			CoreBarrageBullet.DisplayName: Core Barrage Bullet
 			CoreBarrageProj.DisplayName: Core Barrage Proj
+			LaserBeam.DisplayName: Laser Beam
 		}
 
 		Biomes: {

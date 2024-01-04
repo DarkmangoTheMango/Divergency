@@ -17,6 +17,7 @@
     <None Remove="Common\Systems\SkillNodes\SquareGlow.png" />
     <None Remove="Content\Items\Weapons\LivingCore\CoreBarrageProj.png" />
     <None Remove="Content\NPCs\LivingGrove\CorennectorProj.png" />
+    <None Remove="Content\Projectiles\Hostile\BigGuy\LaserBeam.png" />
     <None Remove="Localization\en-US.hjson" />
     <None Remove="TestStuff\Back_Body_Sheet.png" />
     <None Remove="TestStuff\Back_L_Legs_Sheet.png" />

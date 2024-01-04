@@ -462,7 +462,7 @@ namespace Divergency.Common.Systems
             {
                 IsSkillTreeActive = !IsSkillTreeActive;
                 offset = new Vector2();
-                SkillNode.SkillTreeScale = 1f;
+                SkillNode.SkillTreeScale = 0.8f;
             }
 
             if (IsSkillTreeActive && GetTreeRectangle().Contains(Main.mouseX, Main.mouseY))
