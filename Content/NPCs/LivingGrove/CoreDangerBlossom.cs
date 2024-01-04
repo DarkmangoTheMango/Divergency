@@ -214,7 +214,6 @@ namespace Divergency.Content.NPCs.LivingGrove
                 {
                     NPC taggedNPC = Main.npc[k];
 
-                    if (taggedNPC.active && taggedNPC.ModNPC is CoreDangerBlossom&& Projectile.Distance(taggedNPC.Center) < 500)
                     {
                         cachedNPC = taggedNPC;
                     }
