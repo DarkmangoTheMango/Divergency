@@ -357,6 +357,7 @@ Mods: {
 			CoreBarrageProj.DisplayName: Core Barrage Proj
 			CoreBomb.DisplayName: Core Bomb
 			ExplosionIndicator.DisplayName: Explosion Indicator
+			BlossomButterfly.DisplayName: Blossom Butterfly
 		}
 
 		Biomes: {
@@ -1056,6 +1057,7 @@ Mods: {
 			Underseer.DisplayName: Underseer
 			CoreBomber.DisplayName: Core Bomber
 			CoreRottenBlossom.DisplayName: Core Rotten Blossom
+			CoreDangerBlossom.DisplayName: Core Danger Blossom
 		}
 
 		Keybinds: {
