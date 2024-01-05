@@ -358,6 +358,8 @@ Mods: {
 			CoreBomb.DisplayName: Core Bomb
 			ExplosionIndicator.DisplayName: Explosion Indicator
 			BlossomButterfly.DisplayName: Blossom Butterfly
+			RipsawPro.DisplayName: Ripsaw Pro
+			Sawblade.DisplayName: Sawblade
 		}
 
 		Biomes: {
@@ -980,6 +982,11 @@ Mods: {
 
 			CoreBarrage: {
 				DisplayName: Core Barrage
+				Tooltip: ""
+			}
+
+			Ripsaw: {
+				DisplayName: Ripsaw
 				Tooltip: ""
 			}
 		}
