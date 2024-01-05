@@ -5,13 +5,10 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Divergency.Content.Dusts;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using Terraria.DataStructures;
-using System.Threading;
-using Humanizer;
-using static log4net.Appender.ColoredConsoleAppender;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.DataStructures;
+using System;
 
 namespace Divergency.Content.Tiles.LivingGrove
 {
@@ -28,7 +25,7 @@ namespace Divergency.Content.Tiles.LivingGrove
             DustType = ModContent.DustType<CradleWoodFurniture>();
             //ItemDrop = ModContent.ItemType<CradleWoodItem>();
             HitSound = new SoundStyle("Divergency/Assets/Sounds/Tiles/CradleWoodHit") with { PitchVariance = 0.1f };
-
+            
             AddMapEntry(new Color(81, 44, 57));
         }
 

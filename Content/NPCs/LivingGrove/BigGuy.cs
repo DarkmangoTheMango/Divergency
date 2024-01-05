@@ -5,6 +5,7 @@ using Divergency.Content.Projectiles.Summoner.Minions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
+using System;
 using System.Net.Security;
 using Terraria;
 using Terraria.Audio;
@@ -83,8 +84,15 @@ namespace Divergency.Content.NPCs.LivingGrove
         public float Phase;
         private bool initialize;
 
+        private bool spawned = false;
         public override void AI()
         {
+            /*
+            if (!spawned)
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.LaserBeam>(), NPC.damage, 0, ai0: Main.LocalPlayer.whoAmI, ai1: NPC.whoAmI);
+            spawned = true;
+            */
+
             if (!initialize)
             {
 
