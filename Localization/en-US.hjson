@@ -360,6 +360,7 @@ Mods: {
 			BlossomButterfly.DisplayName: Blossom Butterfly
 			RipsawPro.DisplayName: Ripsaw Pro
 			Sawblade.DisplayName: Sawblade
+			LaserBeam.DisplayName: Laser Beam
 		}
 
 		Biomes: {
