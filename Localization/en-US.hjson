@@ -990,6 +990,11 @@ Mods: {
 				DisplayName: Ripsaw
 				Tooltip: ""
 			}
+
+			Sacresti: {
+				DisplayName: Sacresti
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {

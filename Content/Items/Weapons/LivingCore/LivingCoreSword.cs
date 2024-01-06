@@ -72,6 +72,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
     public class LivingCoreSwordSwing : SwordSwing
     {
+        public override float BuildInRotation => 0;
+
         float ScaleEase(float cur, float max)
         {
             float x = cur / max;
