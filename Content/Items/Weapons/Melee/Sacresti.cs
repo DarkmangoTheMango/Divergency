@@ -10,6 +10,7 @@ using ParticleLibrary;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -43,7 +44,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             Item.shoot = ModContent.ProjectileType<SwordProjectile>(); // this dosent actually have to be there at all...
             Item.width = Item.height = 90;
-            Item.scale = 0.7f;
+            Item.scale = 0.6f;
 
             Item.useTime = Item.useAnimation = 50;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -97,17 +98,17 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 30; i++)
             {
-                Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 10f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.Red, 1f);
+                Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 5f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 5f), 0, Color.DarkRed, 1f);
                 ParticleManager.NewParticle<Spark>(target.Center, target.DirectionTo(player.Center) * -Main.rand.NextFloat(0f, 10f), new Color(255, 0, 0, 0), 1f, 1);
 
             }
 
             if (freezeFrames == -1)
-                freezeFrames = 40;
+                freezeFrames = 75;
         }
-
+      
        
 
         private void Update(Projectile projectile)
@@ -121,18 +122,20 @@ namespace Divergency.Content.Items.Weapons.Melee
                     SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
                     proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
                 }
+                
             }
+           
+           
         }
 
         public int attackDirection = 1;
         public int AttackCounter = 1;
-
         public override int Updates => 10;
         public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
-        public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Sacresti";
-        public override Vector2 Pivot => new Vector2(0, 55);
-        public override float BuildInRotation => MathF.PI/8;
 
+        public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Sacresti";
+        public override Vector2 Pivot => new Vector2(0, 60);
+        public override float BuildInRotation => MathF.PI/8;
         public override TimedFunction[] SwingFunctions => new TimedFunction[]
         {
             new TimedFunction(Update, 0, RunEveryFrame: true),
@@ -145,24 +148,24 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
 
         private static TimedFunction[] timedFunctions = new TimedFunction[] { new TimedFunction(PlaySound, 0.5f) };
-
+        
         public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
            new SwordAnimation(0,0),
-           new SwordAnimation(2f+MathF.PI/2, 18, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-2f+MathF.PI/2, 18, 4, FrameFunctions: timedFunctions, Flipped: false, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(MathF.PI* 3f, 30, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-MathF.PI* 3f, 30, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-2+MathF.PI/4, 60, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-
+           new SwordAnimation(2f+MathF.PI/2, 22, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-2f+MathF.PI/2, 22, 4, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-2+MathF.PI/4, 45, FrameFunctions: timedFunctions, MaxCharge: 10f, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
 
 
         });
-        public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f; // 12 is vertical width of blade
+        public override float Width => MathF.Sqrt(MathF.Pow(10, 2) * 2) + 1f; // 12 is vertical width of blade
 
-        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 115, TrailType.Raw);
+        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/RedTrail", 147, TrailType.Sqrt);
 
+       
     }
 }
