@@ -87,11 +87,11 @@ namespace Divergency.Content.NPCs.LivingGrove
         private bool spawned = false;
         public override void AI()
         {
-            /*
+            
             if (!spawned)
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.LaserBeam>(), NPC.damage, 0, ai0: Main.LocalPlayer.whoAmI, ai1: NPC.whoAmI);
             spawned = true;
-            */
+            
 
             if (!initialize)
             {
@@ -122,7 +122,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                     if (NPC.ai[0] == 120)
                     {
-                      //state == ActionState.Lazer
+                        state = ActionState.Lazer;
                     }
                 }
             }
