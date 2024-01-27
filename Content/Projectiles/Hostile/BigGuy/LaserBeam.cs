@@ -1,4 +1,5 @@
-﻿using Divergency.Content.Events.LivingCore;
+﻿using Divergency.Content.Dusts;
+using Divergency.Content.Events.LivingCore;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -68,7 +69,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
             Projectile.timeLeft = 10;
 
             // make it rotate smootly towards player...
-            Projectile.rotation = (targetPlayer.Center - origin).ToRotation();
+            Projectile.rotation = ((targetPlayer.Center - origin) / 400).ToRotation();
 
             CalculateDistance();
             CastLights();
@@ -76,7 +77,12 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
 
             Vector2 end = origin + Projectile.rotation.ToRotationVector2() * (distance < 64 ? 64 : distance);
 
-            // make sparks at end maby?
+            for (int i = 0; i < 10; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(end, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, Color.LimeGreen, 2f) ;
+                dust.noGravity = true;
+
+            }
         }
         private void CastLights()
         {

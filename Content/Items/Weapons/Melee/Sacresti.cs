@@ -113,6 +113,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         private void Update(Projectile projectile)
         {
+            Player player = Main.player[projectile.owner];
             if (freezeFrames > -1)
             {
                 freezeFrames--;
@@ -122,17 +123,35 @@ namespace Divergency.Content.Items.Weapons.Melee
                     SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
                     proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
                 }
-                
+
+               
+
+
+
             }
-           
-           
+            SwordProjectile swing = (projectile.ModProjectile as SwordProjectile);
+
+            if (swing.Charge > 0 && swing.Charge < 60)
+            {
+                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(10f, 30f), new Color(255, 0, 0, 0), 1f, 1);
+            }
+            if (swing.Charge >= 60)
+            {
+                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(10f, 5f), new Color(255, 0, 0, 0), 1f, 1);
+
+            }
+
+            Main.NewText(swing.Charge);
+
+
+
         }
 
+        public int chargeEnder = 0;
         public int attackDirection = 1;
         public int AttackCounter = 1;
         public override int Updates => 10;
         public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
-
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Sacresti";
         public override Vector2 Pivot => new Vector2(0, 60);
         public override float BuildInRotation => MathF.PI/8;
@@ -140,7 +159,6 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             new TimedFunction(Update, 0, RunEveryFrame: true),
         };
-
         static void PlaySound(Projectile proj)
         {
             Player player = Main.player[proj.owner];
@@ -148,15 +166,15 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
 
         private static TimedFunction[] timedFunctions = new TimedFunction[] { new TimedFunction(PlaySound, 0.5f) };
-        
+
         public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
            new SwordAnimation(0,0),
            new SwordAnimation(2f+MathF.PI/2, 22, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-2f+MathF.PI/2, 22, 4, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-2f+MathF.PI/2, 22, 4, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: true),
            new SwordAnimation(MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-2+MathF.PI/4, 45, FrameFunctions: timedFunctions, MaxCharge: 10f, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: true),
+           new SwordAnimation(-2+MathF.PI/4, 45, FrameFunctions: timedFunctions,  ChargeAutoRelease: true, MaxCharge: 60f, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
 
