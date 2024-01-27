@@ -154,6 +154,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/DecodeDestruction";
 
         public override Vector2 Pivot => new Vector2(0, 160);
+        public override float BuildInRotation => 0;
 
 
         public override TimedFunction[] SwingFunctions => new TimedFunction[]

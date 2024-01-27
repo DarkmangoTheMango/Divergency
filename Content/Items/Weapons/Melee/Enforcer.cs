@@ -177,6 +177,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Func<Projectile, Vector2, bool> OnHitTile { get { return OnHitTile2; } }
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Enforcer";
         public override Vector2 Pivot => new Vector2(0, 50);
+        public override float BuildInRotation => 0;
 
         public override TimedFunction[] SwingFunctions => new TimedFunction[]
         {

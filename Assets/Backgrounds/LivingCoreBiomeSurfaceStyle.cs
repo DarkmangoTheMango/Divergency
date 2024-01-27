@@ -94,14 +94,6 @@ namespace Divergency.Assets.Backgrounds
                 int bgLoops = Main.screenWidth / bgW + 2;
                 if (Main.screenPosition.Y < Main.worldSurface * 16.0 + 16.0)
                 {
-                    for (int k = 0; k < bgLoops; k++)
-                    {
-                        spriteBatch.Draw(TextureAssets.Background[textureSlot].Value,
-                            new Vector2(bgStart + bgW * k, MathHelper.Clamp(bgTop, -100, 0)),
-                            new Rectangle(0, 0, Main.backgroundWidth[textureSlot], Main.backgroundHeight[textureSlot]),
-                            backColor, 0f, default, bgScale, SpriteEffects.None, 0f);
-
-                    }
 
                     for (int k = 0; k < bgLoops; k++)
                     {
@@ -109,6 +101,15 @@ namespace Divergency.Assets.Backgrounds
                             new Vector2(bgStartMid + bgW * k, MathHelper.Clamp(bgTop, -100, 0)),
                             new Rectangle(0, 0, Main.backgroundWidth[textureSlot], Main.backgroundHeight[textureSlot]),
                             Color.White, 0f, default, bgScale, SpriteEffects.None, 0f);
+
+                    }
+                   
+                    for (int k = 0; k < bgLoops; k++)
+                    {
+                        spriteBatch.Draw(TextureAssets.Background[textureSlot].Value,
+                            new Vector2(bgStart + bgW * k, MathHelper.Clamp(bgTop, -100, 0)),
+                            new Rectangle(0, 0, Main.backgroundWidth[textureSlot], Main.backgroundHeight[textureSlot]),
+                            backColor, 0f, default, bgScale, SpriteEffects.None, 0f);
 
                     }
                     for (int k = 0; k < bgLoops; k++)
@@ -119,6 +120,7 @@ namespace Divergency.Assets.Backgrounds
                             Color.White, 0f, default, bgScale, SpriteEffects.None, 0f);
 
                     }
+
                 }
 
             }

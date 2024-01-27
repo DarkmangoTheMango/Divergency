@@ -473,6 +473,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
         public abstract Keyframes SwordFrames { get; }
         public virtual float Height { get { return -1; } } // height based off of texture
         public virtual Vector2 Pivot { get { return default; } }
+        public abstract float BuildInRotation { get; }
         public virtual Func<Projectile, bool> PreDraw { get { return null; } }
         public virtual Func<Projectile, Vector2, bool> OnHitTile { get { return null; } }
         public virtual Action<Projectile, NPC, int, float, bool> OnHitNPC { get { return null; } }
@@ -730,17 +731,18 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 if (SwingInfo.PreDraw != null)
                     if (!SwingInfo.PreDraw(Projectile)) // values to pass in
                         return false;
+                float addRotation = SwingInfo.BuildInRotation *    -direction;
 
                 foreach (SwordGlow glow in backGlow)
                 {
-                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
+                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation - addRotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
                 }
 
-                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
+                Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation - addRotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
 
                 foreach (SwordGlow glow in frontGlow)
                 {
-                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
+                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation - addRotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
                 }
             }
 
