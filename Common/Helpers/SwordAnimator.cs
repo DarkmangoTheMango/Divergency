@@ -713,7 +713,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 float h = texture.Height * Scale.Y;
                 float w = texture.Width * Scale.X;
 
-                ST.DrawSwordTrail(TrailPosition - Main.screenPosition, Scale.Y, SA.TargetRotation > LastSA.TargetRotation ? 1 : -1, Projectile.oldRot[0], Projectile.oldRot[1]);
+                ST.DrawSwordTrail(TrailPosition - Main.screenPosition, Scale.Y, (SA.TargetRotation > LastSA.TargetRotation ? 1 : -1) * direction, Projectile.oldRot[0], Projectile.oldRot[1]);
             }
 
             SpriteEffects spriteEffects;
