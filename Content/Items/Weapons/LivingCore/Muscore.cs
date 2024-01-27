@@ -4,11 +4,14 @@ using Divergency.Content.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
+using rail;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent.Biomes;
 using Terraria.GameContent.Creative;
 using Terraria.GameInput;
 using Terraria.ID;
@@ -23,6 +26,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         int shotsLeft = 6;
 
         public string BulletTexture => "Divergency/Common/UI/MuscoreUI_Bullet";
+
+        public int StackSize => 1;
 
         public int GetRemainingBullets() => shotsLeft;
 
@@ -81,16 +86,10 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         }
     }
 
-    public class MuscoreProj : ModProjectile, IReloadWeapon
+    public class MuscoreProj : ModProjectile
     {
         int shotsLeft = 6;
 
-        public string BulletTexture { get { return "Divergency/Common/UI/MuscoreUI_Bullet"; } }
-        public int GetRemainingBullets() { return shotsLeft; }
-        public void Reload()
-        {
-            shotsLeft = 6;
-        }
         private float MovementFactor = 24f;
         //public override string Texture => "DivergencyMod/Items/Weapons/Ranged/Muscore/Bullet";
 
@@ -444,7 +443,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void PreUpdate()
         {
-            if (itemReloading == null)
+            if (itemReloading == null || Player.HeldItem.ModItem == null)
                 return;
 
             if (Player.HeldItem != itemReloading)
@@ -495,6 +494,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         void Reload();
         int GetRemainingBullets();
         string BulletTexture { get; }
+        int StackSize { get; }
     }
 
     public class ItemSwapKeybindDraw : ModSystem
@@ -535,20 +535,35 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
             Texture2D stockTexture = (Texture2D)ModContent.Request<Texture2D>(iReloadWeapon.BulletTexture);
 
-            int stocksLeft = iReloadWeapon.GetRemainingBullets();
+            int bulletsLeft = iReloadWeapon.GetRemainingBullets();
 
-            Console.WriteLine("reach??");
+            int rowsLeft = (bulletsLeft - (bulletsLeft % iReloadWeapon.StackSize)) / iReloadWeapon.StackSize;
 
-            for (int i = 0; i < stocksLeft; i++)
+            int firstStackSize = (bulletsLeft % iReloadWeapon.StackSize);
+
+            if (firstStackSize == 0)
+                firstStackSize = iReloadWeapon.StackSize;
+            else
+                rowsLeft++;
+
+            for (int i = 0; i < rowsLeft; i++)
             {
                 Rectangle bulletRect = new Rectangle(0, 0, 12, 22);
 
-                int spacing = 12;
+                int spacingX = 12;
+                int spacingY = 7;
 
-                int position = -(((12 + spacing) * stocksLeft) / 2);
-                position += (12 + spacing / 2) * i + spacing;
+                int stackSize = i == 0 ? firstStackSize : iReloadWeapon.StackSize;
 
-                spriteBatch.Draw(stockTexture, new Vector2(Main.screenWidth / 2 + position, Main.screenHeight / 2 - 60f), bulletRect, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                Vector2 position = new Vector2(-(((12 + spacingX) * rowsLeft) / 2), -spacingY * stackSize);
+                position.X += (12 + spacingX / 2) * i + spacingX;
+
+                for (int bI = 0; bI < stackSize; bI++)
+                {
+                    position.Y += spacingY;
+                    //position.X++;
+                    spriteBatch.Draw(stockTexture, position + new Vector2(Main.screenWidth / 2, Main.screenHeight / 2 - 60f), bulletRect, Color.White, MathF.PI, Vector2.Zero, 1f, SpriteEffects.None, 0);
+                }
             }
 
             // draw reload ui

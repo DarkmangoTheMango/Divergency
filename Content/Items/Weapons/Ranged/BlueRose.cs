@@ -23,6 +23,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public string BulletTexture => "Divergency/Common/UI/BlueRoseBulletUI";
 
+        public int StackSize => 1;
+
         public int GetRemainingBullets() => shotsLeft;
 
         public void Reload() => shotsLeft = 3;

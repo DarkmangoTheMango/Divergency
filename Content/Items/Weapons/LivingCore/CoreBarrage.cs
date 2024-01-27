@@ -14,13 +14,14 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 {
     public class CoreBarrage : ModItem, IReloadWeapon
     {
-        int shotsLeft = 3;
+        public int StackSize => 6;
+        public int shotsLeft = 3 * 6;
        
         public string BulletTexture => "Divergency/Common/UI/MuscoreUI_Bullet";
 
         public int GetRemainingBullets() => shotsLeft;
 
-        public void Reload() => shotsLeft = 3;
+        public void Reload() => shotsLeft = 3 * StackSize;
       
         public override void SetStaticDefaults()
         {
@@ -48,8 +49,9 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item.noUseGraphic = true;
             Item.autoReuse = true;
             Item.useTurn = false;
-        }
 
+            Item.reuseDelay = 30;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -81,7 +83,6 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            shotsLeft--;
             return true;
         }
 
@@ -120,16 +121,15 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         }
 
         public float Timer = 7;
+        private bool hasShot = false;
 
-
-        private int shotcounter;
 
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
 
             Timer++;
-            if (player.noItems || player.CCed || player.dead || !player.active)
+            if (player.noItems || player.CCed || player.dead || !player.active || !Main.mouseLeft || (player.HeldItem.ModItem as CoreBarrage) == null)
                 Projectile.Kill();
 
 
@@ -157,13 +157,14 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
             if (Timer == 10)
             {
-
                 Projectile.NewProjectile(Projectile.InheritSource(Projectile), Projectile.Center, Projectile.velocity * 5, ModContent.ProjectileType<CoreBarrageBullet>(), Projectile.damage + player.GetModPlayer<CoreBarragePlayer>().ShotCounterTotal, 2, Projectile.owner, Projectile.whoAmI);
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/MuscoreShoot"), player.Center);
                 Timer = 0;
-                shotcounter++;
+
+                (player.HeldItem.ModItem as CoreBarrage).shotsLeft--;
+                hasShot = true;
             }
-            if (shotcounter == 6)
+            if ((player.HeldItem.ModItem as CoreBarrage).shotsLeft % (player.HeldItem.ModItem as CoreBarrage).StackSize == 0 && hasShot)
             {
                 Projectile.Kill();
             }
