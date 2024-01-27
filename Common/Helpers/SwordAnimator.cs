@@ -678,8 +678,18 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
         public override bool PreDraw(ref Color lightColor)
         {
+            float curTime = FramesPassed * AttackSpeed;
             int direction = Projectile.velocity.X > 0 ? 1 : -1;
             bool flipped = Projectile.spriteDirection == 1 ? true : false;
+
+            Keyframes.FrameInfo frameInfo = SwingInfo.SwordFrames.NextFrame(curTime);
+            int keyframe = frameInfo.frameID;
+
+            if (keyframe == -1)
+                return false;
+
+            SwordAnimation SA = SwingInfo.SwordFrames.keyframeArray[keyframe];
+            SwordAnimation LastSA = SwingInfo.SwordFrames.keyframeArray[Math.Max(keyframe - 1, 0)];
 
             SwordTrail ST = SwingInfo.SwordTrail;
 
@@ -697,11 +707,13 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
 
             Player player = Main.player[Projectile.owner];
+
             if (ST != null)
             {
                 float h = texture.Height * Scale.Y;
                 float w = texture.Width * Scale.X;
-                ST.DrawSwordTrail(TrailPosition - Main.screenPosition, Scale.Y, direction * -Projectile.spriteDirection, Projectile.oldRot[0], Projectile.oldRot[1]);
+
+                ST.DrawSwordTrail(TrailPosition - Main.screenPosition, Scale.Y, SA.TargetRotation > LastSA.TargetRotation ? 1 : -1, Projectile.oldRot[0], Projectile.oldRot[1]);
             }
 
             SpriteEffects spriteEffects;
@@ -723,8 +735,6 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 rotation = Projectile.rotation;
 
             }
-
-            float curTime = FramesPassed * AttackSpeed;
 
             if (texture != null)
             {
