@@ -101,12 +101,12 @@ namespace Divergency.Content.Items.Weapons.Melee
             for (int i = 0; i < 30; i++)
             {
                 Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 5f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 5f), 0, Color.DarkRed, 1f);
-                ParticleManager.NewParticle<Spark>(target.Center, target.DirectionTo(player.Center) * -Main.rand.NextFloat(0f, 10f), new Color(255, 0, 0, 0), 1f, 1);
+                ParticleManager.NewParticle<Spark>(target.Center, target.DirectionTo(player.Center) * -Main.rand.NextFloat(5f, 10f), new Color(255, 0, 0, 0), 1f, 1);
 
             }
 
             if (freezeFrames == -1)
-                freezeFrames = 75;
+                freezeFrames = 1;
         }
       
        
@@ -131,13 +131,16 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
             SwordProjectile swing = (projectile.ModProjectile as SwordProjectile);
 
-            if (swing.Charge > 0 && swing.Charge < 60)
+            if (swing.Charge > 0 && swing.Charge < 90)
             {
-                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(10f, 30f), new Color(255, 0, 0, 0), 1f, 1);
+                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2f, swing.Charge/4), new Color(255, 0, 0, 0), 1f, 1);
+                Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(10f, swing.Charge/ 3), projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(10f, swing.Charge/ 4), 0, Color.DarkRed, 0.7f);
+
             }
-            if (swing.Charge >= 60)
+            if (swing.Charge >= 90)
             {
-                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(10f, 5f), new Color(255, 0, 0, 0), 1f, 1);
+                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(5, 10), new Color(255, 0, 0, 0), 1f, 1);
+                Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(1f, swing.Charge / 3), projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(10f, swing.Charge / 10), 0, Color.DarkRed, 1f);
 
             }
 
@@ -171,10 +174,10 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
            new SwordAnimation(0,0),
            new SwordAnimation(2f+MathF.PI/2, 22, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-2f+MathF.PI/2, 22, 4, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: true),
+           new SwordAnimation(-2f+MathF.PI/2, 22, 4, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: false),
            new SwordAnimation(MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: true),
-           new SwordAnimation(-2+MathF.PI/4, 45, FrameFunctions: timedFunctions,  ChargeAutoRelease: true, MaxCharge: 60f, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: false),
+           new SwordAnimation(-2+MathF.PI/4, 30, FrameFunctions: timedFunctions,  ChargeAutoRelease: true, MaxCharge: 90f, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
 
