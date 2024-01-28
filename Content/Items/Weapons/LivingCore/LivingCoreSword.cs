@@ -37,9 +37,9 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item.damage = 35;
             Item.knockBack = 5f;
 
+            Item.shoot = ModContent.ProjectileType<LivingCoreSwordSwing>();
             Item.shootSpeed = 1f;
 
-            Item.shoot = ModContent.ProjectileType<SwordProjectile>(); // this dosent actually have to be there at all...
             Item.width = Item.height = 90;
             Item.scale = 1f;
 
@@ -87,9 +87,9 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         }
 
         private int freezeFrames = -1;
-        void NPCHit(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
 
@@ -118,8 +118,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
                 if (freezeFrames > 0)
                 {
-                    SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
-                    proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
+                    SwordSwing proj = (projectile.ModProjectile as SwordSwing);
+                    proj.framesPassed -= 1f / proj.Updates;
                 }
             }
         }
@@ -128,7 +128,6 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         public int AttackCounter = 1;
 
         public override int Updates => 10;
-        public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
         public override string SwordTexture => "Divergency/Content/Items/Weapons/LivingCore/LivingCoreSword";
         public override Vector2 Pivot => new Vector2(0, 55);
 

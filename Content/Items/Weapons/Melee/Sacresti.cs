@@ -40,9 +40,9 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.damage = 35;
             Item.knockBack = 5f;
 
+            Item.shoot = ModContent.ProjectileType<SacrestiSwing>();
             Item.shootSpeed = 1f;
 
-            Item.shoot = ModContent.ProjectileType<SwordProjectile>(); // this dosent actually have to be there at all...
             Item.width = Item.height = 90;
             Item.scale = 0.6f;
 
@@ -67,6 +67,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            Console.WriteLine("Made proj");
             SwordAnimator.Swing<SacrestiSwing>(player, damage, knockback);
 
             return false;
@@ -88,9 +89,10 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
 
         private int freezeFrames = -1;
-        void NPCHit(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
 
@@ -120,8 +122,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
                 if (freezeFrames > 0)
                 {
-                    SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
-                    proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
+                    SwordSwing proj = (projectile.ModProjectile as SwordSwing);
+                    proj.framesPassed -= 1f / proj.Updates;
                 }
 
                
@@ -129,19 +131,20 @@ namespace Divergency.Content.Items.Weapons.Melee
 
 
             }
-            SwordProjectile swing = (projectile.ModProjectile as SwordProjectile);
 
-            if (swing.Charge > 0 && swing.Charge < 60)
+            SwordSwing swing = (projectile.ModProjectile as SwordSwing);
+
+            if (swing.charge > 0 && swing.charge < 60)
             {
                 ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(10f, 30f), new Color(255, 0, 0, 0), 1f, 1);
             }
-            if (swing.Charge >= 60)
+            if (swing.charge >= 60)
             {
                 ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(10f, 5f), new Color(255, 0, 0, 0), 1f, 1);
 
             }
 
-            Main.NewText(swing.Charge);
+            Main.NewText(swing.charge);
 
 
 
@@ -151,7 +154,6 @@ namespace Divergency.Content.Items.Weapons.Melee
         public int attackDirection = 1;
         public int AttackCounter = 1;
         public override int Updates => 10;
-        public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Sacresti";
         public override Vector2 Pivot => new Vector2(0, 60);
         public override float BuildInRotation => MathF.PI/8;
