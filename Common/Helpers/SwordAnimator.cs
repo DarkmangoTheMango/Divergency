@@ -15,7 +15,6 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Terraria;
@@ -249,7 +248,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Func<float, float, float> SharedMul = null, Func<float, float, float> RotationMul = null,
             Func<float, float, float> GlobalOffsetMul = null, Func<float, float, float> LocalOffsetMul = null,
             Func<float, float, float> ScaleMul = null,
-            
+
             TimedFunction[] FrameFunctions = null)
         {
             this.TargetRotation = TargetRotation;
@@ -260,7 +259,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             this.HoldToContinue = MaxCharge == 0 ? HoldToContinue : false;
             this.Flipped = Flipped;
 
-            this.FrameFunctions = FrameFunctions == null ? new TimedFunction[] {} : FrameFunctions;
+            this.FrameFunctions = FrameFunctions == null ? new TimedFunction[] { } : FrameFunctions;
 
             this.MaxCharge = MaxCharge;
             this.ChargeAutoRelease = ChargeAutoRelease;
@@ -316,7 +315,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
         Raw,
         Sqrt,
     }
-    
+
     public class SwordTrail
     {
 
@@ -348,12 +347,12 @@ namespace Divergency.Common.Helpers.SwordAnimator
             int _height = (int)(height * scale);
             float len = MathF.Min(((rotation - lastRot) * trailMultiplier) * dir, trailLimit);
 
-            effect.Parameters.GetParameterBySemantic("rot").SetValue(rotation - MathF.PI/ 2f);
+            effect.Parameters.GetParameterBySemantic("rot").SetValue(rotation - MathF.PI / 2f);
             effect.Parameters.GetParameterBySemantic("len").SetValue(len);
             effect.Parameters.GetParameterBySemantic("mlen").SetValue(trailLimit);
             effect.Parameters.GetParameterBySemantic("dir").SetValue(dir);
 
-            effect.Parameters.GetParameterBySemantic("type").SetValue((int)TT+1);
+            effect.Parameters.GetParameterBySemantic("type").SetValue((int)TT + 1);
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
@@ -361,7 +360,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Main.spriteBatch.Draw(Texture, new Rectangle((int)worldPos.X - _height, (int)worldPos.Y - _height, _height * 2, _height * 2), Color.White);
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,null, null, null, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
     public class SwordGlowColor // Color animation
@@ -426,7 +425,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
                     curTime = curTime + colorTimers[i];
                 }
 
-                return colors[colors.Count-1];
+                return colors[colors.Count - 1];
             }
         }
     }
@@ -457,7 +456,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Console.WriteLine(Color.GetColor(time));
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-            Main.spriteBatch.Draw(texture, position, rec, Color.GetColor(time), rotation, offset, Scale*scale, spriteEffects, 1f);
+            Main.spriteBatch.Draw(texture, position, rec, Color.GetColor(time), rotation, offset, Scale * scale, spriteEffects, 1f);
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
@@ -493,7 +492,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
         public float framesPassed = 0; // getting synced (i hope...) (maby dosent need to?, probably does... (if so, it needs to be every frame...)
 
         public int NPCOwned = -1; // getting synced (i hope...)
-        
+
         public float charge = 0; // also needs net sync...
 
         // pass values from update into draw, i assume update runs on all clients
@@ -574,7 +573,8 @@ namespace Divergency.Common.Helpers.SwordAnimator
                     {
                         if (Main.mouseLeft && !(SA.ChargeAutoRelease && (charge == SA.MaxCharge)))
                         {
-                            if (charge == 0) {
+                            if (charge == 0)
+                            {
                                 SA.ChargeStart(Projectile);
                             }
 
@@ -656,7 +656,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 TrailPosition = player.Center + localOffset.RotatedBy(Rotation) + globalOffset;
                 Position = player.Center - pivot.RotatedBy(Rotation) + globalOffset;
 
-                player.heldProj = Projectile.whoAmI;    
+                player.heldProj = Projectile.whoAmI;
 
                 player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Rotation - direction * MathF.PI);
                 player.ChangeDir(direction);
@@ -712,7 +712,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
             SpriteEffects spriteEffects;
             float rotation;
-            
+
             if (SlantingSword)
             {
                 spriteEffects = direction * (flipped ? -1 : 1) == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
@@ -768,7 +768,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
                 float SWidth = Width * Scale.X;
                 float SHegith = halfHeight * Scale.Y;
 
-                float rotation = (Projectile.rotation - MathF.PI/2);
+                float rotation = (Projectile.rotation - MathF.PI / 2);
 
                 if (Collision.CheckAABBvLineCollision(
                     targetHitbox.TopLeft(),
@@ -800,9 +800,9 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Console.WriteLine(AttackSpeed);
             Console.WriteLine(FramesPassed);
             */
-    }
+        }
 
-    public override void ReceiveExtraAI(BinaryReader reader)
+        public override void ReceiveExtraAI(BinaryReader reader)
         {
             /*
             NPCOwned = reader.ReadInt32();
