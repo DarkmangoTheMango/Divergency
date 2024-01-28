@@ -78,7 +78,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         float ScaleEase(float cur, float max)
         {
             float x = cur / max;
-            return 0.8f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(0.8f - x) * MathHelper.Pi) * 0.5f * 0.5f;
+            return 0.7f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1 - x) * MathHelper.Pi) * 0.6f * 0.6f;
         }
 
         float RotationEase(float cur, float max)
@@ -94,25 +94,34 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
 
-
+            bool knockbacked = false;
+            if (currentCharge >= 60 && !knockbacked)
+            {
+             
+                player.velocity.X += -player.direction * 15;
+                knockbacked = true;
+                projectile.damage = 0;
+                target.velocity.Y -= 12;
+            }
 
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
 
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 15; i++)
             {
                 Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 5f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 5f), 0, Color.DarkRed, 1f);
-                ParticleManager.NewParticle<Spark>(target.Center, target.DirectionTo(player.Center) * -Main.rand.NextFloat(5f, 10f), new Color(255, 0, 0, 0), 1f, 1);
+                ParticleManager.NewParticle<Spark>(target.Center, target.DirectionTo(player.Center) * -Main.rand.NextFloat(2f, 9f), new Color(255, 0, 0, 0), 1f, 1);
 
             }
 
             if (freezeFrames == -1)
                 freezeFrames = 1;
         }
-      
-       
+        
 
+        public float currentCharge;
         private void Update(Projectile projectile)
         {
+            timer++;
             Player player = Main.player[projectile.owner];
             if (freezeFrames > -1)
             {
@@ -123,29 +132,38 @@ namespace Divergency.Content.Items.Weapons.Melee
                     SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
                     proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
                 }
-
                
+
 
 
 
             }
             SwordProjectile swing = (projectile.ModProjectile as SwordProjectile);
 
-            if (swing.Charge > 0 && swing.Charge < 90)
+            if (swing.Charge > 60 && swing.Charge < 90)
             {
-                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2f, swing.Charge/4), new Color(255, 0, 0, 0), 1f, 1);
-                Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(10f, swing.Charge/ 3), projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(10f, swing.Charge/ 4), 0, Color.DarkRed, 0.7f);
+                ParticleManager.NewParticle<Spark>(projectile.Center, (projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2f, swing.Charge / 4) * Main.rand.NextVector2Circular(2, 2)), new Color(255, 0, 0, 0), 0.4f, 1);
+                Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(10f, swing.Charge / 3), projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(10f, swing.Charge / 4), 0, Color.DarkRed, 0.4f);
 
             }
             if (swing.Charge >= 90)
             {
-                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(5, 10), new Color(255, 0, 0, 0), 1f, 1);
-                Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(1f, swing.Charge / 3), projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(10f, swing.Charge / 10), 0, Color.DarkRed, 1f);
+                ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2, 2), new Color(255, 0, 0, 0), 1f, 1);
+                Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(1f, 2) * 0.8f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(0.8f - 0.2f) * MathHelper.Pi) * 0.5f * 0.5f, projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(2, 2), 0, Color.DarkRed, 1f);
 
             }
+            if (swing.Charge == 90 && !dashed)
+            {
+                player.velocity.X += player.direction * 15;
+                player.velocity.Y -= 5;
+                player.SetImmuneTimeForAllTypes(60);
 
-            Main.NewText(swing.Charge);
-
+                dashed = true;
+            }
+        
+                
+            
+            currentCharge = swing.Charge;
 
 
         }
@@ -157,7 +175,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Sacresti";
         public override Vector2 Pivot => new Vector2(0, 60);
-        public override float BuildInRotation => MathF.PI/8;
+        public override float BuildInRotation => MathF.PI / 8;
         public override TimedFunction[] SwingFunctions => new TimedFunction[]
         {
             new TimedFunction(Update, 0, RunEveryFrame: true),
@@ -167,17 +185,25 @@ namespace Divergency.Content.Items.Weapons.Melee
             Player player = Main.player[proj.owner];
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingHeavy") with { Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, player.Center);
         }
+        static void Dash (Projectile proj)
+        {
+            Player player = Main.player[proj.owner];
+            //SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingHeavy") with { Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, player.Center);
+            player.velocity.X += player.direction * 10;
+
+        }
 
         private static TimedFunction[] timedFunctions = new TimedFunction[] { new TimedFunction(PlaySound, 0.5f) };
 
         public override Keyframes SwordFrames => new Keyframes(new SwordAnimation[]
         {
            new SwordAnimation(0,0),
-           new SwordAnimation(2f+MathF.PI/2, 22, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-2f+MathF.PI/2, 22, 4, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: false),
-           new SwordAnimation(MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
-           new SwordAnimation(-MathF.PI* 2f, 45, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: false),
-           new SwordAnimation(-2+MathF.PI/4, 30, FrameFunctions: timedFunctions,  ChargeAutoRelease: true, MaxCharge: 90f, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(2f+MathF.PI/2, 20, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-2f+MathF.PI/2, 20, 4, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: false),
+           new SwordAnimation(MathF.PI* 2f, 40, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(-MathF.PI* 2f, 40, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase),
+           new SwordAnimation(5+MathF.PI* 2f, 40, FrameFunctions: timedFunctions, RotationIn: RotationEase, ScaleMul: ScaleEase, Flipped: false),
+           new SwordAnimation(-2+MathF.PI/4, 25, FrameFunctions: timedFunctions,  ChargeAutoRelease: true, MaxCharge: 90f, RotationIn: RotationEase, ScaleMul: ScaleEase),
 
 
 
@@ -187,6 +213,29 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/RedTrail", 147, TrailType.Sqrt);
 
-       
+        public override SwordGlow[] Glows => new SwordGlow[]
+         {
+         
+          new SwordGlow(new SwordGlowColor(
+                new List<Color>{
+                    new Color(219, 112, 147,  currentCharge / 100),
+                    new Color(219, 112, 147, currentCharge / 100),
+                    new Color(219, 112, 147, currentCharge / 100)
+
+                }, new List<int>
+                {
+                    0,
+                    1,
+                    1,
+
+                }),
+
+            1f, false, "Divergency/Content/Items/Weapons/Melee/SacrestiGlowmask")
+
+
+           };
+
+        public bool dashed { get; private set; }
+        public int timer { get; private set; }
     }
 }
