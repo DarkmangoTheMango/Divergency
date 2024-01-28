@@ -4,6 +4,7 @@ using Divergency.Common.Players;
 using Divergency.Content.Buffs;
 using Divergency.Content.Dusts;
 using Divergency.Content.Particles;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
@@ -87,7 +88,6 @@ namespace Divergency.Content.Items.Weapons.Melee
             float x = cur / max;
             return EaseFunction.EaseCircularInOut.Ease(x);
         }
-        bool knockbacked = false;
 
         private int freezeFrames = -1;
 
@@ -97,14 +97,13 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
 
+            bool knockbacked = false;
             if (currentCharge >= 60 && !knockbacked)
             {
 
                 player.velocity.X *= -0.5f;
-                player.velocity.Y *= -0.5f;
-
-                knockbacked = true;
-                projectile.damage = 0;
+                player.velocity.Y *= -0.5f; knockbacked = true;
+                Projectile.damage = 0;
                 target.velocity.Y -= 10;
             }
 
@@ -125,7 +124,6 @@ namespace Divergency.Content.Items.Weapons.Melee
         public float currentCharge;
         private void Update(Projectile projectile)
         {
-            timer++;
             Player player = Main.player[projectile.owner];
             if (freezeFrames > -1)
             {
@@ -145,19 +143,19 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             SwordSwing swing = (projectile.ModProjectile as SwordSwing);
 
-            if (swing.Charge > 60 && swing.Charge < 90)
+            if (swing.charge > 60 && swing.charge < 90)
             {
-                ParticleManager.NewParticle<Spark>(projectile.Center, (projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2f, swing.Charge / 4) * Main.rand.NextVector2Circular(2, 2)), new Color(255, 0, 0, 0), 0.4f, 1);
-                Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(10f, swing.Charge / 3), projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(10f, swing.Charge / 4), 0, Color.DarkRed, 0.4f);
+                ParticleManager.NewParticle<Spark>(projectile.Center, (projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2f, swing.charge / 4) * Main.rand.NextVector2Circular(2, 2)), new Color(255, 0, 0, 0), 0.4f, 1);
+                Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(10f, swing.charge / 3), projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(10f, swing.charge / 4), 0, Color.DarkRed, 0.4f);
 
             }
-            if (swing.Charge >= 90)
+            if (swing.charge >= 90)
             {
                 ParticleManager.NewParticle<Spark>(projectile.Center, projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2, 2), new Color(255, 0, 0, 0), 1f, 1);
                 Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<Glow>(), projectile.DirectionTo(player.Center).X * -Main.rand.NextFloat(1f, 2) * 0.8f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(0.8f - 0.2f) * MathHelper.Pi) * 0.5f * 0.5f, projectile.DirectionTo(player.Center).Y * -Main.rand.NextFloat(2, 2), 0, Color.DarkRed, 1f);
 
             }
-            if (swing.Charge == 90 && !dashed)
+            if (swing.charge == 90 && !dashed)
             {
                 player.velocity += player.DirectionTo(Main.MouseWorld) * 15;
                 player.SetImmuneTimeForAllTypes(75);
@@ -167,12 +165,11 @@ namespace Divergency.Content.Items.Weapons.Melee
 
 
 
-            currentCharge = swing.Charge;
+            currentCharge = swing.charge;
 
 
         }
 
-        public int chargeEnder = 0;
         public int attackDirection = 1;
         public int AttackCounter = 1;
         public override int Updates => 10;
@@ -240,6 +237,5 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public bool dashed { get; private set; }
         public int timer { get; private set; }
-        public bool defensive { get; private set; }
     }
 }
