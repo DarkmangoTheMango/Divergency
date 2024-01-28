@@ -19,6 +19,7 @@ using Microsoft.CodeAnalysis;
 using System.Threading;
 using Mono.Cecil;
 using Terraria.GameContent;
+using Divergency.Content.Items.Weapons.LivingCore;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {
@@ -49,7 +50,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.damage = 100;
             Item.knockBack = 5f;
 
-            Item.shoot = ModContent.ProjectileType<SwordProjectile>(); 
+            Item.shoot = ModContent.ProjectileType<DecodeSwing>();
             Item.shootSpeed = 1f;
 
             Item.width = Item.height = 96;
@@ -104,9 +105,9 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
 
         private int freezeFrames = -1;
-        void NPCHit(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
 
@@ -139,8 +140,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
                 if (freezeFrames > 0)
                 {
-                    SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
-                    proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
+                    SwordSwing proj = (projectile.ModProjectile as SwordSwing);
+                    proj.framesPassed -= 1f / proj.Updates;
                 }
             }
         }
@@ -149,7 +150,6 @@ namespace Divergency.Content.Items.Weapons.Melee
         public int AttackCounter = 1;
 
         public override int Updates => 10;
-        public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
 
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/DecodeDestruction";
 

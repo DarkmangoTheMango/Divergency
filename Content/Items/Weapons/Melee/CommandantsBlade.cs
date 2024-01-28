@@ -38,7 +38,6 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             Item.shootSpeed = 1f;
 
-            Item.shoot = ModContent.ProjectileType<SwordProjectile>();
             Item.width = Item.height = 90;
             Item.scale = 1f;
 
@@ -84,9 +83,9 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
 
         private int freezeFrames = -1;
-        void NPCHit(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
 
@@ -100,7 +99,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
 
             if (freezeFrames == -1)
-                freezeFrames = projectile.localNPCHitCooldown;
+                freezeFrames = Projectile.localNPCHitCooldown;
         }
 
         private void Update(Projectile projectile)
@@ -111,13 +110,12 @@ namespace Divergency.Content.Items.Weapons.Melee
 
                 if (freezeFrames > 0)
                 {
-                    SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
-                    proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
+                    SwordSwing proj = (projectile.ModProjectile as SwordSwing);
+                    proj.framesPassed -= 1f / proj.Updates;
                 }
             }
         }
         public override int Updates => 10;
-        public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/CommandantsBlade";
         public override Vector2 Pivot => new Vector2(0, 55);
         public override float BuildInRotation => 0;

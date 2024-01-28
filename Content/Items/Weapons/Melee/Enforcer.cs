@@ -49,7 +49,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Item.damage = 32;
             Item.knockBack = 4f;
 
-            Item.shoot = ModContent.ProjectileType<SwordProjectile>(); // this dosent actually have to be there at all...
+            Item.shoot = ModContent.ProjectileType<EnforcerSwing>();
             Item.shootSpeed = 1f;
 
             Item.width = Item.height = 96;
@@ -115,16 +115,16 @@ namespace Divergency.Content.Items.Weapons.Melee
         }
 
         private int freezeFrames = -1;
-        void NPCHit(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Player player = Main.player[projectile.owner];
+            Player player = Main.player[Projectile.owner];
 
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
 
 
             for (int i = 0; i < 2; i++)
             {
-                Projectile.NewProjectileDirect(projectile.GetSource_FromAI(), target.Center, new Vector2(7,10).RotateRandom(3), ModContent.ProjectileType<EnforcerOrb>(), 20, 0, projectile.owner);
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), target.Center, new Vector2(7,10).RotateRandom(3), ModContent.ProjectileType<EnforcerOrb>(), 20, 0, Projectile.owner);
 
             }
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
@@ -136,21 +136,10 @@ namespace Divergency.Content.Items.Weapons.Melee
                 Dust.NewDust(target.position, target.width, target.height, ModContent.DustType<Glow>(), target.DirectionTo(player.Center).X * -Main.rand.NextFloat(0f, 4f), target.DirectionTo(player.Center).Y * -Main.rand.NextFloat(0f, 10f), 0, Color.LimeGreen, 0.8f);
 
             }
-
         }
-
-        bool OnHitTile2(Projectile projectile, Vector2 oldVelocity)
+        public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            Player player = Main.player[projectile.owner];
-
-            // player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
-
-
-
-          //  SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
-
-
-
+            Player player = Main.player[Projectile.owner];
            
             return false;
         }
@@ -163,8 +152,8 @@ namespace Divergency.Content.Items.Weapons.Melee
 
                 if (freezeFrames > 0)
                 {
-                    SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
-                    proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
+                    SwordSwing proj = (projectile.ModProjectile as SwordSwing);
+                    proj.framesPassed -= 1f / proj.Updates;
                 }
             }
         }
@@ -173,8 +162,6 @@ namespace Divergency.Content.Items.Weapons.Melee
         public int AttackCounter = 1;
 
         public override int Updates => 10;
-        public override Action<Projectile, NPC, int, float, bool> OnHitNPC => NPCHit;
-        public override Func<Projectile, Vector2, bool> OnHitTile { get { return OnHitTile2; } }
         public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/Enforcer";
         public override Vector2 Pivot => new Vector2(0, 50);
         public override float BuildInRotation => 0;

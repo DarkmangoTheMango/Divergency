@@ -361,6 +361,11 @@ Mods: {
 			RipsawPro.DisplayName: Ripsaw Pro
 			Sawblade.DisplayName: Sawblade
 			LaserBeam.DisplayName: Laser Beam
+			LivingCoreSwordSwing.DisplayName: Living Core Sword Swing
+			CommandantsBladeSwing.DisplayName: Commandants Blade Swing
+			DecodeSwing.DisplayName: Decode Swing
+			EnforcerSwing.DisplayName: Enforcer Swing
+			SacrestiSwing.DisplayName: Sacresti Swing
 		}
 
 		Biomes: {

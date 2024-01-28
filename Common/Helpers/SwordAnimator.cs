@@ -74,19 +74,16 @@ namespace Divergency.Common.Helpers.SwordAnimator
     {
         public static int Swing<T>(Player player, int damage, float knockback) where T : SwordSwing, new()
         {
-            SwordSwing SS = new T();
-
-            int projectileID = Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, new Vector2(player.direction, 0), ModContent.ProjectileType<SwordProjectile>(), damage, knockback, player.whoAmI);
+            int projectileID = Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, new Vector2(player.direction, 0), ModContent.ProjectileType<T>(), damage, knockback, player.whoAmI);
             Projectile projectile = Main.projectile[projectileID];
+            SwordSwing projSword = projectile.ModProjectile as SwordSwing;
 
             projectile.timeLeft = 2;
 
-            projectile.extraUpdates = SS.Updates - 1;
-            projectile.localNPCHitCooldown = SS.NPCHitCooldown * SS.Updates; // maby change..?
+            projectile.extraUpdates = projSword.Updates - 1;
+            projectile.localNPCHitCooldown = projSword.NPCHitCooldown * projSword.Updates; // maby change..?
 
-            SwordProjectile projSword = projectile.ModProjectile as SwordProjectile;
-            projSword.SwingInfo = SS;
-            projSword.AttackSpeed = player.GetTotalAttackSpeed(DamageClass.Melee); // idk how speed is calculated...
+            projSword.attackSpeed = player.GetTotalAttackSpeed(DamageClass.Melee); // idk how speed is calculated...
             // above might just work a-ok
 
             projectile.netUpdate = true;
@@ -96,21 +93,18 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
         public static int Swing<T>(NPC npc, int damage, float knockback, float attackspeed = 1) where T : SwordSwing, new()
         {
-            SwordSwing SS = new T();
-
-            int projectileID = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, new Vector2(npc.direction, 0), ModContent.ProjectileType<SwordProjectile>(), damage, knockback);
+            int projectileID = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, new Vector2(npc.direction, 0), ModContent.ProjectileType<T>(), damage, knockback);
             Projectile projectile = Main.projectile[projectileID];
+            SwordSwing projSword = projectile.ModProjectile as SwordSwing;
 
             projectile.timeLeft = 2;
 
-            projectile.extraUpdates = SS.Updates - 1;
-            projectile.localNPCHitCooldown = SS.NPCHitCooldown * SS.Updates; // maby change..?
+            projectile.extraUpdates = projSword.Updates - 1;
+            projectile.localNPCHitCooldown = projSword.NPCHitCooldown * projSword.Updates; // maby change..?
             projectile.hostile = true;
             projectile.friendly = false;
 
-            SwordProjectile projSword = projectile.ModProjectile as SwordProjectile;
-            projSword.SwingInfo = SS;
-            projSword.AttackSpeed = attackspeed;
+            projSword.attackSpeed = attackspeed;
             projSword.NPCOwned = npc.whoAmI;
 
             projectile.netUpdate = true;
@@ -469,17 +463,16 @@ namespace Divergency.Common.Helpers.SwordAnimator
         }
     }
 
-    public abstract class SwordSwing
+
+    public abstract class SwordSwing : ModProjectile
     {
         public abstract float Width { get; }
         public abstract string SwordTexture { get; }
         public abstract Keyframes SwordFrames { get; }
+        public abstract float BuildInRotation { get; }
         public virtual float Height { get { return -1; } } // height based off of texture
         public virtual Vector2 Pivot { get { return default; } }
-        public abstract float BuildInRotation { get; }
-        public virtual Func<Projectile, bool> PreDraw { get { return null; } }
-        public virtual Func<Projectile, Vector2, bool> OnHitTile { get { return null; } }
-        public virtual Action<Projectile, NPC, int, float, bool> OnHitNPC { get { return null; } }
+        public virtual Func<Projectile, bool> CustomDraw { get { return null; } }
         public virtual TimedFunction[] SwingFunctions { get { return new TimedFunction[] { }; } }
         public virtual int Updates { get { return 1; } }
         public virtual int NPCHitCooldown { get { return 10; } }
@@ -487,25 +480,21 @@ namespace Divergency.Common.Helpers.SwordAnimator
         public virtual Action<Projectile, Trail[], Vector2[], float[]> DrawTrails { get { return null; } }
         public virtual SwordGlow[] Glows { get { return new SwordGlow[] { }; } }
         public virtual bool SlantingSword { get { return true; } }
-    }
 
-
-    public class SwordProjectile : ModProjectile
-    {
-        public override string Texture => "Divergency/Common/Helpers/SwordAnimator";
+        public override string Texture => "Divergency/Common/Helpers/SwordAnimator"; // useless...
 
         float lerp(float a, float b, float f)
         {
             return a * (1.0f - f) + (b * f);
         }
 
-        public SwordSwing SwingInfo; // getting synced (i hope...)
-        public float AttackSpeed = 0; // getting synced (i hope...)
-        public float FramesPassed = 0; // getting synced (i hope...) (maby dosent need to?, probably does... (if so, it needs to be every frame...)
+        // public SwordSwing SwingInfo; // getting synced (i hope...)
+        public float attackSpeed = 0; // getting synced (i hope...)
+        public float framesPassed = 0; // getting synced (i hope...) (maby dosent need to?, probably does... (if so, it needs to be every frame...)
 
         public int NPCOwned = -1; // getting synced (i hope...)
         
-        public float Charge = 0; // also needs net sync...
+        public float charge = 0; // also needs net sync...
 
         // pass values from update into draw, i assume update runs on all clients
         //private float Rotation;
@@ -532,7 +521,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
 
             Projectile.aiStyle = -1;
@@ -542,11 +531,13 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
         public override void AI()
         {
+            Console.WriteLine("Made proj");
+
             Projectile.timeLeft = 2;
 
-            float curTime = FramesPassed * AttackSpeed;
+            float curTime = framesPassed * attackSpeed;
 
-            Keyframes.FrameInfo frameInfo = SwingInfo.SwordFrames.NextFrame(curTime);
+            Keyframes.FrameInfo frameInfo = SwordFrames.NextFrame(curTime);
             int keyframe = frameInfo.frameID;
 
             if (keyframe == -1)
@@ -557,15 +548,15 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
             int direction = Projectile.velocity.X > 0 ? 1 : -1;
 
-            SwordAnimation SA = SwingInfo.SwordFrames.keyframeArray[keyframe];
-            SwordAnimation LastSA = SwingInfo.SwordFrames.keyframeArray[Math.Max(keyframe - 1, 0)];
+            SwordAnimation SA = SwordFrames.keyframeArray[keyframe];
+            SwordAnimation LastSA = SwordFrames.keyframeArray[Math.Max(keyframe - 1, 0)];
 
-            float lastTime = curTime - AttackSpeed / SwingInfo.Updates;
+            float lastTime = curTime - attackSpeed / Updates;
 
             bool Charging = false;
             if (NPCOwned == -1)
             {
-                int lastTimeKeyframe = SwingInfo.SwordFrames.NextFrame(lastTime).frameID;
+                int lastTimeKeyframe = SwordFrames.NextFrame(lastTime).frameID;
 
                 // TODO: add something to check all frames in between as well...
                 if (lastTimeKeyframe != keyframe)
@@ -581,18 +572,18 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
                     if (SA.MaxCharge != 0) // can charge
                     {
-                        if (Main.mouseLeft && !(SA.ChargeAutoRelease && (Charge == SA.MaxCharge)))
+                        if (Main.mouseLeft && !(SA.ChargeAutoRelease && (charge == SA.MaxCharge)))
                         {
-                            if (Charge == 0) {
+                            if (charge == 0) {
                                 SA.ChargeStart(Projectile);
                             }
 
-                            Charge = MathF.Min(Charge + 1f / SwingInfo.Updates, SA.MaxCharge);
+                            charge = MathF.Min(charge + 1f / Updates, SA.MaxCharge);
                             Charging = true;
                         }
                         else
                         {
-                            SA.ChargeEnd(Projectile, Charge, SA.MaxCharge);
+                            SA.ChargeEnd(Projectile, charge, SA.MaxCharge);
                         }
                     }
                 }
@@ -600,12 +591,12 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
             if (!Charging)
             {
-                FramesPassed += 1f / SwingInfo.Updates;
+                framesPassed += 1f / Updates;
             }
 
-            foreach (TimedFunction TF in SwingInfo.SwingFunctions)
+            foreach (TimedFunction TF in SwingFunctions)
             {
-                TF.TryRun(Projectile, curTime, lastTime, SwingInfo.SwordFrames.TotalTime);
+                TF.TryRun(Projectile, curTime, lastTime, SwordFrames.TotalTime);
             }
 
             float CurFrame = frameInfo.framePassed;
@@ -615,7 +606,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
             CurFrame = MathF.Min(MathF.Max(CurFrame - SA.SDelay, 0), SA.Duration);
 
-            float LastFrame = CurFrame - AttackSpeed / SwingInfo.Updates;
+            float LastFrame = CurFrame - attackSpeed / Updates;
 
             if (inAnimation)
             {
@@ -639,7 +630,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Vector2 globalOffset = Vector2.Lerp(LastSA.GlobalOffset, SA.GlobalOffset, SA.GlobalOffsetIn(CurFrame, MaxFrame));
             globalOffset *= SA.GlobalOffsetMul(CurFrame, MaxFrame);
 
-            Vector2 pivot = (SwingInfo.Pivot + localOffset);
+            Vector2 pivot = (Pivot + localOffset);
             pivot.X *= Scale.X;
             pivot.Y *= Scale.Y;
 
@@ -681,25 +672,25 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
         public override bool PreDraw(ref Color lightColor)
         {
-            float curTime = FramesPassed * AttackSpeed;
+            float curTime = framesPassed * attackSpeed;
             int direction = Projectile.velocity.X > 0 ? 1 : -1;
             bool flipped = Projectile.spriteDirection == 1 ? true : false;
 
-            Keyframes.FrameInfo frameInfo = SwingInfo.SwordFrames.NextFrame(curTime);
+            Keyframes.FrameInfo frameInfo = SwordFrames.NextFrame(curTime);
             int keyframe = frameInfo.frameID;
 
             if (keyframe == -1)
                 return false;
 
-            SwordAnimation SA = SwingInfo.SwordFrames.keyframeArray[keyframe];
-            SwordAnimation LastSA = SwingInfo.SwordFrames.keyframeArray[Math.Max(keyframe - 1, 0)];
+            SwordAnimation SA = SwordFrames.keyframeArray[keyframe];
+            SwordAnimation LastSA = SwordFrames.keyframeArray[Math.Max(keyframe - 1, 0)];
 
-            SwordTrail ST = SwingInfo.SwordTrail;
+            SwordTrail ST = SwordTrail;
 
             List<SwordGlow> frontGlow = new List<SwordGlow>();
             List<SwordGlow> backGlow = new List<SwordGlow>();
 
-            foreach (SwordGlow glow in SwingInfo.Glows)
+            foreach (SwordGlow glow in Glows)
             {
                 if (glow.InFront)
                     frontGlow.Add(glow);
@@ -707,7 +698,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
                     backGlow.Add(glow);
             }
 
-            Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
+            Texture2D texture = ModContent.Request<Texture2D>(SwordTexture).Value;
 
             Player player = Main.player[Projectile.owner];
 
@@ -722,7 +713,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
             SpriteEffects spriteEffects;
             float rotation;
             
-            if (SwingInfo.SlantingSword)
+            if (SlantingSword)
             {
                 spriteEffects = direction * (flipped ? -1 : 1) == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
@@ -741,53 +732,40 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
             if (texture != null)
             {
-                if (SwingInfo.PreDraw != null)
-                    if (!SwingInfo.PreDraw(Projectile)) // values to pass in
+                if (CustomDraw != null)
+                    if (!CustomDraw(Projectile)) // values to pass in
                         return false;
-                float addRotation = SwingInfo.BuildInRotation *    -direction;
+
+                float addRotation = BuildInRotation * -direction;
 
                 foreach (SwordGlow glow in backGlow)
                 {
-                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation - addRotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
+                    glow.Draw(SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation - addRotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
                 }
 
                 Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), lightColor, rotation - addRotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, 1f);
 
                 foreach (SwordGlow glow in frontGlow)
                 {
-                    glow.Draw(SwingInfo.SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation - addRotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
+                    glow.Draw(SwordTexture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, texture.Width, texture.Height), rotation - addRotation, new Vector2(texture.Width / 2, texture.Height / 2), Scale, spriteEffects, curTime);
                 }
             }
 
             return false;
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            if (SwingInfo.OnHitTile != null)
-                return SwingInfo.OnHitTile(Projectile, oldVelocity);
-
-            return false;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (SwingInfo.OnHitNPC != null)
-                SwingInfo.OnHitNPC(Projectile, target, hit.Damage, hit.Knockback, hit.Crit);
-        }
-
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(SwingInfo.SwordTexture).Value;
+            Texture2D texture = ModContent.Request<Texture2D>(SwordTexture).Value;
             float collisionPoint = 0f;
 
             if (texture != null)
             {
                 float halfHeight = MathF.Sqrt(texture.Height * texture.Height * 2) / 2;
-                if (SwingInfo.Height != -1)
-                    halfHeight = SwingInfo.Height;
+                if (Height != -1)
+                    halfHeight = Height;
 
-                float SWidth = SwingInfo.Width * Scale.X;
+                float SWidth = Width * Scale.X;
                 float SHegith = halfHeight * Scale.Y;
 
                 float rotation = (Projectile.rotation - MathF.PI/2);
