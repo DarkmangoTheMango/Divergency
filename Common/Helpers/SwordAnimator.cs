@@ -455,8 +455,11 @@ namespace Divergency.Common.Helpers.SwordAnimator
             Texture2D texture = ModContent.Request<Texture2D>(path).Value;
 
             Console.WriteLine(Color.GetColor(time));
-
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             Main.spriteBatch.Draw(texture, position, rec, Color.GetColor(time), rotation, offset, Scale*scale, spriteEffects, 1f);
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
 
