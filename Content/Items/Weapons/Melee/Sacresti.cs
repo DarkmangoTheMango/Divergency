@@ -118,7 +118,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             if (freezeFrames == -1)
                 freezeFrames = 1;
         }
-        
+
 
         public float currentCharge;
         private void Update(Projectile projectile)
@@ -134,14 +134,14 @@ namespace Divergency.Content.Items.Weapons.Melee
                     SwordProjectile proj = (projectile.ModProjectile as SwordProjectile);
                     proj.FramesPassed -= 1f / proj.SwingInfo.Updates;
                 }
-               
+
 
 
 
 
             }
             SwordProjectile swing = (projectile.ModProjectile as SwordProjectile);
-       
+
             if (swing.Charge > 60 && swing.Charge < 90)
             {
                 ParticleManager.NewParticle<Spark>(projectile.Center, (projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2f, swing.Charge / 4) * Main.rand.NextVector2Circular(2, 2)), new Color(255, 0, 0, 0), 0.4f, 1);
@@ -161,9 +161,9 @@ namespace Divergency.Content.Items.Weapons.Melee
 
                 dashed = true;
             }
-        
-                
-            
+
+
+
             currentCharge = swing.Charge;
 
 
@@ -186,7 +186,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             Player player = Main.player[proj.owner];
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingHeavy") with { Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, player.Center);
         }
-        static void Dash (Projectile proj)
+        static void Dash(Projectile proj)
         {
             Player player = Main.player[proj.owner];
             //SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/SwingHeavy") with { Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, player.Center);
@@ -216,7 +216,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public override SwordGlow[] Glows => new SwordGlow[]
          {
-         
+
           new SwordGlow(new SwordGlowColor(
                 new List<Color>{
                     new Color(219, 112, 147,  currentCharge / 100),
