@@ -37,7 +37,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
-            Item.damage = 35;
+            Item.damage = 50;
             Item.knockBack = 5f;
 
             Item.shootSpeed = 1f;
@@ -78,7 +78,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         float ScaleEase(float cur, float max)
         {
             float x = cur / max;
-            return 0.7f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1 - x) * MathHelper.Pi) * 0.6f * 0.6f;
+            return 0.666f + MathF.Sin(EaseFunction.EaseCircularInOut.Ease(1 - x) * MathHelper.Pi) * 0.6f * 0.6f;
         }
 
         float RotationEase(float cur, float max)
@@ -86,6 +86,7 @@ namespace Divergency.Content.Items.Weapons.Melee
             float x = cur / max;
             return EaseFunction.EaseCircularInOut.Ease(x);
         }
+        bool knockbacked = false;
 
         private int freezeFrames = -1;
         void NPCHit(Projectile projectile, NPC target, int damage, float knockback, bool crit)
@@ -94,14 +95,15 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
 
-            bool knockbacked = false;
             if (currentCharge >= 60 && !knockbacked)
             {
-             
-                player.velocity.X += -player.direction * 15;
+
+                player.velocity.X *= -0.5f;
+                player.velocity.Y *= -0.5f;
+
                 knockbacked = true;
                 projectile.damage = 0;
-                target.velocity.Y -= 12;
+                target.velocity.Y -= 10;
             }
 
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/CommandantsBladeHit") { Pitch = Main.rand.NextFloat(-0.3f, 0.3f) }, player.Center);
@@ -139,7 +141,7 @@ namespace Divergency.Content.Items.Weapons.Melee
 
             }
             SwordProjectile swing = (projectile.ModProjectile as SwordProjectile);
-
+       
             if (swing.Charge > 60 && swing.Charge < 90)
             {
                 ParticleManager.NewParticle<Spark>(projectile.Center, (projectile.DirectionTo(player.Center) * -Main.rand.NextFloat(2f, swing.Charge / 4) * Main.rand.NextVector2Circular(2, 2)), new Color(255, 0, 0, 0), 0.4f, 1);
@@ -154,9 +156,8 @@ namespace Divergency.Content.Items.Weapons.Melee
             }
             if (swing.Charge == 90 && !dashed)
             {
-                player.velocity.X += player.direction * 15;
-                player.velocity.Y -= 5;
-                player.SetImmuneTimeForAllTypes(60);
+                player.velocity += player.DirectionTo(Main.MouseWorld) * 15;
+                player.SetImmuneTimeForAllTypes(75);
 
                 dashed = true;
             }
@@ -237,5 +238,6 @@ namespace Divergency.Content.Items.Weapons.Melee
 
         public bool dashed { get; private set; }
         public int timer { get; private set; }
+        public bool defensive { get; private set; }
     }
 }
