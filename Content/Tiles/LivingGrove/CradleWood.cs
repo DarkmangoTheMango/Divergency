@@ -40,6 +40,7 @@ namespace Divergency.Content.Tiles.LivingGrove
             {
                 zero = Vector2.Zero;
             }
+            /*
             Texture2D tex = ModContent.Request<Texture2D>("Divergency/Content/Tiles/LivingGrove/CradleWoodGlow").Value;
             int height = tile.TileFrameY == 36 ? 18 : 16;
 
@@ -63,7 +64,7 @@ namespace Divergency.Content.Tiles.LivingGrove
                 Main.spriteBatch.Draw(tex, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y + 2) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, height), Color.White * glowFactor * 1f, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
            
-
+            */
 
 
          
