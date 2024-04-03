@@ -10,6 +10,8 @@ using System;
 using Divergency.Content.Dusts;
 using Divergency.Common.Players;
 using Terraria.Audio;
+using System.Drawing.Imaging;
+using Divergency.Content.NPCs.LivingGrove;
 
 namespace Divergency.Content.Items.Accessories
 {
@@ -56,14 +58,20 @@ namespace Divergency.Content.Items.Accessories
 
                 //Set the flag for the ExampleDashAccessory being equipped if we have it equipped OR immediately return if any of the accessories are
                 // one of the higher-priority ones
-                if (item.type == ItemID.EoCShield || item.type == ItemID.MasterNinjaGear || item.type == ItemID.Tabi || player.setSolar || player.mount.Active)
-				{
-					dashActive = false;
-			    }
-				else
-				{
-					dashActive = true;
-				}
+             
+                    
+                    
+                        if (item.type == ItemID.EoCShield || item.type == ItemID.MasterNinjaGear || item.type == ItemID.Tabi || player.setSolar || player.mount.Active)
+                        {
+                            dashActive = false;
+                        }
+                        else
+                        {
+                            dashActive = true;
+                        }
+                    
+
+             
 
                  
             }
@@ -177,56 +185,64 @@ namespace Divergency.Content.Items.Accessories
         }
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
-            if (player.HeldItem.DamageType == DamageClass.Melee)
+            if (!initialize)
             {
-                player.SetImmuneTimeForAllTypes(5);
+                initialize = true;
             }
-
-
-            if (Projectile.timeLeft >= 10)
             {
-                for (int i = 0; i < 2; i++)
+                Player player = Main.player[Projectile.owner];
+                if (player.HeldItem.DamageType == DamageClass.Melee)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
-                   // Dust.NewDustPerfect(Projectile.Center + new Vector2(0, Main.rand.NextFloat(-15, 30)), ModContent.DustType<GlowLine>(), Projectile.velocity * 5, 0, new Color(109, 223, 94), 0.65f);
-
-                    dust.noGravity = false;
+                    player.SetImmuneTimeForAllTypes(5);
                 }
-                player.velocity.X -= 20;
-            }
-            Projectile.Center = player.Center;
-            if (Projectile.timeLeft == 10)
-            {
-                float radius = 2;
-                int numberOfDusts = 20;
 
-                for (int i = 0; i < 20; i++)
+
+                if (Projectile.timeLeft >= 10)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
-                    Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Glow>(), Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, new Color(109, 223, 94), 1f);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
+                        // Dust.NewDustPerfect(Projectile.Center + new Vector2(0, Main.rand.NextFloat(-15, 30)), ModContent.DustType<GlowLine>(), Projectile.velocity * 5, 0, new Color(109, 223, 94), 0.65f);
 
-                    dust.noGravity = true;
+                        dust.noGravity = false;
+                    }
+                    player.velocity.X -= 20;
                 }
-                DivergencyDraw.SpawnRing(Projectile.Center, new Color(109, 223, 94));
+                Projectile.Center = player.Center;
+                if (Projectile.timeLeft == 10)
+                {
+                    float radius = 2;
+                    int numberOfDusts = 20;
 
-                player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 4;
-                player.velocity.X /= 15;
+                    for (int i = 0; i < 20; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, default, 1f);
+                        Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<Glow>(), Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, new Color(109, 223, 94), 1f);
+
+                        dust.noGravity = true;
+                    }
+                    DivergencyDraw.SpawnRing(Projectile.Center, new Color(109, 223, 94));
+
+                    player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 4;
+                    player.velocity.X /= 15;
+                }
+           
             }
         }
         public override void Kill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
-
+            player.velocity.X = 0;
 
         }
 
-        
+
 
 
         public Trail trail;
 
         float timer;
+        private bool initialize;
 
         public override bool PreDraw(ref Color lightColor)
         {

@@ -1,10 +1,13 @@
 ﻿using Humanizer;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
 using ReLogic.Content;
+using ReLogic.OS.Windows;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -571,7 +574,7 @@ namespace Divergency.Common.Helpers.SwordAnimator
 
                     if (SA.MaxCharge != 0) // can charge
                     {
-                        if (Main.mouseLeft && !(SA.ChargeAutoRelease && (charge == SA.MaxCharge)))
+                        if (Main.mouseLeft && !(SA.ChargeAutoRelease && (charge == SA.MaxCharge)) || (Main.mouseRight && !(SA.ChargeAutoRelease && (charge == SA.MaxCharge))))
                         {
                             if (charge == 0)
                             {
@@ -670,6 +673,30 @@ namespace Divergency.Common.Helpers.SwordAnimator
             return base.PreKill(timeLeft);
         }
 
+        public void SpawnDust(Vector2 p, int type, Vector2 speed, int Alpha = 0, Color newColor = default(Color), float _Scale = 1f)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(SwordTexture).Value;
+
+            if (texture != null)
+            {
+                if (Projectile.spriteDirection == 1) // maby -1?
+                    p.X = 1 - p.X;
+
+                float SHegith = MathF.Sqrt(texture.Height * texture.Height * 2);
+                if (Height != -1)
+                    SHegith = Height;
+
+                SHegith *= Scale.Y;
+                float SWidth = Width * Scale.X;
+                float rotation = (Projectile.rotation - MathF.PI / 2);
+
+                Vector2 lbCorner = Projectile.Center - (rotation + MathF.PI).ToRotationVector2() * SWidth / 2 - rotation.ToRotationVector2() * SHegith / 2;
+
+
+                Dust.NewDustPerfect(lbCorner + (rotation + MathF.PI).ToRotationVector2() * SWidth * p.X + rotation.ToRotationVector2() * SHegith * p.Y, type, speed, Alpha, newColor, _Scale).noGravity = true;
+                // could make you gvive an array and just used values calculated above for all in array, if ever we are low on resources...
+            }
+        }
         public override bool PreDraw(ref Color lightColor)
         {
             float curTime = framesPassed * attackSpeed;

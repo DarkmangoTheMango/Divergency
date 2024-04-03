@@ -23,17 +23,15 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                 case 1:
                     return new Wave("WAVE 1!",
                         new Instance[]
-                        {                          
-                            new Instance(ModContent.NPCType<Corennector>(), new Vector2(40, -100)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, 300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, -300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, -300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, 300)),
+                        {
+                           new Instance(ModContent.NPCType<CoreBlockadeRight>(), new Vector2(300, -300)),
+                            new Instance(ModContent.NPCType<CoreBlockadeLeft>(), new Vector2(-300, -300)),
                         });
                 case 2:
                     return new Wave("WAVE 2!",
                         new Instance[]
                         {
+                            new Instance(ModContent.NPCType<Corennector>(), new Vector2(40, -100)),
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, 300)),
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, -300)),
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, -300)),

@@ -366,6 +366,13 @@ Mods: {
 			DecodeSwing.DisplayName: Decode Swing
 			EnforcerSwing.DisplayName: Enforcer Swing
 			SacrestiSwing.DisplayName: Sacresti Swing
+			CoreHookProj.DisplayName: Core Hook Proj
+			SacrestiSwingEnflameAnim.DisplayName: Sacresti Swing Enflame Anim
+			SacrestiSwingEnflamed.DisplayName: Sacresti Swing Enflamed
+			SacrifeBallThing.DisplayName: Sacrife Ball Thing
+			Blockade.DisplayName: Blockade
+			BlockadeLeft.DisplayName: Blockade Left
+			BlockadeRight.DisplayName: Blockade Right
 		}
 
 		Biomes: {
@@ -1000,6 +1007,11 @@ Mods: {
 				DisplayName: Sacresti
 				Tooltip: ""
 			}
+
+			CoreHook: {
+				DisplayName: Core Hook
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
@@ -1076,6 +1088,9 @@ Mods: {
 			CoreBomber.DisplayName: Core Bomber
 			CoreRottenBlossom.DisplayName: Core Rotten Blossom
 			CoreDangerBlossom.DisplayName: Core Danger Blossom
+			CoreBlockade.DisplayName: Core Blockade
+			CoreBlockadeLeft.DisplayName: Core Blockade Left
+			CoreBlockadeRight.DisplayName: Core Blockade Right
 		}
 
 		Keybinds: {
