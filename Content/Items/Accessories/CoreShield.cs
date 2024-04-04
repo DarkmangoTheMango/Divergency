@@ -353,8 +353,7 @@ namespace Divergency.Content.Items.Accessories
         public override void Kill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
-
-
+            player.velocity.X = 0;
         }
 
 

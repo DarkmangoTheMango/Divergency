@@ -120,4 +120,55 @@ namespace Divergency.Content.Particles
             return false;
         }
     }
+    public class FlareLineParticleCurvedPlayer : Particle
+    {
+        private float offset = 0;
+        private float some_width = 30;
+        private float speedHor = 0.1f;
+        private float speedVer = 2f;
+
+        public Vector2 startPos = new Vector2(0);
+        private bool initialized;
+
+        public override string Texture => "Divergency/Assets/Textures/ParticleTextures/SoftCircle";
+
+        public override void SetDefaults()
+        {
+            width = 1;
+            height = 1;
+            timeLeft = 40;
+            offset = Main.rand.NextFloat() * 100;
+        }
+
+        public override void AI()
+        {
+            if (!initialized)
+            {
+                startPos = position;
+                initialized = true;
+            }
+            else
+            {
+                Vector2 vel = position;
+
+                rotation = velocity.ToRotation();
+                position.X = startPos.X + MathF.Sin(offset + (-timeLeft * speedHor)) * some_width / 2; // - cuz it would go the opposite way as timeLeft counts down                                                                         // sin goes from -1 to 1, so if you set some_width to 5 it would go from -5 to 5 meaning 10 width, so i just but /2; dosent need to be there at all.
+                position.Y -= speedVer; // 
+                rotation = (position - vel).ToRotation();
+
+            }
+
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+
+            float alpha = timeLeft > 40f ? (20f - (timeLeft - 40f)) / 20f : timeLeft <= 20f ? timeLeft / 20f : 1f;
+
+            spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color * alpha, rotation, texture.Size() * 0.5f, Scale * new Vector2(0.1f, 0.005f), SpriteEffects.None, 0f);
+
+            return false;
+        }
+    }
 }
