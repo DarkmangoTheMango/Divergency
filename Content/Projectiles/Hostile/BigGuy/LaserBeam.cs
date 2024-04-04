@@ -3,8 +3,10 @@ using Divergency.Content.Events.LivingCore;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,8 +25,8 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
             get {
                 Vector2 pos = owner.position;
 
-                Vector2 eyeOffset = ownerEyeOffset[0];//[(owner.frame.Y / 58)]; // so like, this shit no work...
-                if (owner.spriteDirection == -1)
+                Vector2 eyeOffset = ownerEyeOffset[(int)(owner.frame.Y / 374)];//[(owner.frame.Y / 58)]; // so like, this shit no work...
+                if (owner.spriteDirection == 1)
                     eyeOffset.X = 374 - eyeOffset.X;
 
                 return pos + eyeOffset;
@@ -37,7 +39,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
             new Vector2(133, 63),
             new Vector2(137, 59),
             new Vector2(141, 56),
-            new Vector2(151, 147),
+            new Vector2(151, 49)
         };
 
         public override void SetDefaults()
@@ -57,9 +59,36 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D Base = (Texture2D)ModContent.Request<Texture2D>(Texture);
+            Texture2D BaseFront = (Texture2D)ModContent.Request<Texture2D>(Texture, ReLogic.Content.AssetRequestMode.ImmediateLoad);
+            Texture2D Base = (Texture2D)ModContent.Request<Texture2D>(Texture + "Base", ReLogic.Content.AssetRequestMode.ImmediateLoad);
+            Texture2D Impact = (Texture2D)ModContent.Request<Texture2D>(Texture + "Impact", ReLogic.Content.AssetRequestMode.ImmediateLoad);
 
-            Main.EntitySpriteDraw(Base, origin - Main.screenPosition, new Rectangle(0, 0, (distance < 64 ? 64 : distance), 64), Color.White, Projectile.rotation, new Vector2(0, 32), 1f, SpriteEffects.FlipHorizontally);
+
+            int f = (int)(Main.GameUpdateCount / 4f);
+            
+            Rectangle baseFR = new Rectangle(0, (f % 4) * 296 + 2, BaseFront.Width, BaseFront.Height / 4 - 2);
+
+            Main.EntitySpriteDraw(BaseFront, origin - Main.screenPosition, baseFR, Color.White, Projectile.rotation - MathF.PI / 2f, new Vector2(BaseFront.Width / 2, BaseFront.Width / 2), 1f, SpriteEffects.FlipHorizontally);
+
+            int dist = (BaseFront.Height / 4 - 2);
+            int bWidth = Base.Width;
+            int bHeight = Base.Height / 4 - 2;
+            Rectangle baseR = new Rectangle(0, (f % 4) * 50 + 2, bWidth, bHeight);
+
+            while (dist < distance)
+            {
+                Main.EntitySpriteDraw(Base, origin - Main.screenPosition + dist * Projectile.rotation.ToRotationVector2(), baseR, Color.White, Projectile.rotation - MathF.PI / 2f, new Vector2(Base.Width / 2, bHeight), 1f, SpriteEffects.FlipHorizontally);
+
+                dist += bHeight;
+
+                if (dist >= distance)
+                {
+                    baseR.Height += (distance - dist);
+                    Main.EntitySpriteDraw(Base, origin - Main.screenPosition + dist * Projectile.rotation.ToRotationVector2(), baseR, Color.White, Projectile.rotation - MathF.PI / 2f, new Vector2(Base.Width / 2, bHeight), 1f, SpriteEffects.FlipHorizontally);
+                }
+            }
+
+            Main.EntitySpriteDraw(Impact, origin - Main.screenPosition + distance * Projectile.rotation.ToRotationVector2(), baseR, Color.White, Projectile.rotation, new Vector2(Impact.Width / 2, Impact.Height / 2), 1f, SpriteEffects.FlipHorizontally);
 
             return false;
         }
@@ -77,7 +106,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
 
             Vector2 end = origin + Projectile.rotation.ToRotationVector2() * (distance < 64 ? 64 : distance);
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 0; i++)
             {
                 Dust dust = Dust.NewDustPerfect(end, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, Color.LimeGreen, 2f) ;
                 dust.noGravity = true;

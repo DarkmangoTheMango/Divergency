@@ -35,8 +35,9 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void SetDefaults()
         {
+            Console.WriteLine("a");
             NPC.lifeMax = 1000;
-            NPC.damage = 0;
+            NPC.damage = 10;
             NPC.defense = 8;
             NPC.knockBackResist = 0f;
 
@@ -52,6 +53,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPC.aiStyle = -1;
             NPC.noGravity = true;
 
+            Console.WriteLine("b");
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -87,9 +89,11 @@ namespace Divergency.Content.NPCs.LivingGrove
         private bool spawned = false;
         public override void AI()
         {
-            
+            Console.WriteLine("ai");
+
             if (!spawned)
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.LaserBeam>(), NPC.damage, 0, ai0: Main.LocalPlayer.whoAmI, ai1: NPC.whoAmI);
+            
             spawned = true;
             
 
@@ -113,7 +117,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
               
 
-                NPC.TargetClosest(true);
+                NPC.TargetClosest(true); // dosent turn quite right...
 
 
                 if (state == ActionState.Idling)
@@ -128,7 +132,13 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
 
         }
-      
+
+        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox)
+        {
+            npcHitbox.X = (int)(NPC.Size.X / 2 - 150 / 2);
+            npcHitbox.Y = (int)(NPC.Size.Y / 2 - 150 / 2);
+            return false;
+        }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
@@ -168,8 +178,8 @@ namespace Divergency.Content.NPCs.LivingGrove
 
 
                 Texture2D a = TextureAssets.Npc[Type].Value;
-                Main.EntitySpriteDraw(a, NPC.VisualPosition - screenPos + new Vector2(-30, 34), NPC.frame, drawColor, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
-                Main.EntitySpriteDraw(glow, NPC.VisualPosition - screenPos + new Vector2(-30, 34), NPC.frame, Color.White, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
+                Main.EntitySpriteDraw(a, NPC.VisualPosition - screenPos, NPC.frame, drawColor, NPC.rotation, Vector2.Zero, 1f, effects, 0);
+                Main.EntitySpriteDraw(glow, NPC.VisualPosition - screenPos, NPC.frame, Color.White, NPC.rotation, Vector2.Zero, 1f, effects, 0);
 
             }
             return false;
