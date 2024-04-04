@@ -354,7 +354,8 @@ namespace Divergency.Content.Items.Accessories
         {
             Player player = Main.player[Projectile.owner];
 
-
+            Player player = Main.player[Projectile.owner];
+            player.velocity.X = 0;
         }
 
 
