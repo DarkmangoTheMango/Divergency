@@ -27,7 +27,6 @@ namespace Divergency.Content.NPCs.LivingGrove
     public class CoreBlockadeRight : ModNPC
     {
 
-
         public override void SetStaticDefaults()
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0) { Scale = 1f };
@@ -159,10 +158,10 @@ namespace Divergency.Content.NPCs.LivingGrove
                 if (state == ActionState.Blocking)
                 {
                     Vector2 spawnPosition = NPC.Center;
-
+                    
                     ParticleManager.NewParticle<FlareLineParticleCurved>(spawnPosition, new Vector2(0, -3), new Color(0.50f, 2.05f, 0.5f, 0), 1.1f, Main.rand.NextFloat(0.8f, 1.1f));
                     //ParticleManager.NewParticle<FlareLineParticle>(spawnPosition + new Vector2(Main.rand.NextFloat(-30, 30), 0), new Vector2(0, -4), new Color(0.50f, 2.05f, 0.5f, 0), 1.1f, Main.rand.NextFloat(0.8f, 1.1f));
-
+                    
 
                 }
 
@@ -219,7 +218,8 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                 Texture2D a = TextureAssets.Npc[Type].Value;
                 Main.EntitySpriteDraw(a, NPC.Center - screenPos + new Vector2(0, 0), NPC.frame, drawColor, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
-
+                Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CoreBlockadeGlow").Value;
+                Main.EntitySpriteDraw(glow, NPC.Center - screenPos + new Vector2(0, 0), NPC.frame, Color.White, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
             }
             return false;
         }
@@ -421,6 +421,10 @@ namespace Divergency.Content.NPCs.LivingGrove
                 Texture2D a = TextureAssets.Npc[Type].Value;
                 Main.EntitySpriteDraw(a, NPC.Center - screenPos + new Vector2(0, 0), NPC.frame, drawColor, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
 
+                Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CoreBlockadeGlow").Value;
+                Main.EntitySpriteDraw(glow, NPC.Center - screenPos + new Vector2(0, 0), NPC.frame, Color.White, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
+
+
             }
             return false;
         }
@@ -465,8 +469,30 @@ namespace Divergency.Content.NPCs.LivingGrove
                 }
 
             }
-            
-            
+            for (int d = 0; d < Main.maxProjectiles; d++)
+            {
+                Projectile projectile = Main.projectile[d];
+                if (projectile.type == ModContent.ProjectileType<CoreDashLeftProjectile>() || projectile.type == ModContent.ProjectileType<CoreDashRightProjectile>())
+                {
+                    for (int p = 0; p < Main.maxNetPlayers; p++)
+                    {
+                        Player player = Main.player[p];
+                    }
+                    projectile.Kill();
+
+
+                }
+                if (Projectile.Hitbox.Intersects(projectile.Hitbox) && Projectile.type != projectile.type && projectile.type == ProjectileID.Hook || (projectile.type == ProjectileID.AmberHook || projectile.type == ProjectileID.AntiGravityHook
+                  || projectile.type == ProjectileID.BatHook || projectile.type == ProjectileID.CandyCaneHook || projectile.type == ProjectileID.ChristmasHook || projectile.type == ProjectileID.DualHookBlue || projectile.type == ProjectileID.DualHookRed || projectile.type == ProjectileID.FishHook || projectile.type == ProjectileID.GemHookAmethyst
+                  || projectile.type == ProjectileID.GemHookDiamond || projectile.type == ProjectileID.GemHookEmerald || projectile.type == ProjectileID.GemHookRuby || projectile.type == ProjectileID.GemHookSapphire || projectile.type == ProjectileID.GemHookTopaz
+                  || projectile.type == ProjectileID.IlluminantHook || projectile.type == ProjectileID.LunarHookNebula || projectile.type == ProjectileID.LunarHookSolar || projectile.type == ProjectileID.LunarHookStardust || projectile.type == ProjectileID.LunarHookVortex || projectile.type == ProjectileID.QueenSlimeHook
+                  || projectile.type == ProjectileID.SlimeHook || projectile.type == ProjectileID.SquirrelHook || projectile.type == ProjectileID.StaticHook || projectile.type == ProjectileID.TendonHook || projectile.type == ProjectileID.ThornHook || projectile.type == ProjectileID.TrackHook || projectile.type == ProjectileID.WoodHook || projectile.type == ProjectileID.WormHook))
+                {
+                    projectile.Kill();
+                }
+
+            }
+
 
 
             if (!cachedNPC.active)
@@ -539,7 +565,17 @@ namespace Divergency.Content.NPCs.LivingGrove
                     projectile.Kill();
 
 
+
                 }
+                if (Projectile.Hitbox.Intersects(projectile.Hitbox) && Projectile.type != projectile.type && projectile.type == ProjectileID.Hook || (projectile.type == ProjectileID.AmberHook || projectile.type == ProjectileID.AntiGravityHook
+                    || projectile.type == ProjectileID.BatHook || projectile.type == ProjectileID.CandyCaneHook || projectile.type == ProjectileID.ChristmasHook || projectile.type == ProjectileID.DualHookBlue || projectile.type == ProjectileID.DualHookRed || projectile.type == ProjectileID.FishHook || projectile.type == ProjectileID.GemHookAmethyst
+                    || projectile.type == ProjectileID.GemHookDiamond || projectile.type == ProjectileID.GemHookEmerald || projectile.type == ProjectileID.GemHookRuby || projectile.type == ProjectileID.GemHookSapphire || projectile.type == ProjectileID.GemHookTopaz
+                    || projectile.type == ProjectileID.IlluminantHook || projectile.type == ProjectileID.LunarHookNebula || projectile.type == ProjectileID.LunarHookSolar || projectile.type == ProjectileID.LunarHookStardust || projectile.type == ProjectileID.LunarHookVortex || projectile.type == ProjectileID.QueenSlimeHook
+                    || projectile.type == ProjectileID.SlimeHook || projectile.type == ProjectileID.SquirrelHook || projectile.type == ProjectileID.StaticHook || projectile.type == ProjectileID.TendonHook || projectile.type == ProjectileID.ThornHook || projectile.type == ProjectileID.TrackHook || projectile.type == ProjectileID.WoodHook || projectile.type == ProjectileID.WormHook))
+                {
+                    projectile.Kill();
+                }
+                    
 
             }
 
