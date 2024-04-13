@@ -175,11 +175,11 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                 */
                 
                 wave++;
-                Console.WriteLine("Starting wave: " + wave * 10);
-                float cost = MathF.Pow((float)wave * 10, 1.5f);
+                Console.WriteLine("Starting wave: " + wave);
+                float cost = MathF.Pow((float)wave, 1.5f);
 
                 MinMaxFightState MMFS = new MinMaxFightState(cost);
-                MinMaxFightState toSpawn = MMFS.Branch(wave * 10);
+                MinMaxFightState toSpawn = MMFS.Branch(wave);
 
                 Instance[] instance = new Instance[toSpawn.activePatterns.Count];
 
@@ -190,7 +190,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                 }
 
                 futureWaves.Enqueue(new Wave("We keep on going... Now at " + wave, instance));
-                Console.WriteLine("Finished wave: " + wave * 10);
+                Console.WriteLine("Finished wave: " + wave);
             }
         }
         public override Wave? getWave(int wave)
