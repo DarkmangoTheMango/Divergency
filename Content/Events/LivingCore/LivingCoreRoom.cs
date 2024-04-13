@@ -12,11 +12,28 @@ using Divergency.Events.LivingCore;
 using Divergency.Content.Particles;
 using Divergency.Common.Helpers;
 using Terraria.ID;
+using ReLogic.Content;
 
 namespace Divergency.Content.Events.LivingCore
 {
+    public class Reward
+    {
+        public Reward(int id, string texturePath) { this.id = id; this.texturePath = texturePath;  }
+        public int id;
+        public string texturePath;
+    }
+
     public abstract class LivingCoreRoom
     {
+        static Effect rewardEffect;
+        static Matrix view = Matrix.CreateTranslation(0, 0, -600);
+
+        public static void Setup()
+        {
+            rewardEffect = ModContent.Request<Effect>("Divergency/Content/Effects/3DShader", AssetRequestMode.ImmediateLoad).Value;
+            rewardEffect.Parameters["View"].SetValue(view);
+        }
+
         List<NPC> currentNPCs = new List<NPC>();
 
         public int Kills = 0;
@@ -61,8 +78,9 @@ namespace Divergency.Content.Events.LivingCore
         }
 
         public virtual int Music { get { return 0; } }
-        public virtual string RewardTexturePath { get { return "Divergency/Assets/Textures/LivingCoreSwordGlow"; } }
-        public virtual int RewardID { get { return 0; } }
+        
+        public virtual List<Reward> Rewards { get { return new List<Reward> { }; } }
+
         public virtual Vector2[] BlockingBlocks { get { return new Vector2[] {}; } }
 
         public virtual Wave? getWave(int wave)
@@ -77,9 +95,15 @@ namespace Divergency.Content.Events.LivingCore
 
         private void updateAltarReward()
         {
-            Texture2D altarWave = ModContent.Request<Texture2D>(Textures[CurWave - 1]).Value;
-            Vector2 position = new Vector2(LivingCoreEvent.X * 16f, LivingCoreEvent.Y * 16f) - Main.screenPosition + altarWave.Size() / 2;
+            int visualWave = CurWave - 1;
+            if (visualWave < 0)
+                visualWave = 0;
+            if (visualWave >= Textures.Length)
+                visualWave = Textures.Length - 1;
 
+            Texture2D altarWave = ModContent.Request<Texture2D>(Textures[visualWave]).Value;
+            Vector2 position = new Vector2(LivingCoreEvent.X * 16f, LivingCoreEvent.Y * 16f) - Main.screenPosition + altarWave.Size() / 2;
+            
             Vector3 RGB = new Vector3(1.45f, 2.55f, 0.94f);
 			float multiplier = 0.4f;
 			RGB *= multiplier;
@@ -89,20 +113,68 @@ namespace Divergency.Content.Events.LivingCore
 
         private void drawAltarReward(Vector2 pos)
         {
-            Texture2D texture = (Texture2D)ModContent.Request<Texture2D>(RewardTexturePath);
+            pos = pos - Main.ScreenSize.ToVector2() / 2;
+            Matrix view = Matrix.CreateLookAt(new Vector3(0f, 0f, 644f * (Main.screenHeight / 1080f)), Vector3.Zero, Vector3.Up);
+            rewardEffect.Parameters["View"].SetValue(view);
 
-            int width, height;
-            width = texture.Width;
-            height = texture.Height;
+            Main.spriteBatch.End();
 
-            Rectangle sourceRectangle = new Rectangle(0, 0, width, height);
-            Vector2 origin = new Vector2(width / 2f, height / 2f);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, rewardEffect, Main.GameViewMatrix.TransformationMatrix);
+            for (int i = 0; i < Rewards.Count; i++)
+            {
+                Matrix projection = Matrix.CreateOrthographic(Main.screenWidth, Main.screenHeight, 0.1f, 1000f);
+                rewardEffect.Parameters["Projection"].SetValue(projection);
+                // only needs to be done on resize, no?
 
-            float addY = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 10;
+                Matrix model = Matrix.CreateScale(1f);
+                // model *= Matrix.CreateTranslation(0, 0, -29);
 
-            Main.EntitySpriteDraw(texture,
-                pos + new Vector2(0f, -80f + addY), sourceRectangle,
-                Color.White, -MathF.PI / 4f, origin, 0.8f, SpriteEffects.None, 0);
+                // model *= Matrix.CreateTranslation(globalOffset);
+
+                // model *= Matrix.CreateScale(scale);
+
+                // model *= Matrix.CreateRotationX(rotation.X);
+                // model *= Matrix.CreateRotationY(rotation.Y);
+                // model *= Matrix.CreateRotationZ(rotation.Z);
+
+                // model *= Matrix.CreateTranslation(localOffset);
+
+                Texture2D texture = (Texture2D)ModContent.Request<Texture2D>(Rewards[i].texturePath);
+
+                int width, height;
+                width = texture.Width;
+                height = texture.Height;
+
+                Rectangle sourceRectangle = new Rectangle(0, 0, width, height);
+                Vector2 origin = new Vector2(width / 2f, height / 2f);
+
+                int offset = (i - (Rewards.Count / 2));
+
+                float r = (MathF.PI * (4f/3f) * (float)i / (float)Rewards.Count + Main.GlobalTimeWrappedHourly * 0f) % MathF.PI;
+
+                float addY = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 10;
+                float addX = offset * 60f;
+
+                Vector2 target = pos + new Vector2(0f, -80f + addY);
+
+                model *= Matrix.CreateRotationY(MathF.PI / 2);
+
+                model *= Matrix.CreateTranslation(100f, 0f, 0f);
+
+                model *= Matrix.CreateRotationY(r);
+
+                model *= Matrix.CreateTranslation(target.X, -target.Y, 0f);
+
+                // model.Translation = model.Translation - new Vector3(0f, 0f, model.Translation.Z);
+
+                rewardEffect.Parameters["Model"].SetValue(model);
+
+                Main.EntitySpriteDraw(texture,
+                    Vector2.Zero, sourceRectangle,
+                    Color.White, -MathF.PI / 4f, origin, 0.8f, SpriteEffects.None, 0);
+            }
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin();
         }
 
         public void Update()
@@ -113,8 +185,11 @@ namespace Divergency.Content.Events.LivingCore
 
             //Console.WriteLine(Timer + " | " + SpawnTimer + " | " + CurWave + " | " + KillsRemaining + " | " + TotalEnemies);
 
-            if (SpawnTimer == 0 && KillsRemaining == 0)
+            if (SpawnTimer == 0 && KillsRemaining == 0 || KeybindSystem.Begin.JustPressed)
             {
+                if (KeybindSystem.Begin.JustPressed)
+                    killSpawnedEnemies();
+
                 CurWave++;
 
                 if (CurWave == getWaves() + 1)
@@ -152,7 +227,7 @@ namespace Divergency.Content.Events.LivingCore
             {
                 foreach (Instance instance in CurWaveObject.enemies)
                 {
-                    Vector2 spawnPosition = LivingCoreEvent.Position + instance.SpawnOffset;
+                    Vector2 spawnPosition = LivingCoreEvent.Center + instance.SpawnOffset;
 
                     currentNPCs.Add(NPC.NewNPCDirect(null, spawnPosition, instance.NPCID));
 
@@ -169,7 +244,7 @@ namespace Divergency.Content.Events.LivingCore
             {
                 foreach (Instance instance in CurWaveObject.enemies)
                 {
-                    Vector2 spawnPosition = LivingCoreEvent.Position + instance.SpawnOffset;
+                    Vector2 spawnPosition = LivingCoreEvent.Center + instance.SpawnOffset;
 
                     float rotation = Main.rand.NextFloat(MathHelper.TwoPi);
 
@@ -223,16 +298,21 @@ namespace Divergency.Content.Events.LivingCore
         public void Draw(SpriteBatch spriteBatch)
         {
             Texture2D altarWave = default;
-            if (CurWave != 0)
-                altarWave = ModContent.Request<Texture2D>(Textures[CurWave-1]).Value;
+
+            int visualWave = CurWave - 1;
+            if (visualWave < 0)
+                visualWave = 0;
+            if (visualWave >= Textures.Length)
+                visualWave = Textures.Length-1;
+
+            altarWave = ModContent.Request<Texture2D>(Textures[visualWave]).Value;
 
             Texture2D altar = ModContent.Request<Texture2D>("Divergency/Content/Tiles/LivingGrove/CombatRoom/LivingCoreAltar1").Value;
 
             Vector2 offscreen = new(Main.offScreenRange);
             Vector2 position = new Vector2(LivingCoreEvent.X * 16f, LivingCoreEvent.Y * 16f) - Main.screenPosition;
 
-            if (CurWave != 0)
-                spriteBatch.Draw(altarWave, position + new Vector2(0,15), Color.White);
+            spriteBatch.Draw(altarWave, position + new Vector2(3,15), Color.White);
 
             if (SpawnTimer >= 100)
             {
@@ -243,15 +323,14 @@ namespace Divergency.Content.Events.LivingCore
 
                 foreach (Instance instance in CurWaveObject.enemies)
                 {
-                    Vector2 spawnPosition = LivingCoreEvent.Position + instance.SpawnOffset;
+                    Vector2 spawnPosition = LivingCoreEvent.Center + instance.SpawnOffset;
 
                     spriteBatch.Draw(glow, spawnPosition - Main.screenPosition, glow.Bounds, new Color(0.50f, 2.05f, 0.5f, 0) * alpha, 0f, glow.Size() * 0.5f, 0.4f, SpriteEffects.None, 0f);
-
                     spriteBatch.Draw(star, spawnPosition - Main.screenPosition, star.Bounds, new Color(0.50f, 2.05f, 0.5f, 0) * alpha, 0f, star.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
                 }
             }
 
-            spriteBatch.Draw(altar, LivingCoreEvent.Position + new Vector2(0, 50), Color.White);
+            spriteBatch.Draw(altar, LivingCoreEvent.Position + new Vector2(3, 50), Color.White);
 
             // texture for reward
 
@@ -284,8 +363,11 @@ namespace Divergency.Content.Events.LivingCore
             SpawnTimer = 0;
         }
 
+        public virtual void HasEnded() { }
         public void End()
         {
+            HasEnded();
+
             if (CurWave == getWaves() + 1)
             {
                 Texture2D altarWave = ModContent.Request<Texture2D>(Textures[CurWave - 2]).Value;
@@ -298,7 +380,7 @@ namespace Divergency.Content.Events.LivingCore
                 if (!roomCleared)
                 {
                     LivingCoreEvent.RoomCleared(this.GetType());
-                    Item.NewItem(null, position, RewardID);
+                    // Item.NewItem(null, position, RewardID);
                 }
 
                 Main.NewText("Cleared!");

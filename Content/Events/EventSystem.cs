@@ -1,5 +1,6 @@
 ﻿using Divergency.Content.Events.LivingCore;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,7 +12,12 @@ namespace Divergency.Content.Events.LivingCore
 		{
 			if (LivingCoreEvent.Active)
 				LivingCoreEvent.Update();
-		}
+
+            if (KeybindSystem.Begin.JustPressed)
+            {
+                LivingCoreEvent.Begin(LivingCoreEvent.lastI, LivingCoreEvent.lastJ, new Rooms.InfiniteRoom());
+            }
+        }
 
 		public override void PostDrawTiles()
 		{

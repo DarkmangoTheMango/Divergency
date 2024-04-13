@@ -2,6 +2,7 @@
 using Divergency.Common.Players;
 using Divergency.Content.Events.LivingCore.Rooms;
 using Divergency.Tiles.LivingTree;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -53,10 +54,17 @@ namespace Divergency.Content.Events.LivingCore
         public static int X { get; private set; }
         public static int Y { get; private set; }
         public static Vector2 Position { get => new(X * 16f, Y * 16f); }
+        public static Vector2 Center { get => Position + new Vector2(24f, 32f); }
         public static LivingCoreRoom Room { get; private set; }
 
+
+        public static int lastI = 0;
+        public static int lastJ = 0;
         public static void Update()
         {
+            if (KeybindSystem.End.JustPressed)
+                End();
+
             if (Room != null)
                 Room.Update();
         }
@@ -71,6 +79,9 @@ namespace Divergency.Content.Events.LivingCore
                 return;
             if (Main.tile[i, j].TileType != ModContent.TileType<LivingCoreAltarTile1>())
                 return;
+
+            lastI = i;
+            lastJ = j;
 
             Active = true;
             Altar = Main.tile[i, j];
@@ -100,6 +111,7 @@ namespace Divergency.Content.Events.LivingCore
         }
         public static void Load()
         {
+            LivingCoreRoom.Setup();
             End();
         }
         public static void Unload()
@@ -109,7 +121,6 @@ namespace Divergency.Content.Events.LivingCore
 
         public static void AddProgress(int amount)
         {
-            return;
             if (Room != null)
             {
                 Room.Kills += amount;
@@ -126,6 +137,7 @@ namespace Divergency.Content.Events.LivingCore
         {
             if (Room != null)
                 return Room.Progress;
+
             return 0f;
         }
 	}

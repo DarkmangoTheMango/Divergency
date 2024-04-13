@@ -15,14 +15,17 @@ using Divergency.Content.Items.Weapons.Melee;
 using Steamworks;
 using Terraria.GameContent.UI.Elements;
 
-namespace Divergency.Common.Systems.Skills
+namespace Divergency.Common.Systems.SkillNodes
 {
     public abstract class SkillNode
     {
         private static List<SkillInteractor> AllInteractors = new List<SkillInteractor>();
         public static List<SkillNode> AllSkills = new List<SkillNode>();
 
-        public static float SkillTreeScale = 1f;
+        public static float SkillTreeScale => ModContent.GetInstance<SkillTreeConfig>().Scale;
+        
+        public virtual int MaxSkillLevel => 1;
+        public int SkillLevel = 0;
 
         public static void ClearAll() { AllSkills.Clear(); AllInteractors.Clear(); }
 
@@ -122,6 +125,9 @@ namespace Divergency.Common.Systems.Skills
 
         public bool IsUnlockable()
         {
+            if (Learned)
+                return SkillLevel != MaxSkillLevel;
+
             if (touchingSkills.Count == 0)
                 return true;
 
@@ -152,7 +158,9 @@ namespace Divergency.Common.Systems.Skills
             float NameHeight = NameDimensions.Y * 1.2f;
 
             if (DescLines == null)
-                DescLines = Description.Split("\n");
+                DescLines = (Description + "\n").Split("\n");
+
+            DescLines[DescLines.Length-1] = SkillLevel + " / " + MaxSkillLevel;
 
             foreach (string line in DescLines)
             {
@@ -164,9 +172,9 @@ namespace Divergency.Common.Systems.Skills
                 DescSize.Y += stringSize.Y + extraLineWidth;
             }
 
-            DescSize += Border * 2f;
+            if (DescSize.X < NameDimensions.X) DescSize.X = NameDimensions.X;
             DescSize.Y += NameHeight;
-            DescSize.X += NameDimensions.X;
+            DescSize += Border * 2f;
 
             Rectangle DescBG = new Rectangle((int)MathF.Ceiling(mousePos.X), (int)MathF.Ceiling(mousePos.Y), (int)MathF.Ceiling(DescSize.X), (int)MathF.Ceiling(DescSize.Y));
 

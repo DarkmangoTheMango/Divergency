@@ -57,7 +57,7 @@ namespace Divergency.Tiles.LivingTree
             {
                 if ((LivingCoreEvent.X != i && LivingCoreEvent.Y != j))
                 {
-                    spriteBatch.Draw(texture, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero + new Vector2(0, 15), color);
+                    spriteBatch.Draw(texture, new Vector2(i * 16 - (int)Main.screenPosition.X + 3, j * 16 - (int)Main.screenPosition.Y) + zero + new Vector2(0, 15), color);
                     Main.tileHammer[Type] = false;
                 }
             }
