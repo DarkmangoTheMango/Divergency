@@ -15,8 +15,6 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
             new Vector2(-360, -80),
         };
 
-        public override float costMultiplier => 1.2f;
-
         public override List<List<ActivePattern>> Possibilities(List<ActivePattern> activePatterns)
         {
             List<List<ActivePattern>> ret = new List<List<ActivePattern>>();
@@ -26,8 +24,10 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
             {
                 foreach (Vector2 v in positions)
                 {
-                    List<ActivePattern> toAdd = [new ActivePattern(u, v)];
-                    ret.Add(toAdd);
+                    List<ActivePattern> toAdd1 = [new ActivePattern(u, v)];
+                    List<ActivePattern> toAdd2 = [new ActivePattern(u, new Vector2(-v.X, v.Y))];
+                    ret.Add(toAdd1);
+                    ret.Add(toAdd2);
                 }
             }
 
