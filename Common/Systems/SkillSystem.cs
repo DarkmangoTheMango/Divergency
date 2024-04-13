@@ -1,34 +1,16 @@
-﻿using Divergency.Common.Systems.Skills;
-using Divergency.Content.Events.LivingCore;
+﻿using Divergency.Common.Systems.SkillNodes;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
-using rail;
 using System;
-using Terraria.DataStructures;
-using System.IO.Pipelines;
-using Terraria.GameInput;
-using Terraria.GameContent.UI.Elements;
 using ReLogic.Content;
-using static Terraria.GameContent.Animations.On_Actions.Sprites;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using static System.Net.WebRequestMethods;
-using Terraria.GameContent;
-using Divergency.Common.Helpers;
 using System.Reflection;
-using System.Drawing.Imaging;
-using Humanizer;
-using Terraria.Initializers;
-using Divergency.Content.Tiles.LivingGrove;
-using Terraria.Utilities;
-using System.Text;
-using Terraria.GameContent.Items;
 using Terraria.ModLoader.IO;
-using System.CodeDom;
+using System.IO;
 
 namespace Divergency.Common.Systems
 {
@@ -54,7 +36,7 @@ namespace Divergency.Common.Systems
         private int SkillPointTotal = 100; // set this to 0 when it out, 100 for testing...
         private int SkillPointsUsed = 0;
         private string SaveString = "";
-        private float d = 46f;
+        private float d = 46f; // distance between points
 
         public SkillNode CoreSkill;
 
@@ -65,10 +47,18 @@ namespace Divergency.Common.Systems
 
         Dictionary<string, List<SkillInvocation>> skills = new Dictionary<string, List<SkillInvocation>>();
 
-        public void GetSkill(SkillNode skill)
+        public void GetSkill(SkillNode skill, int points = 1)
         {
+            if (SkillPoints == 0)
+                return;
+
+            SkillPointsUsed += points;
+            skill.SkillLevel += points;
+
+            if (skill.Learned)
+                return;
+
             skill.Learned = true;
-            SkillPointsUsed++;
 
             MethodInfo[] methods = skill.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                   .Where(method => !method.Name.StartsWith("get_") && !method.Name.StartsWith("set_")).ToArray();
@@ -101,67 +91,88 @@ namespace Divergency.Common.Systems
 
         public override void UpdateEquips() { TryCall("UpdateEquips", new object[] { Player }); }
         // so you can do ^that^ to add override for any functions, basically... 
- 
+
+        const char stopCharC = 'S';
+        const int stopCharI = (int)'S';
         public override void SaveData(TagCompound tag)
         {
             string saveString = "";
             foreach (SkillNode skill in SkillNode.AllSkills)
             {
-                saveString += skill.Learned ? "1" : "0";
+                saveString += skill.SkillLevel.ToString() + stopCharC;
             }
 
             tag.Add("SkillNodeLearnedString", saveString);
             tag.Add("SkillPointTotal", SkillPointTotal);
-            tag.Add("SkillPointsUsed", SkillPointsUsed);
+            // tag.Add("SkillPointsUsed", SkillPointsUsed);
         }
 
         public override void OnEnterWorld()
         {
             SetupTree();
 
-            if (SaveString.Length == SkillNode.AllSkills.Count)
+            StringReader SR = new StringReader(SaveString);
+            int nextChar = SR.Read();
+            string skillLevel = "";
+            int skillNodeIndex = 0;
+
+            while (nextChar != -1)
             {
-                for (int i = 0; i < SkillNode.AllSkills.Count; i++)
+                if (nextChar == stopCharI)
                 {
-                    if (SkillNode.AllSkills[i].Learned == false && SaveString[i] == '1')
+                    int effectiveSkillLevel = Int32.Parse(skillLevel);
+                    if (effectiveSkillLevel > 0)
                     {
-                        GetSkill(SkillNode.AllSkills[i]);
+                        SkillNode s = SkillNode.AllSkills[skillNodeIndex];
+                        GetSkill(s, effectiveSkillLevel);
                     }
+
+                    skillNodeIndex++;
+                    skillLevel = "";
                 }
+                else 
+                    skillLevel += (char)nextChar;
+
+                nextChar = SR.Read();
             }
+
+            if (!CoreSkill.Learned)
+            {
+                GetSkill(CoreSkill);
+                SkillPointsUsed--;
+            }
+
+            SkillTreeSystem.IsSkillTreeActive = false; // idk where this should be...
         }
 
         public override void LoadData(TagCompound tag)
         {
             SaveString = tag.GetString("SkillNodeLearnedString");
             SkillPointTotal = tag.GetInt("SkillPointTotal");
-            SkillPointsUsed = tag.GetInt("SkillPointsUsed");
-
-            SkillTreeSystem.IsSkillTreeActive = false; // idk where this should be...
+            // SkillPointsUsed = tag.GetInt("SkillPointsUsed");
         }
 
         public void SetupTree()
         {
             SkillNode.ClearAll();
 
-            CoreSkill = new TestSkill();
-            CoreSkill.Learned = true;
+            CoreSkill = new SkillNodes.StatSkillsLarge.FlatDamage();
 
             // make base tree branches
             SkillTreeHelper STH = new SkillTreeHelper(CoreSkill);
             STH.SetLabel("Core");
 
             STH.BaseRotation = MathF.PI / 2f * 0f;
-            SetupBranch(STH, "Magic");
+            SetupBranch(STH, "Magic", typeof(SkillNodes.StatSkillsLarge.MagicDamage));
 
             STH.BaseRotation = MathF.PI / 2f * 1f;
-            SetupBranch(STH, "Ranged");
+            SetupBranch(STH, "Ranged", typeof(SkillNodes.StatSkillsLarge.RangedDamage));
 
             STH.BaseRotation = MathF.PI / 2f * 2f;
-            SetupBranch(STH, "Melee");
+            SetupBranch(STH, "Melee", typeof(SkillNodes.StatSkillsLarge.MeleeDamage));
 
             STH.BaseRotation = MathF.PI / 2f * 3f;
-            SetupBranch(STH, "Summon");
+            SetupBranch(STH, "Summon", typeof(SkillNodes.StatSkillsLarge.SummonDamage));
 
             // make "shared" notes
 
@@ -226,7 +237,7 @@ namespace Divergency.Common.Systems
                 STHTmp.AddNSet(new BlankSkill(), (-MathF.PI / 4f * 2f), d);
                 STHTmp.SaveAs("BotEqu");
 
-                STHTmp.TrackeBack(2);
+                STHTmp.TraceBack(2);
 
                 STHTmp.AddNSet(new BlankSkill(), (MathF.PI / 4f), d);
                 STHTmp.AddNSet(new BlankSkill(), (MathF.PI / 4f * 2f), d);
@@ -259,7 +270,7 @@ namespace Divergency.Common.Systems
             }
         }
 
-        private void SetupBranch(SkillTreeHelper STH, string branchName)
+        private void SetupBranch(SkillTreeHelper STH, string branchName, Type BigSkill)
         {
             BlankSkill._idx = 0;
             STH.GOTOLabel("Core");
@@ -271,12 +282,12 @@ namespace Divergency.Common.Systems
             STH.AddNSet(new BlankSkill(), -MathF.PI / 8f * 3f, d * 0.8f);
             STH.SaveAs("P1" + branchName);
 
-            STH.TrackeBack(2);
+            STH.TraceBack(2);
             STH.AddNSet(new BlankSkill(), MathF.PI / 4f, d);
 
             STH.AddNSet(new BlankSkill(), MathF.PI / 8f * 3f, d * 0.8f);
             STH.SaveAs("P3" + branchName);
-            STH.TrackeBack(1);
+            STH.TraceBack(1);
 
             STH.AddNSet(new BlankSkill(), -MathF.PI / 4f, d);
             STH.Connect("tmp");
@@ -287,14 +298,14 @@ namespace Divergency.Common.Systems
             STH.AddNSet(new BlankSkill(), -MathF.PI / 8f * 5f, d * 0.8f);
             STH.SaveAs("P2" + branchName);
 
-            STH.TrackeBack(2);
+            STH.TraceBack(2);
             STH.AddNSet(new BlankSkill(), MathF.PI / 4f, d);
 
             STH.AddNSet(new BlankSkill(), MathF.PI / 8f * 5f, d * 0.8f);
             STH.SaveAs("P4" + branchName);
-            STH.TrackeBack(1);
+            STH.TraceBack(1);
 
-            STH.AddNSet(new BlankSkill(), -MathF.PI / 4f, d);
+            STH.AddNSet(BigSkill, -MathF.PI / 4f, d);
             STH.Connect("tmp");
 
             STH.AddNSet(new BlankSkill(), MathF.PI / 4f, d);
@@ -303,12 +314,12 @@ namespace Divergency.Common.Systems
             STH.AddNSet(new BlankSkill(), MathF.PI * 0.9f, d * 1.2f);
             STH.SaveAs("P6" + branchName);
 
-            STH.TrackeBack(2);
+            STH.TraceBack(2);
 
             STH.AddNSet(new BlankSkill(), MathF.PI / 8f, d);
             STH.SaveAs("tmp");
 
-            STH.TrackeBack(2);
+            STH.TraceBack(2);
 
             STH.AddNSet(new BlankSkill(), -MathF.PI / 4f, d);
 
@@ -316,13 +327,13 @@ namespace Divergency.Common.Systems
             STH.AddNSet(new BlankSkill(), -MathF.PI * 0.9f, d * 1.2f);
             STH.SaveAs("P5" + branchName);
 
-            STH.TrackeBack(2);
+            STH.TraceBack(2);
 
             STH.AddNSet(new BlankSkill(), -MathF.PI / 8f, d);
 
             float tmp = ((MathF.PI / 4f).ToRotationVector2().Y + (MathF.PI / 8f).ToRotationVector2().Y) * d;
 
-            STH.AddNSet(new BlankSkill(), new Vector2(MathF.Cos(MathF.PI / 8f * 3f) * tmp, tmp));
+            STH.AddNSet(BigSkill, new Vector2(MathF.Cos(MathF.PI / 8f * 3f) * tmp, tmp));
             STH.SaveAs("LS");
             STH.Connect("tmp");
 
@@ -330,7 +341,7 @@ namespace Divergency.Common.Systems
             STH.AddNSet(new BlankSkill(), (-MathF.PI / 4f * 2f), d);
             STH.SaveAs("TopExit" + branchName);
 
-            STH.TrackeBack(2);
+            STH.TraceBack(2);
 
             STH.AddNSet(new BlankSkill(), (MathF.PI / 4f), d);
             STH.AddNSet(new BlankSkill(), (MathF.PI / 4f * 2f), d);
@@ -356,18 +367,22 @@ namespace Divergency.Common.Systems
             nodeHistory.Add(curNode);
         }
 
+        public void AddNSet(Type skill, float rotation, float distance) { AddNSet((SkillNode)Activator.CreateInstance(skill), rotation, distance); }
+
         public void AddNSet(SkillNode skill, float rotation, float distance)
         {
             nodeHistory.Add(skill);
             curNode = curNode.AddBS(skill, (rotation + BaseRotation).ToRotationVector2() * distance);
         }
 
+        public void AddNSet(Type skill, float rotation) { AddNSet((SkillNode)Activator.CreateInstance(skill), rotation); }
         public void AddNSet(SkillNode skill, float rotation)
         {
             nodeHistory.Add(skill);
             curNode = curNode.AddBS(skill, rotation + BaseRotation);
         }
 
+        public void AddNSet(Type skill, Vector2 skillOffset) { AddNSet((SkillNode)Activator.CreateInstance(skill), skillOffset); }
         public void AddNSet(SkillNode skill, Vector2 skillOffset)
         {
             nodeHistory.Add(skill);
@@ -388,7 +403,7 @@ namespace Divergency.Common.Systems
         {
             int traceTo = label[s];
 
-            TrackeBack(nodeHistory.Count - traceTo);
+            TraceBack(nodeHistory.Count - traceTo);
 
             foreach (var pair in label)
             {
@@ -397,7 +412,7 @@ namespace Divergency.Common.Systems
             }
         }
 
-        public void TrackeBack(int length)
+        public void TraceBack(int length)
         {
             nodeHistory.RemoveRange(nodeHistory.Count - length, length);
 
@@ -453,7 +468,6 @@ namespace Divergency.Common.Systems
 
         public override void PreUpdatePlayers()
         {
-            Player player = Main.LocalPlayer;
             SkillTreePlayer STP = Main.LocalPlayer.GetModPlayer<SkillTreePlayer>();
             SkillNode CoreSkill = STP.CoreSkill;
 
@@ -462,12 +476,12 @@ namespace Divergency.Common.Systems
             {
                 IsSkillTreeActive = !IsSkillTreeActive;
                 offset = new Vector2();
-                SkillNode.SkillTreeScale = 0.8f;
             }
 
             if (IsSkillTreeActive && GetTreeRectangle().Contains(Main.mouseX, Main.mouseY))
             {
                 Main.blockMouse = true;
+                Main.HoveringOverAnNPC = false;
                 // Main.hoverSomething...
             }
 
@@ -499,9 +513,7 @@ namespace Divergency.Common.Systems
 
                 if (tryClickNode != null && curHover == tryClickNode)
                 {
-                    Console.WriteLine(STP.SkillPoints);
-
-                    if (tryClickNode.IsUnlockable() && STP.SkillPoints > 0)
+                    if (tryClickNode.IsUnlockable())
                     {
                         STP.GetSkill(tryClickNode);
                     }
@@ -516,7 +528,12 @@ namespace Divergency.Common.Systems
 
         public Rectangle GetTreeRectangle()
         {
-            return new Rectangle(Main.screenWidth / 4, Main.screenHeight / 4, Main.screenWidth / 2, Main.screenHeight / 2);
+            return new Rectangle(
+                (int)(Main.screenWidth / (4f * Main.UIScale)),
+                (int)(Main.screenHeight / (4f * Main.UIScale)),
+                (int)(Main.screenWidth / (2f * Main.UIScale)),
+                (int)(Main.screenHeight / (2f * Main.UIScale))
+            );
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -584,7 +601,7 @@ namespace Divergency.Common.Systems
             spriteBatch.End();
             spriteBatch.GraphicsDevice.ScissorRectangle = clippingRectangle;
             spriteBatch.GraphicsDevice.RasterizerState = OverflowHiddenRasterizerState;
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, anisotropicClamp, DepthStencilState.None, OverflowHiddenRasterizerState);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, anisotropicClamp, DepthStencilState.None, OverflowHiddenRasterizerState, null, Main.UIScaleMatrix);
 
             SkillNode.DrawLines(spriteBatch, Center);
             SkillNode.DrawSkills(spriteBatch, Center);
