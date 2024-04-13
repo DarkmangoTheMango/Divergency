@@ -5,6 +5,7 @@ using Terraria.ModLoader;
 using Divergency.Content.Particles;
 using ParticleLibrary;
 using Microsoft.Xna.Framework;
+using Divergency.Common.Helpers.SwordAnimator;
 
 
 namespace Divergency.Content.Items.Accessories
@@ -67,7 +68,7 @@ namespace Divergency.Content.Items.Accessories
         {
             if (Revenge && RevengeCooldown == 0)
 			{
-				RevengePeriod = 60;
+				RevengePeriod = 75;
 
 			}
 			
