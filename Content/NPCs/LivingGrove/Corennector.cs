@@ -387,7 +387,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                         targetfound = true;
                         cachedTarget = target;
                         target.GetGlobalNPC<CorennectorNPC>().connected = true;
-                        target.GetGlobalNPC<CorennectorNPC>().ShieldHP = 150;
+                        target.GetGlobalNPC<CorennectorNPC>().ShieldHP += 150;
                         Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(),target.Center, new Vector2(0), ModContent.ProjectileType<CorennectorVisuals>(), 0, 0);
                     }
 
