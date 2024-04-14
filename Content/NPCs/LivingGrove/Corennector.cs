@@ -238,7 +238,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             foreach (NPC npc in cachedNPCs)
             {
-                if (npc.GetGlobalNPC<CorennectorNPC>().ShieldHP > 0) // or however you do it 
+                if (npc.GetGlobalNPC<CorennectorNPC>().ShieldHP > 0 || npc.active == true) // or however you do it 
                     return false;
             }
 

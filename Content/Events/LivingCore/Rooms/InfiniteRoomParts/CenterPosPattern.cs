@@ -23,7 +23,8 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
             {
                 foreach (Vector2 v in positions)
                 {
-                    List<ActivePattern> toAdd = [new ActivePattern(u, v)];
+                    List<ActivePattern> toAdd = new List<ActivePattern>();
+                    toAdd.Add(new ActivePattern(u, v));
                     ret.Add(toAdd);
                 }
             }

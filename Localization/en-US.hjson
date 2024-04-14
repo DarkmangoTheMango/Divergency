@@ -1096,11 +1096,26 @@ Mods: {
 			CoreBlockade.DisplayName: Core Blockade
 			CoreBlockadeLeft.DisplayName: Core Blockade Left
 			CoreBlockadeRight.DisplayName: Core Blockade Right
+			CoreBeetle.DisplayName: Core Beetle
 		}
 
 		Keybinds: {
 			"Reload the current weapon.DisplayName": Reload the current weapon
 			"Toggle Skill Tree.DisplayName": Toggle  Skill  Tree
+			"end current encounter.DisplayName": end current encounter
+			"Begin infinite on last used pedestal.DisplayName": Begin infinite on last used pedestal
+		}
+
+		Configs: {
+			SkillTreeConfig: {
+				DisplayName: Skill Tree Config
+				Headers.SkillTree: Skill Tree Header
+
+				Scale: {
+					Label: Scale
+					Tooltip: The scale of the skill tree
+				}
+			}
 		}
 	}
 }
