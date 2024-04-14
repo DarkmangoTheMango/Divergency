@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +67,14 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                     if (f.cost < 0)
                         continue;
 
-                    f.activePatterns.AddRange(possiblity);
+                    foreach (ActivePattern ap in possiblity)
+                    {
+                        int count = 0;
+                        foreach (ActivePattern oap in f.activePatterns) { if (ap.unit.id == oap.unit.id) count++; }
+                        f.cost += MathF.Pow(count, 0.3f) - 1f;
+
+                        f.activePatterns.Add(ap);
+                    }
 
                     if (DoKill(f.activePatterns))
                         continue;
@@ -75,10 +83,16 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                     {
                         bestCost = f.cost;
                         bestMMFS = f.Clone();
+                        //potnetialStates.Add(f);   // placing this here and removing the one below speed up like...
+                                                    // too much, lol; 
+                                                    // last time i checked, this only worked up till wave 66
+                                                    // needs more patterns to be bigger
                     }
 
-                    if (f.cost < bestCost * 0.99f)
+                    /*
+                    if (f.cost < bestCost * 0.5f)
                         continue;
+                    */
 
                     potnetialStates.Add(f);
                 }
@@ -114,7 +128,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
 
             potnetialStates.Clear();
 
-            while (tmpMMFSList.Any()) // add randomly to actually have sub 1k/count be random
+            while (tmpMMFSList.Any()) // add randomly to actually have sub-count be random
             {
                 int index = Main.rand.Next(0, tmpMMFSList.Count());
                 potnetialStates.Add(tmpMMFSList.ElementAt(index));
@@ -133,12 +147,20 @@ namespace Divergency.Content.Events.LivingCore.Rooms
             int depth = 0;
             while (bestCost >= wave + depth)
             {
+                if (potnetialStates.Count == 0)
+                {
+                    while (true)
+                    {
+                        Console.WriteLine(wave);
+                    }
+                }
                 Console.WriteLine("Depth: " + depth++ + " | Potential: " + potnetialStates.Count);
-                CutDownTo(depth * 1000);
+                CutDownTo(wave * 100); // can make this 1k, only if we add more ways to add units...
+                                       // and even more so if we add more costly ways to add units...
                 BranchAllPotnetials();
             }
 
-            // might be able to improve a little..?
+            // makes it take more time; but also makes it better, lol
             CutDownTo(1000);
             BranchAllPotnetials();
 
