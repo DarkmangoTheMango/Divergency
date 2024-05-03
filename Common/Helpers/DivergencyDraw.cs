@@ -58,6 +58,19 @@ namespace Divergency.Common.Helpers
                 (Main.projectile[p].ModProjectile as Ring_Visual).color = color;
             }
         }
+        public static void SpawnRingReverse(Vector2 center, Color color, float flatScale = 0.13f, float multiScale = 0.9f, float glowScale = 2)
+        {
+            //Dust dust = Dust.NewDustPerfect(center, ModContent.DustType<GlowDust>(), Vector2.Zero, Scale: glowScale);
+            //dust.noGravity = true;
+            Color dustColor = new(color.R, color.G, color.B) { A = 0 };
+            //dust.color = dustColor;
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                int p = Projectile.NewProjectile(null, center, Vector2.Zero, ModContent.ProjectileType<Ring_VisualReverse>(), 0, 0,
+                    Main.myPlayer, flatScale, multiScale);
+                (Main.projectile[p].ModProjectile as Ring_VisualReverse).color = color;
+            }
+        }
         public static void SpawnCirclePulse(Vector2 center, Color color, float scale = 1, Entity target = null)
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -111,6 +124,45 @@ namespace Divergency.Common.Helpers
             Projectile.friendly = false;
             Projectile.hostile = false;
             Projectile.timeLeft = 20;
+            Projectile.scale = 2f;
+        }
+        public Color color;
+        public override void AI()
+        {
+            Projectile.scale -= Projectile.ai[0]; // 0.13f
+            Projectile.scale /= Projectile.ai[1]; // 0.9f
+            if (Projectile.timeLeft < 10)
+                Projectile.alpha = (int)MathHelper.Lerp(255f, 0f, Projectile.timeLeft / 10f);
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 drawOrigin = new(texture.Width / 2, texture.Height / 2);
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(color), Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            return false;
+        }
+    }
+
+    public class Ring_VisualReverse : ModProjectile
+    {
+        public override string Texture => "Divergency/Assets/Textures/Ring";
+        public override void SetStaticDefaults()
+        {
+            //.setdefault("Ring");
+        }
+        public override void SetDefaults()
+        {
+            Projectile.width = 128;
+            Projectile.height = 128;
+            Projectile.friendly = false;
+            Projectile.hostile = false;
+            Projectile.timeLeft = 20;
             Projectile.scale = 0.1f;
         }
         public Color color;
@@ -135,6 +187,7 @@ namespace Divergency.Common.Helpers
             return false;
         }
     }
+}
     public class CirclePulse_Visual : ModProjectile
     {
         public override string Texture => "Divergency/Assets/Textures/Shockwave";
@@ -356,6 +409,6 @@ namespace Divergency.Common.Helpers
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             return false;
         }
-    }
+    
 }
 

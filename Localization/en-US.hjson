@@ -373,6 +373,9 @@ Mods: {
 			Blockade.DisplayName: Blockade
 			BlockadeLeft.DisplayName: Blockade Left
 			BlockadeRight.DisplayName: Blockade Right
+			CoreVacuumTrail.DisplayName: Core Vacuum Trail
+			Ring_Visual_Reverse.DisplayName: Ring_ Visual_ Reverse
+			Ring_VisualReverse.DisplayName: Ring_ Visual Reverse
 		}
 
 		Biomes: {
@@ -1097,6 +1100,7 @@ Mods: {
 			CoreBlockadeLeft.DisplayName: Core Blockade Left
 			CoreBlockadeRight.DisplayName: Core Blockade Right
 			CoreBeetle.DisplayName: Core Beetle
+			CoreVacuum.DisplayName: Core Vacuum
 		}
 
 		Keybinds: {

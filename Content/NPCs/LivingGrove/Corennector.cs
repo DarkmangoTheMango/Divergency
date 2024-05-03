@@ -152,7 +152,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     {
                         NPC taggedNPC = Main.npc[k];
 
-                        if (!taggedNPC.friendly &&!taggedNPC.immortal && taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.ModNPC is not CoreElementalHand && taggedNPC.ModNPC is not Corennector && taggedNPC.ModNPC is not CoreElementalBody && taggedNPC.Distance(NPC.Center) < 1000 && !cachedNPCs.Contains(taggedNPC) && NPC.ai[0] == 20)
+                        if (!taggedNPC.friendly && taggedNPC.active && taggedNPC.ModNPC is not Corennector && taggedNPC.ModNPC is not CoreElementalHand && taggedNPC.ModNPC is not Corennector && taggedNPC.ModNPC is not CoreElementalBody && taggedNPC.Distance(NPC.Center) < 1000 && !cachedNPCs.Contains(taggedNPC) && NPC.ai[0] == 20)
                         {
                             cachedNPCs.Add(taggedNPC);
                             foreach (NPC targetNPC in cachedNPCs)
@@ -238,7 +238,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             foreach (NPC npc in cachedNPCs)
             {
-                if (npc.GetGlobalNPC<CorennectorNPC>().ShieldHP > 0 || npc.active == true) // or however you do it 
+                if (npc.GetGlobalNPC<CorennectorNPC>().ShieldHP > 0) // or however you do it 
                     return false;
             }
 
