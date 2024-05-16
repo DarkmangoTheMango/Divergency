@@ -124,13 +124,13 @@ namespace Divergency.Common.Helpers
             Projectile.friendly = false;
             Projectile.hostile = false;
             Projectile.timeLeft = 20;
-            Projectile.scale = 2f;
+            Projectile.scale = 0.1f;
         }
         public Color color;
         public override void AI()
         {
-            Projectile.scale -= Projectile.ai[0]; // 0.13f
-            Projectile.scale /= Projectile.ai[1]; // 0.9f
+            Projectile.scale += Projectile.ai[0]; // 0.13f
+            Projectile.scale *= Projectile.ai[1]; // 0.9f
             if (Projectile.timeLeft < 10)
                 Projectile.alpha = (int)MathHelper.Lerp(255f, 0f, Projectile.timeLeft / 10f);
         }
@@ -151,27 +151,32 @@ namespace Divergency.Common.Helpers
 
     public class Ring_VisualReverse : ModProjectile
     {
-        public override string Texture => "Divergency/Assets/Textures/Ring";
+        public override string Texture => "Divergency/Assets/Textures/Shockwave";
         public override void SetStaticDefaults()
         {
             //.setdefault("Ring");
         }
         public override void SetDefaults()
         {
-            Projectile.width = 128;
-            Projectile.height = 128;
+            Projectile.width = 1;
+            Projectile.height = 1;
             Projectile.friendly = false;
             Projectile.hostile = false;
-            Projectile.timeLeft = 20;
-            Projectile.scale = 0.1f;
+            Projectile.timeLeft = 300;
+            Projectile.scale = 5f;
+            Projectile.alpha = 0;
         }
         public Color color;
         public override void AI()
         {
-            Projectile.scale += Projectile.ai[0]; // 0.13f
-            Projectile.scale *= Projectile.ai[1]; // 0.9f
-            if (Projectile.timeLeft < 10)
-                Projectile.alpha = (int)MathHelper.Lerp(255f, 0f, Projectile.timeLeft / 10f);
+            Projectile.scale -= 0.005f; // 0.13f
+            Projectile.scale /= 1.05f; // 0.9f
+           if (Projectile.scale <= 0.01f)
+            {
+                Projectile.Kill();
+            }
+
+            Projectile.alpha++; ;
         }
         public override bool PreDraw(ref Color lightColor)
         {

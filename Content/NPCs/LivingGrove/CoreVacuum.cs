@@ -121,11 +121,15 @@ namespace Divergency.Content.NPCs.LivingGrove
             if (state == State.sucking)
             {
                 NPC.ai[0]++;
+                Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
+
+                Dust dust = Dust.NewDustPerfect(NPC.Center + (velocity * 1000f), ModContent.DustType<Glow>(), velocity * -20f, 0, Color.LimeGreen, 0.7f);
+                Dust dust2 = Dust.NewDustPerfect(target.Center + (velocity * Main.rand.NextFloat(-10,10)), ModContent.DustType<GlowLine>(), velocity * target.DirectionTo(NPC.Center) * 20, 0, Color.LimeGreen, 0.1f);
 
                 target.velocity += target.DirectionTo(NPC.Center) * 0.2f;
                 target.velocity.Y -= 0.3f;
                 target.gravity = 0;
-                if (NPC.ai[0] == 75)
+                if (NPC.ai[0] == 35)
                 {
 
                     DivergencyDraw.SpawnRingReverse(NPC.Center, Color.LimeGreen);
