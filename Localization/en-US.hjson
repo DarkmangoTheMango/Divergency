@@ -376,6 +376,12 @@ Mods: {
 			CoreVacuumTrail.DisplayName: Core Vacuum Trail
 			Ring_Visual_Reverse.DisplayName: Ring_ Visual_ Reverse
 			Ring_VisualReverse.DisplayName: Ring_ Visual Reverse
+			DashVisualsMarkscore.DisplayName: Dash Visuals Markscore
+			MarkscoreArrow.DisplayName: Markscore Arrow
+			MarkscoreArrowOrb.DisplayName: Markscore Arrow Orb
+			MarkscoreArrowExplosion.DisplayName: Markscore Arrow Explosion
+			MarksCoreArrowHoming.DisplayName: Marks Core Arrow Homing
+			MarkscoreArrowHoming.DisplayName: Markscore Arrow Homing
 		}
 
 		Biomes: {
@@ -1101,6 +1107,7 @@ Mods: {
 			CoreBlockadeRight.DisplayName: Core Blockade Right
 			CoreBeetle.DisplayName: Core Beetle
 			CoreVacuum.DisplayName: Core Vacuum
+			Markscore.DisplayName: Markscore
 		}
 
 		Keybinds: {

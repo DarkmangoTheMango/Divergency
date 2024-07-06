@@ -69,7 +69,6 @@ namespace Divergency.Content.NPCs.LivingGrove
         {
             Idling,
             Lazer,
-            SplitShot,
             Thorns,
             Roar
 
@@ -178,8 +177,8 @@ namespace Divergency.Content.NPCs.LivingGrove
 
 
                 Texture2D a = TextureAssets.Npc[Type].Value;
-                Main.EntitySpriteDraw(a, NPC.VisualPosition - screenPos, NPC.frame, drawColor, NPC.rotation, Vector2.Zero, 1f, effects, 0);
-                Main.EntitySpriteDraw(glow, NPC.VisualPosition - screenPos, NPC.frame, Color.White, NPC.rotation, Vector2.Zero, 1f, effects, 0);
+                Main.EntitySpriteDraw(a, NPC.VisualPosition - screenPos + new Vector2(-30, 34), NPC.frame, drawColor, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
+                Main.EntitySpriteDraw(glow, NPC.VisualPosition - screenPos + new Vector2(-30, 34), NPC.frame, Color.White, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
 
             }
             return false;
