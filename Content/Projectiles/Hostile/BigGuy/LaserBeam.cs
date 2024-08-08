@@ -23,7 +23,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
         private NPC owner => Main.npc[(int)Projectile.ai[1]];
         private Vector2 origin {
             get {
-                Vector2 pos = owner.position;
+                Vector2 pos = owner.VisualPosition + new Vector2(-120, -20);
 
                 Vector2 eyeOffset = ownerEyeOffset[(int)(owner.frame.Y / 374)];//[(owner.frame.Y / 58)]; // so like, this shit no work...
                 if (owner.spriteDirection == 1)
@@ -61,7 +61,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
         {
             Texture2D BaseFront = (Texture2D)ModContent.Request<Texture2D>(Texture, ReLogic.Content.AssetRequestMode.ImmediateLoad);
             Texture2D Base = (Texture2D)ModContent.Request<Texture2D>(Texture + "Base", ReLogic.Content.AssetRequestMode.ImmediateLoad);
-            Texture2D Impact = (Texture2D)ModContent.Request<Texture2D>(Texture + "Impact", ReLogic.Content.AssetRequestMode.ImmediateLoad);
+            // Impact = (Texture2D)ModContent.Request<Texture2D>(Texture + "Impact", ReLogic.Content.AssetRequestMode.ImmediateLoad);
 
 
             int f = (int)(Main.GameUpdateCount / 4f);
@@ -88,7 +88,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
                 }
             }
 
-            Main.EntitySpriteDraw(Impact, origin - Main.screenPosition + distance * Projectile.rotation.ToRotationVector2(), baseR, Color.White, Projectile.rotation, new Vector2(Impact.Width / 2, Impact.Height / 2), 1f, SpriteEffects.FlipHorizontally);
+            //Main.EntitySpriteDraw(Impact, origin - Main.screenPosition + distance * Projectile.rotation.ToRotationVector2(), baseR, Color.White, Projectile.rotation, new Vector2(Impact.Width / 2, Impact.Height / 2), 1f, SpriteEffects.FlipHorizontally);
 
             return false;
         }
@@ -106,7 +106,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
 
             Vector2 end = origin + Projectile.rotation.ToRotationVector2() * (distance < 64 ? 64 : distance);
 
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 1; i++)
             {
                 Dust dust = Dust.NewDustPerfect(end, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, Color.LimeGreen, 2f) ;
                 dust.noGravity = true;

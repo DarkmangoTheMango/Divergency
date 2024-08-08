@@ -69,7 +69,9 @@ namespace Divergency.Content.NPCs.LivingGrove
         {
             Idling,
             Lazer,
-            Thorns,
+            Thorns1,
+            Thorns2,
+            Thorns3,
             Roar
 
 
@@ -84,17 +86,12 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public float Phase;
         private bool initialize;
-
+        public float addDistance = 90;
         private bool spawned = false;
         public override void AI()
         {
             Console.WriteLine("ai");
 
-            if (!spawned)
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.LaserBeam>(), NPC.damage, 0, ai0: Main.LocalPlayer.whoAmI, ai1: NPC.whoAmI);
-            
-            spawned = true;
-            
 
             if (!initialize)
             {
@@ -125,7 +122,27 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                     if (NPC.ai[0] == 120)
                     {
-                        state = ActionState.Lazer;
+                        state = ActionState.Thorns1;
+                        NPC.ai[0] = 0;
+
+                    }
+                }
+
+                //////THORNS AFTER ANOTHER :)
+                if (state == ActionState.Thorns1)
+                {
+                    NPC.ai[0]++;
+                    if (NPC.ai[0] == 25)
+                    {
+
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2 (addDistance,0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai1: 1);
+                        addDistance += 90;
+                        NPC.ai[0] = 0;
+                    }
+                    
+                    if (addDistance == 1440)
+                    {
+                        state = ActionState.Idling;
                     }
                 }
             }
