@@ -1,6 +1,7 @@
 using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Dusts;
+using Divergency.Content.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;

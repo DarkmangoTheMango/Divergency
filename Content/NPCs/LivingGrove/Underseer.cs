@@ -3,6 +3,7 @@ using Divergency.Common.Players;
 using Divergency.Content.Dusts;
 using Divergency.Content.Particles;
 using Divergency.Content.Projectiles.Hostile;
+using Divergency.Content.Projectiles.Magic;
 using Divergency.Content.Projectiles.Summoner.Minions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

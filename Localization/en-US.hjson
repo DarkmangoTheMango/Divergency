@@ -383,6 +383,7 @@ Mods: {
 			MarksCoreArrowHoming.DisplayName: Marks Core Arrow Homing
 			MarkscoreArrowHoming.DisplayName: Markscore Arrow Homing
 			BigGuySpike.DisplayName: Big Guy Spike
+			CorescillationProj2.DisplayName: Corescillation Proj2
 		}
 
 		Biomes: {

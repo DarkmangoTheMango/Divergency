@@ -22,7 +22,13 @@ namespace Divergency.Content.NPCs.LivingGrove
 
     public class CoreBomber  : ModNPC
     {
-        
+        int startingFrame;
+
+        int endingFrame;
+
+        int framerate;
+
+        int combatFrame = 6;
 
         public override void SetStaticDefaults()
         {
@@ -30,7 +36,8 @@ namespace Divergency.Content.NPCs.LivingGrove
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, value);
             NPCID.Sets.TrailCacheLength[NPC.type] = 5;
             NPCID.Sets.TrailingMode[NPC.type] = 0;
-            
+            Main.npcFrameCount[NPC.type] = 14;
+
 
 
         }
@@ -44,8 +51,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             NPC.noTileCollide = false;
 
-            NPC.scale = 0.2f;
-            NPC.Size = new Vector2 (150, 150);
+            NPC.Size = new Vector2 (78, 110);
 
             NPC.HitSound = SoundID.NPCHit49;
             NPC.DeathSound = SoundID.NPCDeath51;
@@ -82,6 +88,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public float Phase;
         private bool initialize;
+        private bool attacked;
 
         public override void AI()
         {
@@ -135,12 +142,9 @@ namespace Divergency.Content.NPCs.LivingGrove
                 }
                 if (state == ActionState.Throwing)
                 {
-                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(player.Center) * 7f, ModContent.ProjectileType<CoreBomb>(), NPC.damage / 4, 3f, 0);
-                    
-                    NPC.velocity -= NPC.DirectionTo(player.Center);
 
-                    state = ActionState.Moving;
+                    
+
                 }
             }
 
@@ -165,24 +169,79 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void FindFrame(int frameHeight)
         {
-            NPC.spriteDirection = NPC.direction;
+            Player player = Main.player[NPC.target];
 
+            NPC.spriteDirection = NPC.direction;
+            if (state == ActionState.Moving)
+            {
+                startingFrame = 0;
+                endingFrame = 6;
+                framerate = 5;
+
+                NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
+
+                if (NPC.frameCounter >= framerate)
+                {
+                    NPC.frameCounter = 0;
+                    NPC.frame.Y += frameHeight;
+
+                    if (NPC.frame.Y > endingFrame * frameHeight) { NPC.frame.Y = startingFrame * frameHeight; }
+                }
+            }
+
+            if (state == ActionState.Throwing)
+            {
+                startingFrame = 7;
+                endingFrame = 13;
+                framerate = 7;
+
+                NPC.frameCounter++;
+                if (NPC.frame.Y == 11 * frameHeight)
+                {
+                    if (!attacked)
+                    {
+                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Top + new Vector2(0, 15), NPC.DirectionTo(player.Center) * 7f, ModContent.ProjectileType<CoreBomb>(), NPC.damage / 4, 3f, 0);
+                        NPC.velocity -= NPC.DirectionTo(player.Center);
+                        attacked = true;
+                    }
+                
+
+                }
+                if (NPC.frameCounter >= framerate)
+                {
+                    NPC.frameCounter = 0;
+                    NPC.frame.Y += frameHeight;
+
+                 
+
+                    if (NPC.frame.Y > endingFrame * frameHeight)
+                    {
+                        
+                        NPC.frame.Y = endingFrame * frameHeight;
+                        state = ActionState.Moving;
+                        NPC.ai[0] = 0;
+                        attacked = false;
+                    }
+                }
+            }
         }
+
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (!NPC.hide)
             {
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-                //Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/BigGuyGlow").Value;
+                Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CoreBomberGlow").Value;
 
 
                 Texture2D a = TextureAssets.Npc[Type].Value;
-                //Main.EntitySpriteDraw(a, NPC.VisualPosition - screenPos + new Vector2(-30, 34), NPC.frame, drawColor, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
-               // Main.EntitySpriteDraw(glow, NPC.VisualPosition - screenPos + new Vector2(-30, 34), NPC.frame, Color.White, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
+                Main.EntitySpriteDraw(a, NPC.Center - screenPos - new Vector2(20,0) , NPC.frame, drawColor, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
+                Main.EntitySpriteDraw(glow, NPC.Center - screenPos - new Vector2(20, 0), NPC.frame, Color.White, NPC.rotation, NPC.Size / 2, 1f, effects, 0);
 
             }
-            return true;
+            return false;
         }
     }
 
@@ -297,6 +356,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             return true;
         }
+
 
         public Trail trail;
         public Trail whiteTrail;

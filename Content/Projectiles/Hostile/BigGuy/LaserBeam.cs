@@ -1,4 +1,5 @@
-﻿using Divergency.Content.Dusts;
+﻿using Divergency.Common.Players;
+using Divergency.Content.Dusts;
 using Divergency.Content.Events.LivingCore;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,9 +17,11 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
     {
         private const int maxDistance = 2000;
         private const int beamWidth = 20;
-
+        private float alpha;
         private int distance = 0;
+        private int initialDamage;
 
+        private Vector2 targetSpawnPos;
         private Player targetPlayer => Main.player[(int)Projectile.ai[0]];
         private NPC owner => Main.npc[(int)Projectile.ai[1]];
         private Vector2 origin {
@@ -41,6 +44,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
             new Vector2(141, 56),
             new Vector2(151, 49)
         };
+        private bool spawned;
 
         public override void SetDefaults()
         {
@@ -53,22 +57,22 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
 
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-
             Projectile.aiStyle = -1;
+            Projectile.timeLeft = 240;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D BaseFront = (Texture2D)ModContent.Request<Texture2D>(Texture, ReLogic.Content.AssetRequestMode.ImmediateLoad);
             Texture2D Base = (Texture2D)ModContent.Request<Texture2D>(Texture + "Base", ReLogic.Content.AssetRequestMode.ImmediateLoad);
-            // Impact = (Texture2D)ModContent.Request<Texture2D>(Texture + "Impact", ReLogic.Content.AssetRequestMode.ImmediateLoad);
+            Texture2D Impact = (Texture2D)ModContent.Request<Texture2D>(Texture, ReLogic.Content.AssetRequestMode.ImmediateLoad);
 
 
             int f = (int)(Main.GameUpdateCount / 4f);
             
             Rectangle baseFR = new Rectangle(0, (f % 4) * 296 + 2, BaseFront.Width, BaseFront.Height / 4 - 2);
 
-            Main.EntitySpriteDraw(BaseFront, origin - Main.screenPosition, baseFR, Color.White, Projectile.rotation - MathF.PI / 2f, new Vector2(BaseFront.Width / 2, BaseFront.Width / 2), 1f, SpriteEffects.FlipHorizontally);
+            Main.EntitySpriteDraw(BaseFront, origin - Main.screenPosition, baseFR, Color.White * alpha, Projectile.rotation - MathF.PI / 2f, new Vector2(BaseFront.Width / 2, BaseFront.Width / 2), 1f, SpriteEffects.FlipHorizontally);
 
             int dist = (BaseFront.Height / 4 - 2);
             int bWidth = Base.Width;
@@ -77,14 +81,14 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
 
             while (dist < distance)
             {
-                Main.EntitySpriteDraw(Base, origin - Main.screenPosition + dist * Projectile.rotation.ToRotationVector2(), baseR, Color.White, Projectile.rotation - MathF.PI / 2f, new Vector2(Base.Width / 2, bHeight), 1f, SpriteEffects.FlipHorizontally);
+                Main.EntitySpriteDraw(Base, origin - Main.screenPosition + dist * Projectile.rotation.ToRotationVector2(), baseR, Color.White * alpha, Projectile.rotation - MathF.PI / 2f, new Vector2(Base.Width / 2, bHeight), 1f, SpriteEffects.FlipHorizontally);
 
                 dist += bHeight;
 
                 if (dist >= distance)
                 {
                     baseR.Height += (distance - dist);
-                    Main.EntitySpriteDraw(Base, origin - Main.screenPosition + dist * Projectile.rotation.ToRotationVector2(), baseR, Color.White, Projectile.rotation - MathF.PI / 2f, new Vector2(Base.Width / 2, bHeight), 1f, SpriteEffects.FlipHorizontally);
+                    Main.EntitySpriteDraw(Base, origin - Main.screenPosition + dist * Projectile.rotation.ToRotationVector2(), baseR, Color.White * alpha, Projectile.rotation - MathF.PI / 2f, new Vector2(Base.Width / 2, bHeight), 1f, SpriteEffects.FlipHorizontally);
                 }
             }
 
@@ -95,23 +99,45 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
 
         public override void AI()
         {
-            Projectile.timeLeft = 10;
-
-            // make it rotate smootly towards player...
-            Projectile.rotation = ((targetPlayer.Center - origin) / 400).ToRotation();
-
-            CalculateDistance();
-            CastLights();
-            //Projectile.Kill();
-
-            Vector2 end = origin + Projectile.rotation.ToRotationVector2() * (distance < 64 ? 64 : distance);
-
-            for (int i = 0; i < 1; i++)
+            if (!spawned)
             {
-                Dust dust = Dust.NewDustPerfect(end, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, Color.LimeGreen, 2f) ;
-                dust.noGravity = true;
+                initialDamage = Projectile.damage;
+                Projectile.damage = 0;
 
+          
+                targetSpawnPos = targetPlayer.Center;
+                spawned = true;
             }
+            else
+            {
+                Projectile.ai[0]++;
+                if (Projectile.ai[0] ==30)
+                {
+
+                    Projectile.damage = initialDamage;
+
+                }
+
+                // make it rotate smootly towards player...
+                Projectile.rotation = ((targetSpawnPos - origin) / 400).ToRotation();
+
+                CalculateDistance();
+                //Projectile.Kill();
+
+                Vector2 end = origin + Projectile.rotation.ToRotationVector2() * (distance < 64 ? 64 : distance);
+                if (Projectile.ai[0] >= 30)
+                {
+                    CastLights();
+
+                    alpha += 0.2f;
+                    for (int i = 0; i < 1; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(end, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, Color.LimeGreen, 2f);
+                        dust.noGravity = true;
+                    }
+                }
+            }
+            
         }
         private void CastLights()
         {

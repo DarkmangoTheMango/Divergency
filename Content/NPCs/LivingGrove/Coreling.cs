@@ -65,6 +65,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 
             NPC.aiStyle = -1;
             NPC.noGravity = true;
+
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

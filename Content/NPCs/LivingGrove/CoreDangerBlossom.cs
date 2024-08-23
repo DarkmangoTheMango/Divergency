@@ -43,15 +43,15 @@ namespace Divergency.Content.NPCs.LivingGrove
 
         public override void SetDefaults()
         {
-            NPC.lifeMax = 100;
+            NPC.lifeMax = 300;
             NPC.damage = 16;
             NPC.defense = 8;
             NPC.knockBackResist = 0f;
 
             NPC.noTileCollide = false;
 
-            NPC.scale = 0.2f;
-            NPC.Size = new Vector2(84, 70);
+            NPC.scale = 1f;
+            NPC.Size = new Vector2(194, 252);
 
             NPC.HitSound = SoundID.NPCHit49;
             NPC.DeathSound = SoundID.NPCDeath51;
@@ -79,7 +79,10 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (!initialize)
             {
-
+                Player player = Main.player[NPC.target];
+                NPC.TargetClosest(true);
+                NPC.direction = player.direction * 1;
+                NPC.spriteDirection = NPC.direction;
                 initialize = true;
 
             }
@@ -102,7 +105,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     }
                     Vector2 speed2 = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (speed2 * 200f), (NPC.DirectionTo(player.Center) * 10f).RotatedByRandom(0.9f), ModContent.ProjectileType<BlossomButterfly>(), NPC.damage, 0f, 0);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (speed2 * 100f), (NPC.DirectionTo(player.Center) * 10f).RotatedByRandom(0.9f), ModContent.ProjectileType<BlossomButterfly>(), NPC.damage, 0f, 0);
                     Dust dust2 = Dust.NewDustPerfect(NPC.Center + (speed2 * 200f), DustID.TerraBlade, speed2 * 2f, 0, default, 1f);
 
                 }
@@ -124,7 +127,12 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (NPC.life <= 0)
             {
-                //NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Bottom.Y, ModContent.NPCType<SageDeath>());
+                for (int i = 0; i < 20; i++)
+                {
+                    Vector2 speed = Main.rand.NextVector2Circular(1f, 1f);
+
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.TerraBlade, speed * 15f, 0, default, 2f);
+                }
             }
         }
 
@@ -136,13 +144,16 @@ namespace Divergency.Content.NPCs.LivingGrove
         {
                            //base textures
 
-                Texture2D a = TextureAssets.Npc[Type].Value; 
-        
-                Vector2 drawOrigin = new(a.Width / 2, a.Height / 2);
+                Texture2D a = TextureAssets.Npc[Type].Value;
+              Texture2D glow = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/CoreDangerBlossomGlow").Value;
 
-                Main.EntitySpriteDraw(a, NPC.Center - Main.screenPosition + new Vector2(0, 0), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+            Vector2 drawOrigin = new(a.Width / 2, a.Height / 2);
 
-            
+                Main.EntitySpriteDraw(a, NPC.Center - Main.screenPosition + new Vector2(0, 7), null, drawColor, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+
+              Main.EntitySpriteDraw(glow, NPC.Center - Main.screenPosition + new Vector2(0, 7), null, Color.White, NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0);
+
+
             return false;
         }
     }
@@ -150,7 +161,7 @@ namespace Divergency.Content.NPCs.LivingGrove
     {
         public bool spawned { get; private set; }
         public NPC cachedNPC { get; private set; }
-
+        public float speed;
         public override void SetStaticDefaults()
         {
             //.setdefault("Shadowflame Effigy");
@@ -196,20 +207,21 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
             if (player.HasBuff<CoreInfection>())
             {
-                Projectile.Move(player.Center, 1.2f, Main.rand.NextFloat(20, 50));
+                Projectile.Move(player.Center, speed * 2, Main.rand.NextFloat(20, 50));
             }
             else if (player.HasBuff<CoreInfectionII>())
             {
-                Projectile.Move(player.Center, 1.5f, Main.rand.NextFloat(20, 50));
+                Projectile.Move(player.Center, speed * 3, Main.rand.NextFloat(20, 50));
             }
             else
             {
-                Projectile.Move(player.Center, 0.5f, Main.rand.NextFloat(20, 50));
+                Projectile.Move(player.Center, speed, Main.rand.NextFloat(20, 50));
 
             }
 
             if (!spawned)
             {
+                speed = Main.rand.NextFloat(0.3f, 0.6f);
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC taggedNPC = Main.npc[k];
@@ -262,7 +274,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 drawOrigin = sourceRectangle.Size() / 2f;
             float offsetX = 30f;
-            drawOrigin.X = (float)(Projectile.spriteDirection == 1 ? sourceRectangle.Width - offsetX : offsetX);
+         //   drawOrigin.X = (float)(Projectile.spriteDirection == 1 ? sourceRectangle.Width - offsetX : offsetX);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), sourceRectangle, Color.White, Projectile.rotation, drawOrigin, Projectile.scale, SpriteEffects.None, 0);
