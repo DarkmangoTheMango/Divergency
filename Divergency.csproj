@@ -3,7 +3,7 @@
   <Import Project="..\tModLoader.targets" />
   <PropertyGroup>
     <AssemblyName>Divergency</AssemblyName>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -14,13 +14,12 @@
     <Compile Remove="Common\Players\DivergencyPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Common\Systems\SkillNodes\SquareGlow.png" />
+    <None Remove="Content\Effects\SwordTrailShader\Testing.fx" />
     <None Remove="Content\Items\Weapons\LivingCore\CoreBarrageProj.png" />
     <None Remove="Content\NPCs\LivingGrove\CoreBlockadeRight.png" />
     <None Remove="Content\NPCs\LivingGrove\CorennectorProj.png" />
     <None Remove="Content\Projectiles\Hostile\BigGuy\LaserBeam.png" />
     <None Remove="Content\Projectiles\Melee\SacrifeBallThing.png" />
-    <None Remove="Localization\en-US.hjson" />
     <None Remove="TestStuff\Back_Body_Sheet.png" />
     <None Remove="TestStuff\Back_L_Legs_Sheet.png" />
     <None Remove="TestStuff\Back_R_Legs_Sheet.png" />
@@ -33,8 +32,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\ParticleUtils\" />
-    <Folder Include="Content\Effects\SwordTrailShader\" />
-    <Folder Include="Content\Events\LivingCore\" />
+    <Folder Include="Common\Systems\SkillNodes\ActiveSkills\" />
+    <Folder Include="Common\Systems\SkillNodes\PassiveSkills\" />
+    <Folder Include="Localization\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ParticleLibrary">

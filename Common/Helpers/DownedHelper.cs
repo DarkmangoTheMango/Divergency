@@ -1,4 +1,5 @@
 ﻿using Divergency.Content.Events.LivingCore;
+using System;
 using System.IO;
 using Terraria;
 using Terraria.ModLoader;
@@ -13,24 +14,28 @@ namespace Divergency.Common.Helpers
     // Saving and loading these flags requires TagCompounds, a guide exists on the wiki: https://github.com/tModLoader/tModLoader/wiki/Saving-and-loading-using-TagCompound
     public class DownedHelper : ModSystem
     {
-        public static bool[] livingCoreRoomCompletionTracker = { };
+        public static bool[][] livingCoreRoomCompletionTracker;
+
 
         public override void OnWorldLoad()
         {
-            livingCoreRoomCompletionTracker = new bool[LivingCoreEvent.lcrList.Length];
+            livingCoreRoomCompletionTracker = new bool[LivingCoreEvent.lcrList.Length][];
             for (int i = 0; i < LivingCoreEvent.lcrList.Length; i++)
             {
-                livingCoreRoomCompletionTracker[i] = false;
+                LivingCoreRoom room = (LivingCoreRoom)Activator.CreateInstance(LivingCoreEvent.lcrList[i]);
+
+                livingCoreRoomCompletionTracker[i] = new bool[room.Rewards.Count];
+
+                for (int rewardIdx = 0; rewardIdx < livingCoreRoomCompletionTracker.Length; rewardIdx++)
+                {
+                    livingCoreRoomCompletionTracker[i][rewardIdx] = false;
+                }
             }
         }
 
         public override void OnWorldUnload()
         {
-            livingCoreRoomCompletionTracker = new bool[LivingCoreEvent.lcrList.Length];
-            for (int i = 0; i < LivingCoreEvent.lcrList.Length; i++)
-            {
-                livingCoreRoomCompletionTracker[i] = false;
-            }
+            livingCoreRoomCompletionTracker = null;
         }
 
         // We save our data sets using TagCompounds.
@@ -39,8 +44,7 @@ namespace Divergency.Common.Helpers
         {
             for (int i = 0; i < livingCoreRoomCompletionTracker.Length; i++)
             {
-                if (livingCoreRoomCompletionTracker[i])
-                    tag["LCR" + i] = true;
+                tag.Add("RoomStatus"+i, livingCoreRoomCompletionTracker[i]);
             }
         }
 
@@ -48,10 +52,14 @@ namespace Divergency.Common.Helpers
         {
             for (int i = 0; i < livingCoreRoomCompletionTracker.Length; i++)
             {
-                livingCoreRoomCompletionTracker[i] = tag.ContainsKey("LCR" + i);
+                if (tag.TryGet<bool[]>("RoomStatus" + i, out bool[] val))
+                {
+                    livingCoreRoomCompletionTracker[i] = val;
+                }
             }
         }
 
+        /*
         public override void NetSend(BinaryWriter writer)
         {
             var flags = new BitsByte();
@@ -70,5 +78,6 @@ namespace Divergency.Common.Helpers
                 livingCoreRoomCompletionTracker[i] = flags[i];
             }
         }
+        */
     }
 }

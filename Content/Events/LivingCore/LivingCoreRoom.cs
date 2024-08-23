@@ -13,6 +13,8 @@ using Divergency.Content.Particles;
 using Divergency.Common.Helpers;
 using Terraria.ID;
 using ReLogic.Content;
+using rail;
+using System.Linq;
 
 namespace Divergency.Content.Events.LivingCore
 {
@@ -27,6 +29,20 @@ namespace Divergency.Content.Events.LivingCore
     {
         static Effect rewardEffect;
         static Matrix view = Matrix.CreateTranslation(0, 0, -600);
+
+
+        private Vector3 lerp(Vector3 start, Vector3 stop, float t, bool curve = true)
+        {
+            if (curve)
+                t = MathF.Pow(t, 2);
+            return start * (1f - t) + stop * t;
+        }
+        private float lerp(float start, float stop, float t, bool curve = true)
+        {
+            if (curve)
+                t = MathF.Pow(t, 2);
+            return start * (1f - t) + stop * t;
+        }
 
         public static void Setup()
         {
@@ -46,12 +62,19 @@ namespace Divergency.Content.Events.LivingCore
         private int SpawnTimer = 0;
         private int CurWave = 0;
 
+        private bool rewardPhase = false;
+        private float rewardTransition = 0f;
+
         private int TotalEnemies = 0;
         private int TotalKills = 0;
 
         private bool Intermission = false;
 
         private Wave CurWaveObject;
+
+        private int hoverReward = -1;
+
+        private float rewardLastTransition = -1f;
 
         private string[] Textures = new string[] {
             "Divergency/Content/Tiles/LivingGrove/CombatRoom/LivingCoreAltar1",
@@ -95,6 +118,7 @@ namespace Divergency.Content.Events.LivingCore
 
         private void updateAltarReward()
         {
+            // no clue what this is for...
             int visualWave = CurWave - 1;
             if (visualWave < 0)
                 visualWave = 0;
@@ -111,67 +135,205 @@ namespace Divergency.Content.Events.LivingCore
 			Lighting.AddLight(position, RGB.X, RGB.Y, RGB.Z);
         }
 
-        private void drawAltarReward(Vector2 pos)
+        private Matrix FromEuler(Vector3 position, Vector3 rotation, Vector3 scale)
         {
-            pos = pos - Main.ScreenSize.ToVector2() / 2;
+            Matrix result = Matrix.CreateScale(1f);
+
+            Matrix translationMatrix = Matrix.CreateTranslation(position);
+            Matrix rotXMatrix = Matrix.CreateRotationX(rotation.X);
+            Matrix rotYMatrix = Matrix.CreateRotationY(rotation.Y);
+            Matrix rotZMatrix = Matrix.CreateRotationZ(rotation.Z);
+            Matrix scaleMatrix = Matrix.CreateScale(scale);
+
+            Matrix rotationMatrix = Matrix.Multiply(rotXMatrix, Matrix.Multiply(rotYMatrix, rotZMatrix));
+
+            result = scaleMatrix * rotationMatrix * translationMatrix;
+
+            return result;
+        }
+
+        private float RewardH = 0f;
+        private void drawAltarReward()
+        {
+            Vector2 pos = LivingCoreEvent.Center - Main.screenPosition + new Vector2(0f, 24f) - Main.ScreenSize.ToVector2() / 2;
             Matrix view = Matrix.CreateLookAt(new Vector3(0f, 0f, 644f * (Main.screenHeight / 1080f)), Vector3.Zero, Vector3.Up);
             rewardEffect.Parameters["View"].SetValue(view);
 
             Main.spriteBatch.End();
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, rewardEffect, Main.GameViewMatrix.TransformationMatrix);
-            for (int i = 0; i < Rewards.Count; i++)
+
+            bool[] allowed = LivingCoreEvent.GetAllowedRewards(this);
+
+            if (!rewardPhase)
             {
-                Matrix projection = Matrix.CreateOrthographic(Main.screenWidth, Main.screenHeight, 0.1f, 1000f);
-                rewardEffect.Parameters["Projection"].SetValue(projection);
-                // only needs to be done on resize, no?
+                for (int i = 0; i < Rewards.Count; i++)
+                {
+                    Color c = Color.White;
 
-                Matrix model = Matrix.CreateScale(1f);
-                // model *= Matrix.CreateTranslation(0, 0, -29);
+                    RewardH = Main.GlobalTimeWrappedHourly;
+                    float r = (RewardH + (MathF.PI * 2f) * i / Rewards.Count) % MathF.PI;
+                    float x = MathF.Cos(r);
+                    float y = MathF.Sin(r);
 
-                // model *= Matrix.CreateTranslation(globalOffset);
+                    Matrix projection = Matrix.CreateOrthographic(Main.screenWidth, Main.screenHeight, 0.1f, 1000f);
+                    rewardEffect.Parameters["Projection"].SetValue(projection);
+                    // only needs to be done on resize, no?
 
-                // model *= Matrix.CreateScale(scale);
+                    Texture2D texture = (Texture2D)ModContent.Request<Texture2D>(Rewards[i].texturePath);
 
-                // model *= Matrix.CreateRotationX(rotation.X);
-                // model *= Matrix.CreateRotationY(rotation.Y);
-                // model *= Matrix.CreateRotationZ(rotation.Z);
+                    int width, height;
+                    width = texture.Width;
+                    height = texture.Height;
 
-                // model *= Matrix.CreateTranslation(localOffset);
+                    Rectangle sourceRectangle = new Rectangle(0, 0, width, height);
+                    Vector2 origin = new Vector2(width / 2f, height / 2f);
 
-                Texture2D texture = (Texture2D)ModContent.Request<Texture2D>(Rewards[i].texturePath);
+                    float addY = MathF.Sin(Main.GlobalTimeWrappedHourly * 2) * 10;
+                    // float addX = offset * 60f;
 
-                int width, height;
-                width = texture.Width;
-                height = texture.Height;
+                    Vector2 target = pos + new Vector2(0f, -80f + addY);
 
-                Rectangle sourceRectangle = new Rectangle(0, 0, width, height);
-                Vector2 origin = new Vector2(width / 2f, height / 2f);
+                    float hpi = MathF.PI / 2f;
+                    float xrot = 0f;
+                    /*
+                    if (r < hpi)
+                        xrot = hpi - r;
+                    else
+                        xrot = r - hpi;
+                    */
 
-                int offset = (i - (Rewards.Count / 2));
+                    float dist = 80f;
+                    rewardEffect.Parameters["Model"].SetValue(FromEuler(new Vector3(target.X + x * dist, -target.Y, y * dist), new Vector3(xrot, r + MathF.PI / 2f, 0f), new Vector3(1f, 1f, 1f)));
 
-                float r = (MathF.PI * (4f/3f) * (float)i / (float)Rewards.Count + Main.GlobalTimeWrappedHourly * 0f) % MathF.PI;
+                    if (allowed[i] == true) // if it has been claimed
+                        c = Color.Gray;
 
-                float addY = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2) * 10;
-                float addX = offset * 60f;
+                    Main.EntitySpriteDraw(texture,
+                        Vector2.Zero, sourceRectangle,
+                        c, -MathF.PI / 4f, origin, 0.8f, SpriteEffects.None, 0);
+                }
+            }
+            else
+            {
+                if (rewardLastTransition < 0f)
+                {
+                    // ^^ list is a list of all rewards having been clamed are true
 
-                Vector2 target = pos + new Vector2(0f, -80f + addY);
+                    for (int i = 0; i < Rewards.Count; i++)
+                    {
+                        float r = (RewardH + (MathF.PI * 2f) * i / Rewards.Count) % MathF.PI;
+                        float x = MathF.Cos(r);
+                        float y = MathF.Sin(r);
 
-                model *= Matrix.CreateRotationY(MathF.PI / 2);
+                        Matrix projection = Matrix.CreateOrthographic(Main.screenWidth, Main.screenHeight, 0.1f, 1000f);
+                        rewardEffect.Parameters["Projection"].SetValue(projection);
+                        // only needs to be done on resize, no?
 
-                model *= Matrix.CreateTranslation(100f, 0f, 0f);
+                        Texture2D texture = (Texture2D)ModContent.Request<Texture2D>(Rewards[i].texturePath);
 
-                model *= Matrix.CreateRotationY(r);
+                        int width, height;
+                        width = texture.Width;
+                        height = texture.Height;
 
-                model *= Matrix.CreateTranslation(target.X, -target.Y, 0f);
+                        Rectangle sourceRectangle = new Rectangle(0, 0, width, height);
+                        Vector2 origin = new Vector2(width / 2f, height / 2f);
 
-                // model.Translation = model.Translation - new Vector3(0f, 0f, model.Translation.Z);
+                        float addY = MathF.Sin(Main.GlobalTimeWrappedHourly * 2) * 10;
+                        // float addX = offset * 60f;
 
-                rewardEffect.Parameters["Model"].SetValue(model);
+                        Vector2 target = pos + new Vector2(0f, -80f + addY);
 
-                Main.EntitySpriteDraw(texture,
-                    Vector2.Zero, sourceRectangle,
-                    Color.White, -MathF.PI / 4f, origin, 0.8f, SpriteEffects.None, 0);
+                        float hpi = MathF.PI / 2f;
+                        float xrot = 0f;
+                        /*
+                        if (r < hpi)
+                            xrot = hpi - r;
+                        else
+                            xrot = r - hpi;
+                        */
+
+                        float dist = 80f;
+
+                        Vector3 prePos = new Vector3(target.X + x * dist, -target.Y, y * dist);
+                        Vector3 preRot = new Vector3(xrot, r + MathF.PI / 2f, 0f);
+
+                        float rr = MathF.PI * ((float)i / (Rewards.Count - 1));
+                        float rx = MathF.Cos(rr);
+                        float ry = MathF.Sin(rr);
+                        Vector3 tPos = new Vector3(target.X + rx * dist, -target.Y + ry * dist, 0f);
+                        Vector3 tRot = new Vector3(0f, 0f, 0f);
+                        if (preRot.Y > MathF.PI / 2f)
+                            tRot.Y = MathF.PI;
+
+                        rewardEffect.Parameters["Model"].SetValue(FromEuler(
+                            lerp(prePos, tPos, rewardTransition),
+                            lerp(preRot, tRot, rewardTransition),
+                            new Vector3(1f, 1f, 1f)));
+
+                        Color c = Color.White;
+
+                        float multW = 1f / MathF.Sqrt(2);
+                        Vector2 playerM = Main.MouseScreen;
+                        Vector2 TopLeftReward = target + Main.ScreenSize.ToVector2() / 2 + new Vector2(rx * dist, -ry * dist) - new Vector2(width / 2f * multW, height / 2f);
+
+                        if (allowed[i] == true) // if it has been claimed
+                            c = Color.Gray;
+
+                        if (playerM.X > TopLeftReward.X && playerM.Y > TopLeftReward.Y &&
+                            playerM.X < TopLeftReward.X + width * multW && playerM.Y < TopLeftReward.Y + height)
+                        {
+                            hoverReward = i;
+                            c = Color.Yellow;
+
+                            if (allowed[i] == true) // if it has been claimed
+                                c = new Color(128, 128, 0, 255);
+                        }
+
+                        Main.EntitySpriteDraw(texture,
+                            Vector2.Zero, sourceRectangle,
+                            c, -MathF.PI / 4f, origin, 0.8f, SpriteEffects.None, 0);
+                    }
+                }
+                else
+                {
+                    Color c = Color.White;
+
+                    Matrix projection = Matrix.CreateOrthographic(Main.screenWidth, Main.screenHeight, 0.1f, 1000f);
+                    rewardEffect.Parameters["Projection"].SetValue(projection);
+
+                    Texture2D texture = (Texture2D)ModContent.Request<Texture2D>(Rewards[hoverReward].texturePath);
+
+                    int width, height;
+                    width = texture.Width;
+                    height = texture.Height;
+
+                    Rectangle sourceRectangle = new Rectangle(0, 0, width, height);
+                    Vector2 origin = new Vector2(width / 2f, height / 2f);
+
+                    Vector2 target = pos + new Vector2(0f, -80f);
+
+                    float dist = 80f;
+
+                    float rr = MathF.PI * ((float)hoverReward / (Rewards.Count - 1));
+                    float rx = MathF.Cos(rr);
+                    float ry = MathF.Sin(rr);
+                    Vector3 tPos = new Vector3(target.X + rx * dist, -target.Y + ry * dist, 0f);
+
+                    Vector3 t2Pos = new Vector3(pos.X, pos.Y, 0f);
+
+                    rewardEffect.Parameters["Model"].SetValue(FromEuler(
+                        lerp(tPos, t2Pos, rewardLastTransition),
+                        new Vector3(0f, 0f, 0f),
+                        new Vector3(1f, 1f, 1f)));
+
+                    if (allowed[hoverReward] == true) // if it has been claimed
+                        c = Color.Gray;
+
+                    Main.EntitySpriteDraw(texture,
+                        Vector2.Zero, sourceRectangle,
+                        c, -MathF.PI / 4f, origin, 0.8f, SpriteEffects.None, 0);
+                }
             }
             Main.spriteBatch.End();
             Main.spriteBatch.Begin();
@@ -185,16 +347,31 @@ namespace Divergency.Content.Events.LivingCore
 
             //Console.WriteLine(Timer + " | " + SpawnTimer + " | " + CurWave + " | " + KillsRemaining + " | " + TotalEnemies);
 
-            if (SpawnTimer == 0 && KillsRemaining == 0 || KeybindSystem.Begin.JustPressed)
+            if (rewardPhase)
             {
-                if (KeybindSystem.Begin.JustPressed)
-                    killSpawnedEnemies();
+                rewardTransition += 0.01f;
+                if (rewardTransition >= 1f)
+                    rewardTransition = 1f; // should be 1, testing
 
+                if (rewardLastTransition >= 0f)
+                {
+                    rewardLastTransition += 0.05f;
+                    if (rewardLastTransition >= 1f)
+                    {
+                        LivingCoreEvent.End();
+                    }
+                }
+
+                return;
+            }
+
+            if (SpawnTimer == 0 && KillsRemaining == 0)
+            {
                 CurWave++;
 
                 if (CurWave == getWaves() + 1)
                 {
-                    LivingCoreEvent.End();
+                    LivingCoreEvent.PreEnd();
                     return;
                 }
 
@@ -203,7 +380,7 @@ namespace Divergency.Content.Events.LivingCore
 
                 if (CurWaveObject == null)
                 {
-                    LivingCoreEvent.End();
+                    LivingCoreEvent.PreEnd();
                     return;
                 }
 
@@ -276,8 +453,7 @@ namespace Divergency.Content.Events.LivingCore
             }
 
             clearList();
-            if (!LivingCoreEvent.HasRoomBeenCleared(this.GetType()))
-                updateAltarReward();
+            updateAltarReward();
         }
 
         private void clearList()
@@ -334,8 +510,7 @@ namespace Divergency.Content.Events.LivingCore
 
             // texture for reward
 
-            if (!LivingCoreEvent.HasRoomBeenCleared(this.GetType()))
-                drawAltarReward(position + altarWave.Size() / 2);
+            drawAltarReward();
         }
 
 
@@ -361,35 +536,56 @@ namespace Divergency.Content.Events.LivingCore
             Timer = 0;
             CurWave = 0;
             SpawnTimer = 0;
+            rewardPhase = false;
+            rewardTransition = 0f;
+            hoverReward = -1;
+            rewardLastTransition = -1f;
         }
 
         public virtual void HasEnded() { }
+
+        public void PreEnd()
+        {
+            rewardPhase = true;
+        }
+
+        public void RequestReward()
+        {
+            if (rewardPhase && rewardTransition == 1f && hoverReward != -1)
+            {
+                rewardLastTransition = 0f;
+            }
+        }
+        
         public void End()
         {
             HasEnded();
 
-            if (CurWave == getWaves() + 1)
+            if (hoverReward != -1)
             {
-                Texture2D altarWave = ModContent.Request<Texture2D>(Textures[CurWave - 2]).Value;
-                Vector2 position = new Vector2(LivingCoreEvent.X * 16f, LivingCoreEvent.Y * 16f) + altarWave.Size() / 2;
+                bool[] allowed = LivingCoreEvent.GetAllowedRewards(this);
 
-                bool roomCleared = LivingCoreEvent.HasRoomBeenCleared(this.GetType());
-
-                Console.WriteLine(roomCleared);
-
-                if (!roomCleared)
+                if (allowed[hoverReward] == false)
                 {
-                    LivingCoreEvent.RoomCleared(this.GetType());
-                    // Item.NewItem(null, position, RewardID);
+                    Item.NewItem(null, LivingCoreEvent.Center, Rewards[hoverReward].id);
+                    Main.NewText("Cleared!");
+                }
+                else
+                {
+                    // drop currency
                 }
 
-                Main.NewText("Cleared!");
+                LivingCoreEvent.RewardObtained(this, hoverReward);
             }
 
             Kills = 0;
             Timer = 0;
             CurWave = 0;
             SpawnTimer = 0;
+            rewardPhase = false;
+            rewardTransition = 0f;
+            hoverReward = -1;
+            rewardLastTransition = -1f;
 
             killSpawnedEnemies();
 
