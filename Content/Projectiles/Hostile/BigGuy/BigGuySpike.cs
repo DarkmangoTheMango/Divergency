@@ -53,10 +53,16 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
                 Projectile.damage = 0;
                if (Projectile.ai[1] == 1)
                 {
-                    SpikeRetreatCounter = 250;
+                    SpikeRetreatCounter = 210;
                     maxInstances = 300;
                 }
-            
+
+                if (Projectile.ai[2] == 2)
+                {
+                    SpikeRetreatCounter = 230;
+                    maxInstances = 1;
+                }
+
 
                 initialized = true;
             }
@@ -84,7 +90,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
             if (timer > 120)
             {
                 Projectile.damage = initialDamage;
-                if (hitboxExtension.Intersects(Main.LocalPlayer.Hitbox) && Projectile.frame >= 3 && Projectile.frame <= 7)
+                if (hitboxExtension.Intersects(Main.LocalPlayer.Hitbox) && Projectile.frame >= 3 && Projectile.frame <= 6)
                 {
                     Main.LocalPlayer.Hurt(PlayerDeathReason.ByCustomReason("womp womp"), Projectile.damage, 0);
                 }

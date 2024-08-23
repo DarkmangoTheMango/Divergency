@@ -193,7 +193,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                         NPC.velocity.Y = 0;
                         NPC.velocity.X = 0;
 
-                        for (int i = 0; i < 3; i++)
+                        for (int i = 0; i < 4   ; i++)
                         {
 
 

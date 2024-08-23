@@ -77,7 +77,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Console.WriteLine("Made proj");
             if (Main.mouseLeft)
-            SwordAnimator.Swing<SacrestiSwing>(player, damage, knockback);
+            SwordAnimator.Swing<SacrestiSwingEnflamed>(player, damage, knockback);
             if (Main.mouseRight)
             SwordAnimator.Swing<SacrestiSwingEnflameAnim>(player, damage, knockback);
 
