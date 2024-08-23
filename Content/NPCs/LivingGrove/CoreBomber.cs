@@ -249,7 +249,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 {
                     Player player = Main.LocalPlayer;
                     player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 12;
-
+                    
                     DivergencyDraw.SpawnExplosion(Projectile.Center, Color.LimeGreen, DustID.PortalBoltTrail, 0);
                     for (int i = 0; i < 20; i++)
                     {
@@ -259,6 +259,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     }
 
                     Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(0), ModContent.ProjectileType<CoreElementalDeathProj>(), Projectile.damage * 2, 1.2f);
+                    player.GetModPlayer<FlashPlayer>().intensity += 40;
 
                 }
 
@@ -329,7 +330,20 @@ namespace Divergency.Content.NPCs.LivingGrove
             return false;
         }
     }
+    public class FlashPlayer : ModPlayer
+    {
+        public int intensity = 1;
 
+        public override void PreUpdate()
+        {
+            if (intensity > 1)
+            {
+                intensity -= 5;
+            }
+            if (intensity <= 2)
+                intensity = 1;
+        }
+    }
 
 
 }

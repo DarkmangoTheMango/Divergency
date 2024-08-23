@@ -373,6 +373,16 @@ Mods: {
 			Blockade.DisplayName: Blockade
 			BlockadeLeft.DisplayName: Blockade Left
 			BlockadeRight.DisplayName: Blockade Right
+			CoreVacuumTrail.DisplayName: Core Vacuum Trail
+			Ring_Visual_Reverse.DisplayName: Ring_ Visual_ Reverse
+			Ring_VisualReverse.DisplayName: Ring_ Visual Reverse
+			DashVisualsMarkscore.DisplayName: Dash Visuals Markscore
+			MarkscoreArrow.DisplayName: Markscore Arrow
+			MarkscoreArrowOrb.DisplayName: Markscore Arrow Orb
+			MarkscoreArrowExplosion.DisplayName: Markscore Arrow Explosion
+			MarksCoreArrowHoming.DisplayName: Marks Core Arrow Homing
+			MarkscoreArrowHoming.DisplayName: Markscore Arrow Homing
+			BigGuySpike.DisplayName: Big Guy Spike
 		}
 
 		Biomes: {
@@ -1096,11 +1106,28 @@ Mods: {
 			CoreBlockade.DisplayName: Core Blockade
 			CoreBlockadeLeft.DisplayName: Core Blockade Left
 			CoreBlockadeRight.DisplayName: Core Blockade Right
+			CoreBeetle.DisplayName: Core Beetle
+			CoreVacuum.DisplayName: Core Vacuum
+			Markscore.DisplayName: Markscore
 		}
 
 		Keybinds: {
 			"Reload the current weapon.DisplayName": Reload the current weapon
 			"Toggle Skill Tree.DisplayName": Toggle  Skill  Tree
+			"end current encounter.DisplayName": end current encounter
+			"Begin infinite on last used pedestal.DisplayName": Begin infinite on last used pedestal
+		}
+
+		Configs: {
+			SkillTreeConfig: {
+				DisplayName: Skill Tree Config
+				Headers.SkillTree: Skill Tree Header
+
+				Scale: {
+					Label: Scale
+					Tooltip: The scale of the skill tree
+				}
+			}
 		}
 	}
 }

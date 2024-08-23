@@ -7,11 +7,13 @@ using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.GameContent;
 using Divergency.Common.Helpers;
+using Divergency.Content.NPCs.LivingGrove;
 
 namespace Divergency.Assets.Backgrounds
 {
     public class LivingCoreBiomeSurfaceStyle : ModSurfaceBackgroundStyle
     {
+        public int flashIntensity;
         // Use this to keep far Backgrounds like the mountains.
         public override void ModifyFarFades(float[] fades, float transitionSpeed)
         {
@@ -52,8 +54,9 @@ namespace Divergency.Assets.Backgrounds
         }
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch)
         {
-
-            float a = 2800f;
+            Player player = Main.LocalPlayer;
+            flashIntensity = player.GetModPlayer<FlashPlayer>().intensity;
+             float a = 2800f;
             float b = 1750f;
             int[] textureSlots = new int[] {
             BackgroundTextureLoader.GetBackgroundSlot("Divergency/Assets/Backgrounds/LivingCoreBiomeSurfaceFar"),
@@ -109,7 +112,7 @@ namespace Divergency.Assets.Backgrounds
                         spriteBatch.Draw(TextureAssets.Background[textureSlot].Value,
                             new Vector2(bgStart + bgW * k, MathHelper.Clamp(bgTop, -100, 0)),
                             new Rectangle(0, 0, Main.backgroundWidth[textureSlot], Main.backgroundHeight[textureSlot]),
-                            backColor, 0f, default, bgScale, SpriteEffects.None, 0f);
+                            backColor * flashIntensity, 0f, default, bgScale, SpriteEffects.None, 0f);;
 
                     }
                     for (int k = 0; k < bgLoops; k++)
