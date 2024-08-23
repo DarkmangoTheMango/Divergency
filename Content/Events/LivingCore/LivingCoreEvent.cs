@@ -21,32 +21,27 @@ namespace Divergency.Content.Events.LivingCore
             typeof(FirstRoom)
         };
 
-        public static bool HasRoomBeenCleared(Type t)
-        {
-            if (!lcrList.Contains(t))
-                return false;
-
-            for (int i = 0; i < lcrList.Length; i++)
-            {
-                if (lcrList[i] == t)
-                    return DownedHelper.livingCoreRoomCompletionTracker[i];
-            }
-
-            return false;
-        }
-
-        public static void RoomCleared(Type t)
+        private static int GetRoomIdx(LivingCoreRoom room)
         {
             for (int i = 0; i < lcrList.Length; i++)
             {
-                if (lcrList[i] == t)
+                if (room.GetType() == lcrList[i])
                 {
-                    DownedHelper.livingCoreRoomCompletionTracker[i] = true;
-                    return;
+                    return i;
                 }
             }
 
-            Console.WriteLine("Room missing from lcrList");
+            return 0;
+        }
+
+        public static void RewardObtained(LivingCoreRoom room, int idx)
+        {
+            DownedHelper.livingCoreRoomCompletionTracker[GetRoomIdx(room)][idx] = true;
+        }
+
+        public static bool[] GetAllowedRewards(LivingCoreRoom room)
+        {
+            return DownedHelper.livingCoreRoomCompletionTracker[GetRoomIdx(room)];
         }
 
         public static bool Active { get; private set; }
@@ -98,6 +93,19 @@ namespace Divergency.Content.Events.LivingCore
             
             room.Begin(left, top);
         }
+
+        public static void PreEnd() // only end after rewards have been handed out
+        {
+            if (Room != null)
+                Room.PreEnd();
+        }
+
+        public static void RequestReward() // only end after rewards have been handed out
+        {
+            if (Room != null)
+                Room.RequestReward();
+        }
+
         public static void End()
         {
             if (Room != null)
@@ -116,7 +124,7 @@ namespace Divergency.Content.Events.LivingCore
         }
         public static void Unload()
         {
-            End();
+            // End();
         }
 
         public static void AddProgress(int amount)

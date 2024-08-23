@@ -15,6 +15,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
             new Reward(ModContent.ItemType<LivingCoreSword>(), "Divergency/Assets/Rewards/LivingCoreSwordGlow"),
             new Reward(ModContent.ItemType<LivingCoreSword>(), "Divergency/Assets/Rewards/LivingCoreSwordGlow"),
         };
+
         public override Vector2[] BlockingBlocks => new Vector2[] {
   
   
@@ -31,7 +32,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                         {
                             new Instance(ModContent.NPCType<CoreBlockadeRight>(), new Vector2(300, -300)),
                             new Instance(ModContent.NPCType<CoreBlockadeLeft>(), new Vector2(-300, -300)),
-                        });
+                        });/*
                 case 2:
                     return new Wave("WAVE 2!",
                         new Instance[]
@@ -59,13 +60,13 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, -300)),
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, -300)),
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, 300)),
-                        });
+                        });*/
             }
             return null;
         }
         public override int getWaves()
         {
-            return 4;
+            return 1;
         }
     }
 }
