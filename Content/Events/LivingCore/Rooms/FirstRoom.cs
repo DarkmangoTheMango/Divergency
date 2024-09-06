@@ -3,6 +3,7 @@ using Divergency.Content.Items.Weapons.LivingCore;
 using Divergency.Content.NPCs.LivingGrove;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria.ModLoader;
 
 namespace Divergency.Content.Events.LivingCore.Rooms
@@ -21,9 +22,10 @@ namespace Divergency.Content.Events.LivingCore.Rooms
   
         };
 
-
         public override Wave? getWave(int wave)
         {
+            int claimedRewards = LivingCoreEvent.GetObtainedRewards(this).Select(b => b == true ? 1 : 0).Sum();
+
             switch (wave)
             {
                 case 1:
@@ -32,7 +34,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                         {
                             new Instance(ModContent.NPCType<CoreBlockadeRight>(), new Vector2(300, -300)),
                             new Instance(ModContent.NPCType<CoreBlockadeLeft>(), new Vector2(-300, -300)),
-                        });/*
+                        });
                 case 2:
                     return new Wave("WAVE 2!",
                         new Instance[]
@@ -41,32 +43,15 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, 300)),
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, -300)),
                             new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, -300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, 300)),
+                            new Instance(claimedRewards == 0 ? ModContent.NPCType<Coreling>() : ModContent.NPCType<Sage>(), new Vector2(-300, 300)),
                         });
-                case 3:
-                    return new Wave("WAVE 3!",
-                        new Instance[]
-                        {
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, 300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, -300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, -300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, 300)),
-                        });
-                case 4:
-                    return new Wave("WAVE 4!",
-                        new Instance[]
-                        {
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, 300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(300, -300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, -300)),
-                            new Instance(ModContent.NPCType<Coreling>(), new Vector2(-300, 300)),
-                        });*/
             }
             return null;
         }
+
         public override int getWaves()
         {
-            return 1;
+            return 2;
         }
     }
 }
