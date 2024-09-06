@@ -1110,6 +1110,8 @@ Mods: {
 			CoreBeetle.DisplayName: Core Beetle
 			CoreVacuum.DisplayName: Core Vacuum
 			Markscore.DisplayName: Markscore
+			BomberDeath.DisplayName: Bomber Death
+			Wraith.DisplayName: Wraith
 		}
 
 		Keybinds: {

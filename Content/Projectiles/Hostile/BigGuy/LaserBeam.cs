@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.ID;
@@ -58,7 +59,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.aiStyle = -1;
-            Projectile.timeLeft = 240;
+            Projectile.timeLeft = 180;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -115,6 +116,7 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
                 {
 
                     Projectile.damage = initialDamage;
+                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/chargedBeamImpactOnly") with { Pitch = Main.rand.NextFloat(-0.3f, 0.3f), MaxInstances = 4 }, Projectile.Center);
 
                 }
 
@@ -129,12 +131,23 @@ namespace Divergency.Content.Projectiles.Hostile.BigGuy
                 {
                     CastLights();
 
-                    alpha += 0.2f;
+                    if (alpha <  1)
+                    {
+                        alpha += 0.2f;
+                    }
+
                     for (int i = 0; i < 1; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(end, ModContent.DustType<Glow>(), Main.rand.NextVector2Circular(1f, 1f) * 10, 0, Color.LimeGreen, 2f);
                         dust.noGravity = true;
                     }
+                }
+                if (Projectile.ai[0] >= 175)
+                {
+                    CastLights();
+
+                    alpha -= 0.2f;
+                  
                 }
             }
             

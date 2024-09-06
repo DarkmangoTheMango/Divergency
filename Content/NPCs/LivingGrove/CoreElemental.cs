@@ -430,7 +430,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.Size = new Vector2(400, 400);
+            Projectile.Size = new Vector2(300, 300);
             Projectile.aiStyle = -1;
             Projectile.timeLeft = 2;
         }        

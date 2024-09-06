@@ -44,7 +44,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         public override void SetDefaults()
         {
             NPC.lifeMax = 300;
-            NPC.damage = 16;
+            NPC.damage = 0;
             NPC.defense = 8;
             NPC.knockBackResist = 0f;
 
@@ -94,7 +94,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 NPC.velocity.Y += 3;
 
                
-                if (NPC.ai[0] == 60)
+                if (NPC.ai[0] == 120)
                 {
                     for (int i = 0; i < 5; i++)
                     {
@@ -105,7 +105,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     }
                     Vector2 speed2 = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (speed2 * 100f), (NPC.DirectionTo(player.Center) * 10f).RotatedByRandom(0.9f), ModContent.ProjectileType<BlossomButterfly>(), NPC.damage, 0f, 0);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (speed2 * 100f), (NPC.DirectionTo(player.Center) * 10f).RotatedByRandom(0.9f), ModContent.ProjectileType<BlossomButterfly>(), 16, 0f, 0);
                     Dust dust2 = Dust.NewDustPerfect(NPC.Center + (speed2 * 200f), DustID.TerraBlade, speed2 * 2f, 0, default, 1f);
 
                 }
@@ -181,7 +181,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             Projectile.tileCollide = false;
             Projectile.ignoreWater = false;
-            Projectile.timeLeft = 3000;
+            Projectile.timeLeft = 10000;
             Projectile.aiStyle = -1;
             Projectile.penetrate = 1;
         }
@@ -198,7 +198,7 @@ namespace Divergency.Content.NPCs.LivingGrove
             {
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
-
+          
 
             if (++Projectile.frameCounter >= 10)
             {
@@ -207,11 +207,11 @@ namespace Divergency.Content.NPCs.LivingGrove
             }
             if (player.HasBuff<CoreInfection>())
             {
-                Projectile.Move(player.Center, speed * 2, Main.rand.NextFloat(20, 50));
+                Projectile.Move(player.Center, speed * 2.5f, Main.rand.NextFloat(20, 50));
             }
             else if (player.HasBuff<CoreInfectionII>())
             {
-                Projectile.Move(player.Center, speed * 3, Main.rand.NextFloat(20, 50));
+                Projectile.Move(player.Center, speed * 4, Main.rand.NextFloat(20, 50));
             }
             else
             {
@@ -221,7 +221,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (!spawned)
             {
-                speed = Main.rand.NextFloat(0.3f, 0.6f);
+                speed = Main.rand.NextFloat(0.15f, 0.3f);
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC taggedNPC = Main.npc[k];

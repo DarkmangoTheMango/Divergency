@@ -1,6 +1,7 @@
 using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Dusts;
+using Divergency.Content.Items.Accessories;
 using Divergency.Content.Particles;
 using Divergency.Content.Projectiles.Hostile;
 using Divergency.Content.Projectiles.Magic;
@@ -103,6 +104,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         private bool reverse;
         private double framespeed;
         private int repeatCounter;
+        private float pitch;
 
         public override void AI()
         {
@@ -120,147 +122,137 @@ namespace Divergency.Content.NPCs.LivingGrove
                     DivergencyDraw.SpawnRing(NPC.Top, Color.LimeGreen, 0.13f * 2f, 0.9f * 2, 2 * 2);
                     DivergencyDraw.SpawnRing(NPC.Top, Color.LimeGreen, 0.13f * 2, 0.9f * 2, 2 * 2);
                     DivergencyDraw.SpawnRing(NPC.Top, Color.LimeGreen, 0.13f * 2, 0.9f * 2, 2 * 2);
-                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/growl") with { Pitch = Main.rand.NextFloat(-0.3f, 0.3f), MaxInstances = 1}, NPC.Center);
+                    SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/growl") with { Pitch = Main.rand.NextFloat(-0.3f, 0.3f), MaxInstances = 1 }, NPC.Center);
                     enraged = true;
                     screamtimer = 0;
 
                 }
-               
-            }
-            if (!initialize)
-            {
-
-                initialize = true;
 
             }
-            else
+
+            for (int d = 0; d < Main.maxProjectiles; d++)
             {
-                if (NPC.life <= NPC.lifeMax / 2)
+                Projectile projectile = Main.projectile[d];
+
+                if (projectile.type == ProjectileID.Hook || (projectile.type == ProjectileID.AmberHook || projectile.type == ProjectileID.AntiGravityHook
+                  || projectile.type == ProjectileID.BatHook || projectile.type == ProjectileID.CandyCaneHook || projectile.type == ProjectileID.ChristmasHook || projectile.type == ProjectileID.DualHookBlue || projectile.type == ProjectileID.DualHookRed || projectile.type == ProjectileID.FishHook || projectile.type == ProjectileID.GemHookAmethyst
+                  || projectile.type == ProjectileID.GemHookDiamond || projectile.type == ProjectileID.GemHookEmerald || projectile.type == ProjectileID.GemHookRuby || projectile.type == ProjectileID.GemHookSapphire || projectile.type == ProjectileID.GemHookTopaz
+                  || projectile.type == ProjectileID.IlluminantHook || projectile.type == ProjectileID.LunarHookNebula || projectile.type == ProjectileID.LunarHookSolar || projectile.type == ProjectileID.LunarHookStardust || projectile.type == ProjectileID.LunarHookVortex || projectile.type == ProjectileID.QueenSlimeHook
+                  || projectile.type == ProjectileID.SlimeHook || projectile.type == ProjectileID.SquirrelHook || projectile.type == ProjectileID.StaticHook || projectile.type == ProjectileID.TendonHook || projectile.type == ProjectileID.ThornHook || projectile.type == ProjectileID.TrackHook || projectile.type == ProjectileID.WoodHook || projectile.type == ProjectileID.WormHook))
                 {
-                    enraged = true;
+                    projectile.Kill();
                 }
-
-                if (NPC.HasValidTarget && !player.dead)
+            }
+                if (!initialize)
                 {
 
-                    NPC.TargetClosest();
+                    initialize = true;
+
                 }
-
-                NPC.velocity.Y = 0f;
-
-
-
-                NPC.TargetClosest(true); 
-
-
-                if (state == ActionState.Idling)
+                else
                 {
-                    NPC.ai[0]++;
-
-                    if (NPC.ai[0] == 120)
+                    if (NPC.life <= NPC.lifeMax / 2)
                     {
-                        WeightedRandom<ActionState> attack = new WeightedRandom<ActionState>();
-                       attack.Add(ActionState.Thorns1, 1f);
-                        attack.Add(ActionState.Thorns2, 1f);
-                        attack.Add(ActionState.Thorns3, 1f);
-
-                        state = attack.Get();
-
-                        NPC.ai[0] = 0;
-
+                        enraged = true;
                     }
-                }
 
-                //////THORNS AFTER ANOTHER :)
-                if (state == ActionState.Thorns1)
-                {
-
-                    NPC.ai[0]++;
-                    if (NPC.ai[0] == 25)
+                    if (NPC.HasValidTarget && !player.dead)
                     {
 
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(addDistance, 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai1: 1);
-                        if (reverse)
-                        {
-                            addDistance -= 90;
+                        NPC.TargetClosest();
+                    }
 
+                    NPC.velocity.Y = 0f;
+
+
+
+                    NPC.TargetClosest(true);
+
+
+                    if (state == ActionState.Idling)
+                    {
+                        NPC.ai[0]++;
+
+                        if (NPC.ai[0] == 120)
+                        {
+                            WeightedRandom<ActionState> attack = new WeightedRandom<ActionState>();
+                            attack.Add(ActionState.Thorns1, 1f);
+                            attack.Add(ActionState.Thorns2, 1f);
+                            attack.Add(ActionState.Thorns3, 1f);
+                            state = attack.Get();
+
+                            NPC.ai[0] = 0;
+
+                        }
+                    }
+
+                    //////THORNS AFTER ANOTHER :)
+                    if (state == ActionState.Thorns1)
+                    {
+
+                        NPC.ai[0]++;
+                        if (NPC.ai[0] == 25)
+                        {
+
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(addDistance, 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai1: 1);
+                            if (reverse)
+                            {
+                                addDistance -= 90;
+
+                            }
+                            else
+                            {
+                                addDistance += 90;
+
+                            }
+                            NPC.ai[0] = 0;
+                        }
+                        if (enraged)
+                        {
+                            if (addDistance == 1440)
+                            {
+                                reverse = true;
+                            }
+
+                            if (addDistance == 0)
+                            {
+                                if (Main.rand.NextBool(2))
+                                {
+                                    state = ActionState.Lazer1;
+                                }
+                                else
+                                {
+                                    state = ActionState.Projectiles;
+                                }
+                                NPC.ai[0] = 0;
+                                addDistance = 0;
+                                reverse = false;
+                            }
                         }
                         else
                         {
-                            addDistance += 90;
-
-                        }
-                        NPC.ai[0] = 0;
-                    }
-                    if (enraged)
-                    {
-                        if (addDistance == 1440)
-                        {
-                            reverse = true;
-                        }
-
-                        if (addDistance == 0)
-                        {
-                            if (Main.rand.NextBool(2))
+                            if (addDistance == 1440)
                             {
-                                state = ActionState.Lazer1;
+                                if (Main.rand.NextBool(2))
+                                {
+                                    state = ActionState.Lazer1;
+                                }
+                                else
+                                {
+                                    state = ActionState.Projectiles;
+                                }
+                                NPC.ai[0] = 0;
+                                addDistance = 0;
                             }
-                            else
-                            {
-                                state = ActionState.Projectiles;
-                            }
-                            NPC.ai[0] = 0;
-                            addDistance = 0;
-                            reverse = false;
                         }
                     }
-                    else
-                    {
-                        if (addDistance == 1440)
-                        {
-                            if (Main.rand.NextBool(2))
-                            {
-                                state = ActionState.Lazer1;
-                            }
-                            else
-                            {
-                                state = ActionState.Projectiles;
-                            }
-                            NPC.ai[0] = 0;
-                            addDistance = 0;
-                        }
-                    }
-                }
-                ////THORNS SET POS
+                    ////THORNS SET POS
 
-                if (state == ActionState.Thorns2)
-                {
-                    NPC.ai[0]++;
-                    if (NPC.ai[0] == 180)
+                    if (state == ActionState.Thorns2)
                     {
-                        for (int i = 0; i < 9; i++)
+                        NPC.ai[0]++;
+                        if (NPC.ai[0] == 180)
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(addDistance, 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
-                            addDistance += 180;
-
-                        }
-                    }
-                    if (NPC.ai[0] == 300)
-                    {
-                        addDistance = 90;
-                        for (int i = 0; i < 8; i++)
-                        {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(addDistance, 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
-                            addDistance += 180;
-
-                        }
-                    }
-                    if (enraged)
-                    {
-                        if (NPC.ai[0] == 420)
-                        {
-                            addDistance = 0;
-
                             for (int i = 0; i < 9; i++)
                             {
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(addDistance, 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
@@ -268,7 +260,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                             }
                         }
-                        if (NPC.ai[0] == 540)
+                        if (NPC.ai[0] == 300)
                         {
                             addDistance = 90;
                             for (int i = 0; i < 8; i++)
@@ -276,203 +268,235 @@ namespace Divergency.Content.NPCs.LivingGrove
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(addDistance, 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
                                 addDistance += 180;
 
-
                             }
                         }
-
-                        if (NPC.ai[0] == 600)
+                        if (enraged)
                         {
-                            if (Main.rand.NextBool(2))
+                            if (NPC.ai[0] == 420)
                             {
-                                state = ActionState.Lazer1;
+                                addDistance = 0;
+
+                                for (int i = 0; i < 9; i++)
+                                {
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(addDistance, 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
+                                    addDistance += 180;
+
+                                }
                             }
-                            else
+                            if (NPC.ai[0] == 540)
                             {
-                                state = ActionState.Projectiles;
+                                addDistance = 90;
+                                for (int i = 0; i < 8; i++)
+                                {
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(addDistance, 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
+                                    addDistance += 180;
+
+
+                                }
                             }
-                            NPC.ai[0] = 0;
-                            addDistance = 0;
+
+                            if (NPC.ai[0] == 600)
+                            {
+                                if (Main.rand.NextBool(2))
+                                {
+                                    state = ActionState.Lazer1;
+                                }
+                                else
+                                {
+                                    state = ActionState.Projectiles;
+                                }
+                                NPC.ai[0] = 0;
+                                addDistance = 0;
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (NPC.ai[0] == 360)
+                        else
                         {
-                            if (Main.rand.NextBool(2))
+                            if (NPC.ai[0] == 360)
                             {
-                                state = ActionState.Lazer1;
+                                if (Main.rand.NextBool(2))
+                                {
+                                    state = ActionState.Lazer1;
+                                }
+                                else
+                                {
+                                    state = ActionState.Projectiles;
+                                }
+                                NPC.ai[0] = 0;
+                                addDistance = 0;
                             }
-                            else
-                            {
-                                state = ActionState.Projectiles;
-                            }
-                            NPC.ai[0] = 0;
-                            addDistance = 0;
                         }
+
+
                     }
-                   
-
-                }
-                ////RANDOM THORNS
-            }
-
-
-            if (state == ActionState.Thorns3)
-            {
-                NPC.ai[0]++;
-                NPC.ai[1]++; //real timer
-                if (enraged)
-                {
-                    if (NPC.ai[1] == 100)
-                    {
-                        for (int i = 0; i < 7; i++)
-                        {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(Main.rand.NextFloat(20, 1440), 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
-
-                        }
-                        NPC.ai[1] = 0;
-                    }
-                }
-                else
-                {
-                    if (NPC.ai[1] == 120)
-                    {
-                        for (int i = 0; i < 5; i++)
-                        {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(Main.rand.NextFloat(20, 1440), 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
-
-                        }
-                        NPC.ai[1] = 0;
-                    }
-                }
+                    ////RANDOM THORNS
                 
 
-                if (NPC.ai[0] == 1000)
+
+                if (state == ActionState.Thorns3)
                 {
-                    if (Main.rand.NextBool(2))
+                    NPC.ai[0]++;
+                    NPC.ai[1]++; //real timer
+                    if (enraged)
                     {
-                        state = ActionState.Lazer1;
+                        if (NPC.ai[1] == 100)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(Main.rand.NextFloat(20, 1440), 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
+
+                            }
+                            NPC.ai[1] = 0;
+                        }
                     }
                     else
                     {
-                        state = ActionState.Projectiles;
+                        if (NPC.ai[1] == 120)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center - new Vector2(Main.rand.NextFloat(20, 1440), 0), Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.BigGuySpike>(), NPC.damage, 0, ai2: 2);
+
+                            }
+                            NPC.ai[1] = 0;
+                        }
                     }
-                    NPC.ai[0] = 0;
-                    NPC.ai[1] = 0;
-
-                    addDistance = 0;
-                }
 
 
-            }
-
-            ///FOLOWWING LASER
-           
-            if (state == ActionState.Lazer1)
-            {
-                NPC.ai[1]++; //real timer
-
-                if (NPC.ai[0] < 120)
-                {
-                    if (NPC.ai[1] == 30)
+                    if (NPC.ai[0] == 1000)
                     {
-                        DivergencyDraw.SpawnRingReverse(NPC.Center, Color.LimeGreen, 0.13f / 5, 0.9f / 5, 2 / 5);
-                        NPC.ai[1] = 0;
-                    }
-                }
-
-                NPC.ai[0]++;
-                if (NPC.ai[0] == 120)
-                {
-
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.LaserBeam>(), NPC.damage, 0, ai0: Main.LocalPlayer.whoAmI, ai1: NPC.whoAmI);
-    
-
-                }
-
-                if (NPC.ai[0] == 140)
-                {
-                    
-                    if (repeatCounter < 3 && enraged)
-                    {
-                       
+                        if (Main.rand.NextBool(2))
+                        {
                             state = ActionState.Lazer1;
-                        repeatCounter++;
-                        NPC.ai[0] = 100;
-                        
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
+                            state = ActionState.Projectiles;
+                        }
                         NPC.ai[0] = 0;
                         NPC.ai[1] = 0;
-                        repeatCounter = 0;
-                        state = ActionState.Idling;
-                 
-                    }
-                  
-                    
-                 
-                }
-            }
-            if (state == ActionState.Projectiles)
-            {
-                NPC.ai[2]++;
-                NPC.ai[0]++;
 
-                if (NPC.ai[0] < 120)
-                {
-                    if (NPC.ai[2] == 30)
-                    {
-                        DivergencyDraw.SpawnRingReverse(NPC.Center, Color.LimeGreen, 0.13f / 5, 0.9f / 5, 2 / 5);
-                        NPC.ai[2] = 0;
+                        addDistance = 0;
                     }
+
+
                 }
-                if (NPC.ai[0] > 120)
+
+                ///FOLOWWING LASER
+
+                if (state == ActionState.Lazer1)
                 {
                     NPC.ai[1]++; //real timer
 
-                    if (!enraged)
+                    if (NPC.ai[0] < 120)
                     {
-                        if (NPC.ai[1] == 25)
+                        if (NPC.ai[1] == 30)
                         {
-                            Vector2 newVelocity = new Vector2(3).RotatedByRandom(MathHelper.ToRadians(30));
-
-                            // Decrease velocity randomly for nicer visuals.
-                            newVelocity *= 1.5f - Main.rand.NextFloat(0.4f);
-
-                            // Create a projectile.
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Top, NPC.DirectionTo(player.Center) * newVelocity, ModContent.ProjectileType<CorescillationProj2>(), NPC.damage, 0);
-                            NPC.ai[1] = 0; //real timer
-
+                            DivergencyDraw.SpawnRingReverse(NPC.Center, Color.LimeGreen, 0.13f / 5, 0.9f / 5, 2 / 5);
+                            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/BeamWindUpSmall") with { Pitch = pitch, MaxInstances = 10 }, NPC.Center);
+                            pitch += 0.1f;
+                            NPC.ai[1] = 10;
                         }
                     }
-                    else
+
+                    NPC.ai[0]++;
+                    if (NPC.ai[0] == 120)
                     {
-                        if (NPC.ai[1] == 15)
+                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/BeamWindUp") with { Pitch = pitch, MaxInstances = 10 }, NPC.Center);
+                        pitch = 0;
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<Projectiles.Hostile.BigGuy.LaserBeam>(), NPC.damage, 0, ai0: Main.LocalPlayer.whoAmI, ai1: NPC.whoAmI);
+                    }
+                    if (NPC.ai[0] == 160)
+                    {
+
+                       
+
+
+                    }
+
+                    if (NPC.ai[0] == 180)
+                    {
+
+                        if (repeatCounter < 3 && enraged)
                         {
-                            Vector2 newVelocity = new Vector2(4).RotatedByRandom(MathHelper.ToRadians(30));
 
-                            // Decrease velocity randomly for nicer visuals.
-                            newVelocity *= 1.9f - Main.rand.NextFloat(0.5f);
-
-                            // Create a projectile.
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Top, NPC.DirectionTo(player.Center) * newVelocity, ModContent.ProjectileType<CorescillationProj2>(), NPC.damage, 0);
-                            NPC.ai[1] = 0; //real timer
+                            state = ActionState.Lazer1;
+                            repeatCounter++;
+                            NPC.ai[0] = 100;
 
                         }
+                        else
+                        {
+                            NPC.ai[0] = 0;
+                            NPC.ai[1] = 0;
+                            repeatCounter = 0;
+                            state = ActionState.Idling;
+
+                        }
+
+
+
                     }
-                   
                 }
-                if (NPC.ai[0] >= 480)
+                if (state == ActionState.Projectiles)
                 {
-                    NPC.ai[0] = 0; //real timer
-                    NPC.ai[1] = 0; //real timer
-                    NPC.ai[2] = 0;
+                    NPC.ai[2]++;
+                    NPC.ai[0]++;
 
-                    state = ActionState.Idling;
+                    if (NPC.ai[0] < 120)
+                    {
+                        if (NPC.ai[2] == 30)
+                        {
+                            DivergencyDraw.SpawnRingReverse(NPC.Center, Color.LimeGreen, 0.13f / 5, 0.9f / 5, 2 / 5);
+                            NPC.ai[2] = 0;
+                        }
+                    }
+                    if (NPC.ai[0] > 120)
+                    {
+                        NPC.ai[1]++; //real timer
+
+                        if (!enraged)
+                        {
+                            if (NPC.ai[1] == 25)
+                            {
+                                Vector2 newVelocity = new Vector2(3).RotatedByRandom(MathHelper.ToRadians(30));
+
+                                // Decrease velocity randomly for nicer visuals.
+                                newVelocity *= 1.5f - Main.rand.NextFloat(0.4f);
+
+                                // Create a projectile.
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Top, NPC.DirectionTo(player.Center) * newVelocity, ModContent.ProjectileType<CorescillationProj2>(), NPC.damage, 0);
+                                NPC.ai[1] = 0; //real timer
+
+                            }
+                        }
+                        else
+                        {
+                            if (NPC.ai[1] == 15)
+                            {
+                                Vector2 newVelocity = new Vector2(4).RotatedByRandom(MathHelper.ToRadians(30));
+
+                                // Decrease velocity randomly for nicer visuals.
+                                newVelocity *= 1.9f - Main.rand.NextFloat(0.5f);
+
+                                // Create a projectile.
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Top, NPC.DirectionTo(player.Center) * newVelocity, ModContent.ProjectileType<CorescillationProj2>(), NPC.damage, 0);
+                                NPC.ai[1] = 0; //real timer
+
+                            }
+                        }
+
+                    }
+                    if (NPC.ai[0] >= 480)
+                    {
+                        NPC.ai[0] = 0; //real timer
+                        NPC.ai[1] = 0; //real timer
+                        NPC.ai[2] = 0;
+
+                        state = ActionState.Idling;
+                    }
+
+
                 }
-
-                   
             }
         }
 

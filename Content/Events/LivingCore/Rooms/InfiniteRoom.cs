@@ -111,7 +111,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
 
             foreach (MinMaxFightState MMFS in tmpMMFSList)
             {
-                MMFS.InnerBranch();
+                MMFS?.InnerBranch();
             }
         }
 
