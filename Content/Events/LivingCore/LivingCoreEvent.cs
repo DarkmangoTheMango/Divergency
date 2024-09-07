@@ -39,7 +39,7 @@ namespace Divergency.Content.Events.LivingCore
             DownedHelper.livingCoreRoomCompletionTracker[GetRoomIdx(room)][idx] = true;
         }
 
-        public static bool[] GetObtainedRewards(LivingCoreRoom room)
+        public static bool[] GetAllowedRewards(LivingCoreRoom room)
         {
             return DownedHelper.livingCoreRoomCompletionTracker[GetRoomIdx(room)];
         }

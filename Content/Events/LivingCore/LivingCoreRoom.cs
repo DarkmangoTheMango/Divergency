@@ -163,7 +163,7 @@ namespace Divergency.Content.Events.LivingCore
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, rewardEffect, Main.GameViewMatrix.TransformationMatrix);
 
-            bool[] obtained = LivingCoreEvent.GetObtainedRewards(this);
+            bool[] allowed = LivingCoreEvent.GetAllowedRewards(this);
 
             if (!rewardPhase)
             {
@@ -206,7 +206,7 @@ namespace Divergency.Content.Events.LivingCore
                     float dist = 80f;
                     rewardEffect.Parameters["Model"].SetValue(FromEuler(new Vector3(target.X + x * dist, -target.Y, y * dist), new Vector3(xrot, r + MathF.PI / 2f, 0f), new Vector3(1f, 1f, 1f)));
 
-                    if (obtained[i] == true) // if it has been claimed
+                    if (allowed[i] == true) // if it has been claimed
                         c = Color.Gray;
 
                     Main.EntitySpriteDraw(texture,
@@ -277,7 +277,7 @@ namespace Divergency.Content.Events.LivingCore
                         Vector2 playerM = Main.MouseScreen;
                         Vector2 TopLeftReward = target + Main.ScreenSize.ToVector2() / 2 + new Vector2(rx * dist, -ry * dist) - new Vector2(width / 2f * multW, height / 2f);
 
-                        if (obtained[i] == true) // if it has been claimed
+                        if (allowed[i] == true) // if it has been claimed
                             c = Color.Gray;
 
                         if (playerM.X > TopLeftReward.X && playerM.Y > TopLeftReward.Y &&
@@ -286,7 +286,7 @@ namespace Divergency.Content.Events.LivingCore
                             hoverReward = i;
                             c = Color.Yellow;
 
-                            if (obtained[i] == true) // if it has been claimed
+                            if (allowed[i] == true) // if it has been claimed
                                 c = new Color(128, 128, 0, 255);
                         }
 
@@ -327,7 +327,7 @@ namespace Divergency.Content.Events.LivingCore
                         new Vector3(0f, 0f, 0f),
                         new Vector3(1f, 1f, 1f)));
 
-                    if (obtained[hoverReward] == true) // if it has been claimed
+                    if (allowed[hoverReward] == true) // if it has been claimed
                         c = Color.Gray;
 
                     Main.EntitySpriteDraw(texture,
@@ -563,9 +563,9 @@ namespace Divergency.Content.Events.LivingCore
 
             if (hoverReward != -1)
             {
-                bool[] obtained = LivingCoreEvent.GetObtainedRewards(this);
+                bool[] allowed = LivingCoreEvent.GetAllowedRewards(this);
 
-                if (obtained[hoverReward] == false)
+                if (allowed[hoverReward] == false)
                 {
                     Item.NewItem(null, LivingCoreEvent.Center, Rewards[hoverReward].id);
                     Main.NewText("Cleared!");
