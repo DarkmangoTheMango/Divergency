@@ -11,6 +11,7 @@ using Divergency.Common;
 using Divergency.Content.Projectiles;
 using Divergency.Common.Helpers;
 using Terraria.Utilities;
+using Mono.Cecil;
 
 
 namespace Divergency.Content.Bosses
@@ -26,11 +27,12 @@ namespace Divergency.Content.Bosses
         private int framerate;
 
         private byte _hitShake;
+        private bool spawned;
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.TrailCacheLength[NPC.type] = 5;
-            NPCID.Sets.TrailingMode[NPC.type] = 0;
+            NPCID.Sets.TrailCacheLength[NPC.type] = 45;
+            NPCID.Sets.TrailingMode[NPC.type] = 3;
 
             Main.npcFrameCount[NPC.type] = 25; // make sure to set this for your modNPCs.
       
@@ -49,7 +51,8 @@ namespace Divergency.Content.Bosses
             NPC.boss = true;
             NPC.lavaImmune = true;
             NPC.noGravity = true;
-            NPC.noTileCollide = false;
+            NPC.noTileCollide = true;
+            
             //NPC.dontTakeDamageFromHostiles = true;
             NPC.behindTiles = false;
 
@@ -84,7 +87,6 @@ namespace Divergency.Content.Bosses
             NPC.frame.Width = 180;
             NPC.frame.Height = 180;
 
-            Main.NewText(NPC.frameCounter);
             //idle anime
             if (State == (float)Phase.Float)
             {
@@ -117,14 +119,27 @@ namespace Divergency.Content.Bosses
         {
 
             NPC.TargetClosest();
-            switch (State)
+            if (!spawned)
             {
-                case (float)Phase.Float:
-                    Float();
-                    break;
-         
-          
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<WraithCore>(), 0, NPC.whoAmI);
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<WraithHand>(), 0, NPC.whoAmI);
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<WraithBody>(), 0, NPC.whoAmI);
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<BodyOrb>(), 0, NPC.whoAmI);
+              
+                    spawned = true;
             }
+            else
+            {
+                switch (State)
+                {
+                    case (float)Phase.Float:
+                        Float();
+                        break;
+
+
+                }
+            }
+          
             if (NPC.life <= NPC.lifeMax / 2)
             {
                 phase = 2;
@@ -133,12 +148,17 @@ namespace Divergency.Content.Bosses
         }
         private void Float()
         {
+            NPC.oldRot[0] = NPC.velocity.ToRotation();
+            for (int i = NPCID.Sets.TrailCacheLength[Type] - 1; i > 0; i--)
+            {
+                NPC.oldRot[i] = NPC.oldRot[i - 1];
+            }
             NPC.ai[0]++;
             Player player = Main.player[NPC.target];
             NPC.direction = NPC.spriteDirection = (NPC.velocity.X >= 0f) ? 1 : -1;
 
-           
-                NPC.rotation = NPC.velocity.ToRotation();
+
+            NPC.rotation = NPC.velocity.ToRotation();       
             
 
             if (phase == 2)
@@ -147,13 +167,16 @@ namespace Divergency.Content.Bosses
             }
             else
             {
-                NPC.Move(player.Center, 2f);
+              
+                    NPC.Move(player.Center, 5f);
+
 
             }
-            if (NPC.ai[0] == 180)
+            if (NPC.ai[0] == 480)
             {
                 WeightedRandom<Phase> phase = new WeightedRandom<Phase>();
                 //phase.Add(Phase.HandDash, 1f);
+                NPC.ai[0] = 0;
             }
 
         }

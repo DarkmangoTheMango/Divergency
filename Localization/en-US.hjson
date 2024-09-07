@@ -1112,6 +1112,10 @@ Mods: {
 			Markscore.DisplayName: Markscore
 			BomberDeath.DisplayName: Bomber Death
 			Wraith.DisplayName: Wraith
+			WraithBody.DisplayName: Wraith Body
+			BodyOrb.DisplayName: Body Orb
+			WraithCore.DisplayName: Wraith Core
+			WraithHand.DisplayName: Wraith Hand
 		}
 
 		Keybinds: {
