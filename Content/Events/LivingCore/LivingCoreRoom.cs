@@ -85,20 +85,7 @@ namespace Divergency.Content.Events.LivingCore
 
         private int[] savedTiles = new int[0];
 
-        public LivingCoreRoom()
-        {
-            TotalEnemies = 0;
-
-            int curWaveTest = 1;
-            Wave wave = getWave(curWaveTest);
-
-            while (wave != null)
-            {
-                TotalEnemies += wave.enemies.Length;
-                curWaveTest++;
-                wave = getWave(curWaveTest);
-            }
-        }
+        public LivingCoreRoom() { }
 
         public virtual int Music { get { return 0; } }
         
@@ -517,6 +504,16 @@ namespace Divergency.Content.Events.LivingCore
 
         public void Begin(int i, int j)
         {
+            int curWaveTest = 1;
+            Wave wave = getWave(curWaveTest);
+
+            while (wave != null)
+            {
+                TotalEnemies += wave.enemies.Length;
+                curWaveTest++;
+                wave = getWave(curWaveTest);
+            }
+
             NPC.NewNPCDirect(null, LivingCoreEvent.Position + new Vector2(24f), ModContent.NPCType<LivingCoreEventHandler>());
 
             int left = i - Main.tile[i, j].TileFrameX / 18;
