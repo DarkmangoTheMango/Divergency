@@ -110,19 +110,14 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
                 Projectile.ai[0]++;
 
-                if (Projectile.ai[0] == 1f)
-                {
-                    SoundEngine.PlaySound(SoundID.Item101, player.Center);
-                }
-
                 if (Projectile.ai[0] == 60f)
                 {
-                    SoundEngine.PlaySound(SoundID.Item29, player.Center);
-                    
-                    int numberOfDusts = 20;
-                    float radius = 2;
+                    SoundEngine.PlaySound(SoundID.MaxMana, player.Center);
 
-                    for (int i = 0; i < numberOfDusts; i++) { Dust.NewDustPerfect(Projectile.Center, DustID.TerraBlade, Vector2.UnitX.RotatedBy(MathHelper.ToRadians(360f / numberOfDusts * i)) * radius, 0, default, 1.2f).noGravity = true; }
+                    for (int k = 0; k < 10; k++)
+                    {
+                        Dust.NewDustDirect(player.position, player.width, player.height, DustID.Terra, 0, 0, 0, default, 1);
+                    }
                 }
 
                 if (Projectile.ai[0] >= 60f)
@@ -132,6 +127,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             }
             else
             {
+                Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10), DustID.Terra, Projectile.velocity * 10 * Main.rand.NextFloat(), 0, default, 0.5f);
+
                 if (Projectile.ai[0] >= 60f)
                 {
                     delay++;
@@ -145,8 +142,6 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
                         delay = 0f;
                         Projectile.ai[1]++;
-
-                        player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 5f;
                     }
                 }
             }
@@ -161,7 +156,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             else { progress = (duration - Projectile.timeLeft) / halfDuration; }
 
             Projectile.velocity = Vector2.Normalize(Projectile.velocity);
-            Projectile.Center = player.MountedCenter + Vector2.SmoothStep(Projectile.velocity * 0f, Projectile.velocity * 90f, progress);
+            Projectile.Center = player.MountedCenter + Vector2.SmoothStep(Projectile.velocity * 0f, Projectile.velocity * 60f, progress);
 
             if (Projectile.timeLeft > duration) { Projectile.timeLeft = duration; }
         }
@@ -169,35 +164,17 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         public override void Kill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
-
             SoundEngine.PlaySound(SoundID.Item1, player.Center);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
 
-            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), position, Vector2.Zero, ModContent.ProjectileType<LivingCoreSpearDamage>(), 0, 0f, Projectile.owner);
-
-            for (int k = 0; k < 5; k++)
-            {
-                float speed = Main.rand.NextFloat(0.2f, 2f);
-                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(0f, speed), 0, default, 1.2f).noGravity = true;
-
-                speed = Main.rand.NextFloat(0.2f, 2f);
-                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(speed, 0f), 0, default, 1.2f).noGravity = true;
-
-                speed = Main.rand.NextFloat(0.2f, 2f);
-                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(0f, -speed), 0, default, 1.2f).noGravity = true;
-
-                speed = Main.rand.NextFloat(0.2f, 2f);
-                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(-speed, 0f), 0, default, 1.2f).noGravity = true;
-            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture + "Glow2").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int frameY = frameHeight * Projectile.frame;
@@ -205,17 +182,9 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
             Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            Color color = Projectile.GetAlpha(new Color(255, 255, 255));
+            Color color = Projectile.GetAlpha(lightColor);
 
             SpriteEffects spriteEffects = SpriteEffects.None;
-
-            if (timer >= MathHelper.TwoPi) { timer = 0f; }
-            timer += 0.02f;
-
-            for (int i = 0; i < 3; i++) { Main.EntitySpriteDraw(texture, position + Vector2.One.RotatedBy(timer + ((2 * i))) * radius, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0); }
-
-            texture = ModContent.Request<Texture2D>(Texture).Value;
-            color = Projectile.GetAlpha(lightColor);
 
             Main.EntitySpriteDraw(texture, position, sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
 
@@ -262,6 +231,8 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public override void AI()
         {
+            Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10), DustID.Terra, Projectile.velocity * Main.rand.NextFloat(), 0, default, 0.5f);
+
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
 
             Projectile.alpha += 11;
@@ -271,27 +242,10 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 Projectile.Kill();
             }
         }
-
-         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Vector2 position = target.Center + Main.rand.NextVector2Circular(1f, 1f) * target.width;
 
-            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), position, Vector2.Zero, ModContent.ProjectileType<LivingCoreSpearDamage>(), 0, 0f, Projectile.owner);
-
-            for (int k = 0; k < 5; k++)
-            {
-                float speed = Main.rand.NextFloat(0.2f, 2f);
-                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(0f, speed), 0, default, 1.2f).noGravity = true;
-
-                speed = Main.rand.NextFloat(0.2f, 2f);
-                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(speed, 0f), 0, default, 1.2f).noGravity = true;
-
-                speed = Main.rand.NextFloat(0.2f, 2f);
-                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(0f, -speed), 0, default, 1.2f).noGravity = true;
-
-                speed = Main.rand.NextFloat(0.2f, 2f);
-                Dust.NewDustPerfect(position, DustID.TerraBlade, new Vector2(-speed, 0f), 0, default, 1.2f).noGravity = true;
-            }
         }
 
         public override bool PreDraw(ref Color lightColor)
