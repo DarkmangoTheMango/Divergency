@@ -121,7 +121,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
     public class BloomstickBullet : ModProjectile
     {
-        public override string Texture => TextureGrabber.Empty;
+        public override string Texture => "Divergency/Assets/Textures/Empty";
 
         public override void SetStaticDefaults()
         {
