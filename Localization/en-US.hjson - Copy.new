@@ -28,8 +28,8 @@ Mods: {
 			BlueRosePro.: Blue Rose
 			DoorLauncherPro.: Door Launcher
 			HighShot.: Blue Rose
-			LivingShardSlayerExplosion.: Living Shard Slayer
-			LivingShardSlayerPro.: Living Shard Slayer
+			BloomstickExplosion.: Living Shard Slayer
+			BloomstickPro.: Living Shard Slayer
 			LivingWoodBullet.: Forest Ripper
 			LivingCoreWhipProj.: Living Core Whip Proj
 			SageDeathBomb.: Sage Death Bomb
@@ -291,7 +291,7 @@ Mods: {
 				//: Uses doors as ammo
 			}
 
-			LivingShardSlayer: {
+			Bloomstick: {
 				: Living Core Slayer
 				//:
 					'''
