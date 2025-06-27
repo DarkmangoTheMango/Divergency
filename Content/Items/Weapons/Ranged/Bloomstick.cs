@@ -172,9 +172,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         }
 
-        public override void Kill(int timeLeft)
-        {
-        }
+        //removed kill() b ecause build error??
 
         public override bool PreDraw(ref Color lightColor)
         {

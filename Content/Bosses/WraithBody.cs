@@ -111,6 +111,15 @@ namespace Divergency.Content.Bosses
             }
             if (spawned)
             {
+
+                NPC.ai[3] = cachedNPC.ai[3];
+           
+             
+                if (NPC.ai[4] == 2)
+                {
+                    cachedNPC.ai[4] = 2;
+                    NPC.ai[4] = 0;
+                }
                 NPC.rotation = cachedNPC.oldRot[cachedNPC.oldRot.Length - 1];
 
                 Vector2 vector; float speed; float turnResistance = 10f; bool toNPC = false;
