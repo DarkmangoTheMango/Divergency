@@ -1,5 +1,4 @@
-﻿using Divergency.Common.Systems.SkillNodes;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
