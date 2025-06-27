@@ -384,6 +384,11 @@ Mods: {
 			MarkscoreArrowHoming.DisplayName: Markscore Arrow Homing
 			BigGuySpike.DisplayName: Big Guy Spike
 			CorescillationProj2.DisplayName: Corescillation Proj2
+			WraithIndicator.DisplayName: Wraith Indicator
+			WraithIndicator2.DisplayName: Wraith Indicator2
+			FireBreathWraith.DisplayName: Fire Breath Wraith
+			LivingCoreSwordSwing2.DisplayName: Living Core Sword Swing2
+			ProxRingProj.DisplayName: Prox Ring Proj
 		}
 
 		Biomes: {

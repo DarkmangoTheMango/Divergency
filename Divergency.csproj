@@ -12,6 +12,8 @@
     <Compile Remove="Common\Players\DivergencyPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Content\Bosses\WraithIndicator.png" />
+    <None Remove="Content\Bosses\WraithIndicator2.png" />
     <None Remove="Content\Effects\SwordTrailShader\Testing.fx" />
     <None Remove="Content\Items\Weapons\LivingCore\CoreBarrageProj.png" />
     <None Remove="Content\NPCs\LivingGrove\CoreBlockadeRight.png" />

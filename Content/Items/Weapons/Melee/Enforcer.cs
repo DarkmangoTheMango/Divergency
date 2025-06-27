@@ -189,7 +189,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         });
         public override float Width => MathF.Sqrt(MathF.Pow(12, 2) * 2) + 1f; // 12 is vertical width of blade
 
-        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/TestTrail2", 90, TrailType.Raw, 100f);
+        public override SwordTrail SwordTrail => new SwordTrail("Divergency/Assets/Textures/NormalTrail", 90, TrailType.Raw, 100f);
         public override SwordGlow[] Glows => new SwordGlow[] { new SwordGlow(
             new SwordGlowColor(
                 new List<Color>{
