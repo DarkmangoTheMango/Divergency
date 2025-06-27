@@ -46,7 +46,7 @@ namespace Divergency.Content.Bosses
             NPCID.Sets.TrailingMode[NPC.type] = 3;
 
             Main.npcFrameCount[NPC.type] = 25; // make sure to set this for your modNPCs.
-      
+
         }
         public override void SetDefaults()
         {
@@ -63,7 +63,7 @@ namespace Divergency.Content.Bosses
             NPC.lavaImmune = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            
+
             //NPC.dontTakeDamageFromHostiles = true;
             NPC.behindTiles = false;
 
@@ -88,13 +88,13 @@ namespace Divergency.Content.Bosses
             Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
             Color color = Color.White;
 
-            SpriteEffects spriteEffects = NPC.spriteDirection > 0 ?   SpriteEffects.None : SpriteEffects.FlipVertically;
+            SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
             if (_hitShake > 0)
             {
                 position += new Vector2(Main.rand.Next(-_hitShake, _hitShake), Main.rand.Next(-_hitShake, _hitShake));
                 _hitShake--;
             }
-                spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
+            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
             return false;
         }
         public override void FindFrame(int blabla)
@@ -241,8 +241,8 @@ namespace Divergency.Content.Bosses
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<WraithHand>(), 0, NPC.whoAmI);
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<WraithBody>(), 0, NPC.whoAmI);
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<BodyOrb>(), 0, NPC.whoAmI);
-              
-                    spawned = true;
+
+                spawned = true;
             }
             else
             {
@@ -269,11 +269,23 @@ namespace Divergency.Content.Bosses
 
                 }
             }
-          
+
             if (NPC.life <= NPC.lifeMax / 2)
             {
                 phase = 2;
             }
+
+        }
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            if (State == (float)Phase.Float || noContactDamage)
+            {
+                return false;
+
+            }
+            else
+            {
+                return true;
 
         }
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
