@@ -1,4 +1,5 @@
 ﻿using Divergency.Common.Players;
+using Divergency.Content.Bosses;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -8,6 +9,7 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static ExplosionIndicator;
 
 namespace Divergency.Common.Helpers
 {
@@ -91,6 +93,7 @@ namespace Divergency.Common.Helpers
                 (Main.projectile[p].ModProjectile as ExplosionIndicator).entityTarget = target;
             }
         }
+
         public static void SpawnExplosion(Vector2 center, Color color, int dustID, float shakeAmount = 7, int dustAmount = 30, float dustScale = 2, float scale = 4f, bool noDust = false, Texture2D tex = null, float rot = 0)
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -107,6 +110,16 @@ namespace Divergency.Common.Helpers
                     explode.noDust = noDust;
                     explode.texture = tex;
                 }
+            }
+        }
+        public static void ProxRing(Vector2 center, Color color, float scale = 1, Entity target = null)
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                int p = Projectile.NewProjectile(null, center, Vector2.Zero, ModContent.ProjectileType<ProxRingProj>(), 0, 0,
+                    Main.myPlayer, scale);
+                (Main.projectile[p].ModProjectile as ProxRingProj).color = color;
+                (Main.projectile[p].ModProjectile as ProxRingProj).entityTarget = target;
             }
         }
     }
@@ -171,7 +184,7 @@ namespace Divergency.Common.Helpers
         {
             Projectile.scale -= 0.005f; // 0.13f
             Projectile.scale /= 1.05f; // 0.9f
-           if (Projectile.scale <= 0.01f)
+            if (Projectile.scale <= 0.01f)
             {
                 Projectile.Kill();
             }
@@ -193,166 +206,229 @@ namespace Divergency.Common.Helpers
         }
     }
 }
-    public class CirclePulse_Visual : ModProjectile
+public class CirclePulse_Visual : ModProjectile
+{
+    public override string Texture => "Divergency/Assets/Textures/Shockwave";
+    public override void SetStaticDefaults()
     {
-        public override string Texture => "Divergency/Assets/Textures/Shockwave";
-        public override void SetStaticDefaults()
+        //.setdefault("Pulse");
+    }
+    public override void SetDefaults()
+    {
+        Projectile.width = 1;
+        Projectile.height = 1;
+        Projectile.penetrate = -1;
+        Projectile.hostile = false;
+        Projectile.friendly = false;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.alpha = 255;
+    }
+    public Entity entityTarget;
+    public override void AI()
+    {
+        if (entityTarget != null)
         {
-            //.setdefault("Pulse");
+            if (entityTarget.active)
+                Projectile.Center = entityTarget.Center;
         }
-        public override void SetDefaults()
-        {
-            Projectile.width = 1;
-            Projectile.height = 1;
-            Projectile.penetrate = -1;
-            Projectile.hostile = false;
-            Projectile.friendly = false;
-            Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;
-            Projectile.alpha = 255;
-        }
-        public Entity entityTarget;
-        public override void AI()
-        {
-            if (entityTarget != null)
-            {
-                if (entityTarget.active)
-                    Projectile.Center = entityTarget.Center;
-            }
 
-            Projectile.timeLeft = 180;
-            Projectile.velocity *= 0;
-            Projectile.localAI[0]++;
-            if (Projectile.localAI[0] < 300)
-            {
-                if (Projectile.localAI[0] < 30)
-                    Projectile.alpha -= 5;
-                else
-                    Projectile.alpha += 1;
-
-            }
+        Projectile.timeLeft = 180;
+        Projectile.velocity *= 0;
+        Projectile.localAI[0]++;
+        if (Projectile.localAI[0] < 300)
+        {
+            if (Projectile.localAI[0] < 30)
+                Projectile.alpha -= 5;
             else
-            {
-                Projectile.alpha = 255;
-                Projectile.Kill();
-            }
+                Projectile.alpha += 1;
+
         }
-        public Color color;
-        public override bool PreDraw(ref Color lightColor)
+        else
         {
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
-            Vector2 position = Projectile.Center - Main.screenPosition;
-            Rectangle rect = new(0, 0, texture.Width, texture.Height);
-            Vector2 origin = new(texture.Width / 2f, texture.Height / 2f);
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-            Main.EntitySpriteDraw(texture, position, new Rectangle?(rect), Projectile.GetAlpha(color), Projectile.rotation, origin, Projectile.scale + Projectile.ai[0], SpriteEffects.None, 0);
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-            return false;
+            Projectile.alpha = 255;
+            Projectile.Kill();
         }
     }
-    public class Explosion_Visual : ModProjectile
+    public Color color;
+    public override bool PreDraw(ref Color lightColor)
     {
-        public override string Texture => "Divergency/Assets/Textures/Empty";
-        public override void SetStaticDefaults()
-        {
-            //.setdefault("Explosion");
-        }
-        public override void SetDefaults()
-        {
-            Projectile.width = 20;
-            Projectile.height = 20;
-            Projectile.friendly = false;
-            Projectile.hostile = false;
-            Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 10;
-        }
+        Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+        Vector2 position = Projectile.Center - Main.screenPosition;
+        Rectangle rect = new(0, 0, texture.Width, texture.Height);
+        Vector2 origin = new(texture.Width / 2f, texture.Height / 2f);
+        Main.spriteBatch.End();
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        Main.EntitySpriteDraw(texture, position, new Rectangle?(rect), Projectile.GetAlpha(color), Projectile.rotation, origin, Projectile.scale + Projectile.ai[0], SpriteEffects.None, 0);
+        Main.spriteBatch.End();
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        return false;
+    }
+}
+public class Explosion_Visual : ModProjectile
+{
+    public override string Texture => "Divergency/Assets/Textures/Empty";
+    public override void SetStaticDefaults()
+    {
+        //.setdefault("Explosion");
+    }
+    public override void SetDefaults()
+    {
+        Projectile.width = 20;
+        Projectile.height = 20;
+        Projectile.friendly = false;
+        Projectile.hostile = false;
+        Projectile.tileCollide = false;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 10;
+    }
 
-        private float GlowTimer;
-        private bool Glow;
-        public Color color;
-        public int dustID;
-        public float dustScale;
-        public float scale;
-        public bool noDust;
-        public Texture2D texture;
-        public override void AI()
+    private float GlowTimer;
+    private bool Glow;
+    public Color color;
+    public int dustID;
+    public float dustScale;
+    public float scale;
+    public bool noDust;
+    public Texture2D texture;
+    public override void AI()
+    {
+        if (Glow)
         {
-            if (Glow)
+            GlowTimer += 3;
+            if (GlowTimer > 120)
             {
-                GlowTimer += 3;
-                if (GlowTimer > 120)
+                Glow = false;
+                GlowTimer = 0;
+            }
+        }
+        if (Projectile.localAI[0]++ == 0)
+        {
+            Glow = true;
+            Projectile.alpha = 255;
+            Main.LocalPlayer.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3;
+            if (!noDust)
+            {
+                for (int i = 0; i < 15; i++)
                 {
-                    Glow = false;
-                    GlowTimer = 0;
+                    //int dust = Dust.NewDust(Projectile.Center + Projectile.velocity, 1, 1, ModContent.DustType<GlowDust>(), Scale: 2);
+                    //Main.dust[dust].velocity *= 6;
+                    // Main.dust[dust].noGravity = true;
+                    //Color dustColor = new(color.R, color.G, color.B) { A = 0 };
+                    //Main.dust[dust].color = dustColor;
+                }
+                for (int i = 0; i < Projectile.ai[1]; i++)
+                {
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, Scale: dustScale);
+                    Main.dust[dust].velocity *= 10;
+                    Main.dust[dust].noGravity = true;
+                }
+                for (int i = 0; i < Projectile.ai[1]; i++)
+                {
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, Scale: dustScale);
+                    Main.dust[dust].velocity *= 15;
+                    Main.dust[dust].noGravity = true;
+                }
+                if (Main.netMode != NetmodeID.Server)
+                {
+                    for (int g = 0; g < 6; g++)
+                    {
+                        int goreIndex = Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, default, Main.rand.Next(61, 64));
+                        Main.gore[goreIndex].scale = 1.5f;
+                        Main.gore[goreIndex].velocity *= 2f;
+                    }
                 }
             }
-            if (Projectile.localAI[0]++ == 0)
-            {
-                Glow = true;
-                Projectile.alpha = 255;
-                Main.LocalPlayer.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3;
-                if (!noDust)
-                {
-                    for (int i = 0; i < 15; i++)
-                    {
-                        //int dust = Dust.NewDust(Projectile.Center + Projectile.velocity, 1, 1, ModContent.DustType<GlowDust>(), Scale: 2);
-                        //Main.dust[dust].velocity *= 6;
-                       // Main.dust[dust].noGravity = true;
-                        //Color dustColor = new(color.R, color.G, color.B) { A = 0 };
-                        //Main.dust[dust].color = dustColor;
-                    }
-                    for (int i = 0; i < Projectile.ai[1]; i++)
-                    {
-                        int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, Scale: dustScale);
-                        Main.dust[dust].velocity *= 10;
-                        Main.dust[dust].noGravity = true;
-                    }
-                    for (int i = 0; i < Projectile.ai[1]; i++)
-                    {
-                        int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, Scale: dustScale);
-                        Main.dust[dust].velocity *= 15;
-                        Main.dust[dust].noGravity = true;
-                    }
-                    if (Main.netMode != NetmodeID.Server)
-                    {
-                        for (int g = 0; g < 6; g++)
-                        {
-                            int goreIndex = Gore.NewGore(Projectile.GetSource_FromThis(), Projectile.Center, default, Main.rand.Next(61, 64));
-                            Main.gore[goreIndex].scale = 1.5f;
-                            Main.gore[goreIndex].velocity *= 2f;
-                        }
-                    }
-                }
-            }
-            if (Projectile.localAI[0] >= 40)
-                Projectile.Kill();
         }
-        public override void PostDraw(Color lightColor)
+        if (Projectile.localAI[0] >= 40)
+            Projectile.Kill();
+    }
+    public override void PostDraw(Color lightColor)
+    {
+        if (texture == null)
+            texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/WhiteGlow").Value;
+
+        Main.spriteBatch.End();
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+
+        Texture2D teleportGlow = texture;
+        Rectangle rect2 = new(0, 0, teleportGlow.Width, teleportGlow.Height);
+        Vector2 origin2 = new(teleportGlow.Width / 2, teleportGlow.Height / 2);
+        Vector2 position2 = Projectile.Center - Main.screenPosition;
+        Color colour2 = Color.Lerp(color, color, 1f / GlowTimer * 10f) * (1f / GlowTimer * 10f);
+        if (Glow)
         {
-            if (texture == null)
-                texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/WhiteGlow").Value;
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
-
-            Texture2D teleportGlow = texture;
-            Rectangle rect2 = new(0, 0, teleportGlow.Width, teleportGlow.Height);
-            Vector2 origin2 = new(teleportGlow.Width / 2, teleportGlow.Height / 2);
-            Vector2 position2 = Projectile.Center - Main.screenPosition;
-            Color colour2 = Color.Lerp(color, color, 1f / GlowTimer * 10f) * (1f / GlowTimer * 10f);
-            if (Glow)
-            {
-                Main.spriteBatch.Draw(teleportGlow, position2, new Rectangle?(rect2), colour2, Projectile.rotation, origin2, scale, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(teleportGlow, position2, new Rectangle?(rect2), colour2 * 0.4f, Projectile.rotation, origin2, scale, SpriteEffects.None, 0);
-            }
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Draw(teleportGlow, position2, new Rectangle?(rect2), colour2, Projectile.rotation, origin2, scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(teleportGlow, position2, new Rectangle?(rect2), colour2 * 0.4f, Projectile.rotation, origin2, scale, SpriteEffects.None, 0);
+        }
+        Main.spriteBatch.End();
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+    }
+}
+public class ExplosionIndicator : ModProjectile
+{
+    public override string Texture => "Divergency/Assets/Textures/GlowRing";
+    public override void SetStaticDefaults()
+    {
+        //.setdefault("Pulse");
+    }
+    public override void SetDefaults()
+    {
+        Projectile.width = 1;
+        Projectile.height = 1;
+        Projectile.penetrate = -1;
+        Projectile.hostile = false;
+        Projectile.friendly = false;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.alpha = 255;
+    }
+    public Entity entityTarget;
+    public override void AI()
+    {
+        if (entityTarget != null)
+        {
+            if (entityTarget.active)
+                Projectile.Center = entityTarget.Center;
+        }
+        if (Projectile.timeLeft == 180)
+        {
+            Projectile.Kill();
+        }
+        Projectile.timeLeft = 300;
+        Projectile.velocity *= 0;
+        Projectile.localAI[0]++;
+        if (Projectile.localAI[0] < 300)
+        {
+            if (Projectile.localAI[0] < 30)
+                Projectile.alpha -= 5;
+            else
+                Projectile.alpha += 1;
+            Projectile.scale += 0.01f;
+        }
+        else
+        {
+            Projectile.alpha = 255;
+            Projectile.scale = 1;
+            Projectile.Kill();
         }
     }
-    public class ExplosionIndicator : ModProjectile
+    public Color color;
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+        Vector2 position = Projectile.Center - Main.screenPosition;
+        Rectangle rect = new(0, 0, texture.Width, texture.Height);
+        Vector2 origin = new(texture.Width / 2f, texture.Height / 2f);
+        Main.spriteBatch.End();
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        Main.EntitySpriteDraw(texture, position, new Rectangle?(rect), Projectile.GetAlpha(color), Projectile.rotation, origin, Projectile.scale * Projectile.ai[0], SpriteEffects.None, 0);
+        Main.spriteBatch.End();
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+        return false;
+    }
+
+    public class ProxRingProj : ModProjectile
     {
         public override string Texture => "Divergency/Assets/Textures/GlowRing";
         public override void SetStaticDefaults()
@@ -373,34 +449,66 @@ namespace Divergency.Common.Helpers
         public Entity entityTarget;
         public override void AI()
         {
-            if (entityTarget != null)
+            if (!spawned)
             {
-                if (entityTarget.active)
-                    Projectile.Center = entityTarget.Center;
+                for (int k = 0; k < Main.maxNPCs; k++)
+                {
+                    NPC taggedNPC = Main.npc[k];
+
+                    if (taggedNPC.active && taggedNPC.ModNPC is WraithHand)
+                    {
+                        cachedNPC = taggedNPC;
+                    }
+                }
+
+
+
+                spawned = true;
             }
-            if (Projectile.timeLeft == 180)
+            if (!cachedNPC.active)
             {
-                Projectile.Kill();
+                Projectile.active = false;
             }
-            Projectile.timeLeft = 300;
-            Projectile.velocity *= 0;
-            Projectile.localAI[0]++;
-            if (Projectile.localAI[0] < 300)
+
+            if (spawned)
             {
-                if (Projectile.localAI[0] < 30)
-                    Projectile.alpha -= 5;
-                else
-                    Projectile.alpha += 1;
-                Projectile.scale += 0.01f;
-            }
-            else
-            {
-                Projectile.alpha = 255;
-                Projectile.scale = 1;
-                Projectile.Kill();
+                Projectile.Center = cachedNPC.Center;
+                if (entityTarget != null)
+                {
+                    if (entityTarget.active)
+                        Projectile.Center = entityTarget.Center;
+                }
+                if (Projectile.timeLeft == 99999)
+                {
+                    Projectile.Kill();
+                }
+                Projectile.timeLeft = 300;
+                Projectile.velocity *= 0;
+                if (Projectile.scale > 0.1f)
+                {
+                    Projectile.localAI[0]++;
+                }
+
+                if (Projectile.localAI[0] < 10)
+                {
+                    if (Projectile.scale > 0.1f)
+                    {
+
+                        Projectile.alpha -= 50;
+                    }
+                    else
+                        Projectile.alpha += 1;
+                    Projectile.scale += 0.001f;
+
+                }
             }
         }
+
+
         public Color color;
+        private bool spawned;
+        private NPC cachedNPC;
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
@@ -414,6 +522,6 @@ namespace Divergency.Common.Helpers
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
             return false;
         }
-    
-}
 
+    }
+}
