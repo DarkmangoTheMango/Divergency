@@ -1,20 +1,13 @@
 using Divergency.Common.Helpers;
-using Divergency.Content.Dusts;
-using Divergency.Content.Items.Weapons.LivingCore;
-using Divergency.Content.Projectiles.Hostile;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.ModLoader;
 

@@ -1,11 +1,6 @@
 ﻿using Divergency.Common.Helpers;
-using Divergency.Content.Buffs;
-using Divergency.Content.Items.Weapons.LivingCore;
-using Divergency.Content.Particles;
-using Divergency.Content.Tiles.LivingGrove.CorePuzzle;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ParticleLibrary;
 using System;
 using System.Collections.Generic;
 using Terraria;

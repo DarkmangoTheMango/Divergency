@@ -12,7 +12,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Items.Weapons.LivingCore
+namespace Divergency.Content.Items.Weapons.Melee
 {
     public class CoreHook : ModItem
     { 
@@ -86,7 +86,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Projectile.extraUpdates = 2;
             Projectile.aiStyle = -1;
         }
-        private const string ChainTexturePath = "Divergency/Content/Items/Weapons/LivingCore/CoreHookChain"; 
+        private const string ChainTexturePath = "Divergency/Content/Items/Weapons/Melee/CoreHookChain"; 
         public override void AI()
         {
             //Dust.NewDustPerfect(Projectile.Center, DustID.PortalBoltTrail, Projectile.velocity.RotatedByRandom(0.1f), 0, new Color(109, 223, 94), 1.2f).noGravity = true;
@@ -170,7 +170,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             // Drippler Crippler customizes sourceRectangle to cycle through sprite frames: sourceRectangle = asset.Frame(1, 6);
             float chainHeightAdjustment = 0f; // Use this to adjust the chain overlap. 
 
-            Vector2 chainOrigin = chainSourceRectangle.HasValue ? (chainSourceRectangle.Value.Size() / 2f) : (chainTex.Size() / 2f);
+            Vector2 chainOrigin = chainSourceRectangle.HasValue ? chainSourceRectangle.Value.Size() / 2f : chainTex.Size() / 2f;
             Vector2 chainDrawPosition = Projectile.Center; /// top bottom etc ------------------------------------------------------------------ TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOO __________________________________________
             Vector2 vectorFromProjectileToPlayerArms = Origin.MoveTowards(chainDrawPosition, 4f) - chainDrawPosition;
             Vector2 unitVectorFromProjectileToPlayerArms = vectorFromProjectileToPlayerArms.SafeNormalize(Vector2.Zero);
@@ -230,7 +230,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 {
                     timer++;
 
-                    npc.rotation += (npc.velocity.Length() * 0.05f) * npc.direction;
+                    npc.rotation += npc.velocity.Length() * 0.05f * npc.direction;
                     return false;
                 }
                 else

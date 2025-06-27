@@ -3,7 +3,6 @@ using Divergency.Common.Helpers;
 using Divergency.Common.Players;
 using Divergency.Content.Buffs;
 using Divergency.Content.Dusts;
-using Divergency.Content.Items.Weapons.LivingCore;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;

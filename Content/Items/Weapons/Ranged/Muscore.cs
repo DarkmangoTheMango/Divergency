@@ -20,7 +20,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using static Divergency.Content.Projectiles.Magic.CorescillationProj;
 
-namespace Divergency.Content.Items.Weapons.LivingCore
+namespace Divergency.Content.Items.Weapons.Ranged
 {
     public class Muscore : ModItem, IReloadWeapon
     {
@@ -125,7 +125,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 {
                     Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + (velocity * 80f), ModContent.DustType<Glow>(), velocity * 6f, 0, Color.LimeGreen, 0.8f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity * 80f, ModContent.DustType<Glow>(), velocity * 6f, 0, Color.LimeGreen, 0.8f);
             }
         }
         int frameTimer;
@@ -197,7 +197,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 }
                 if (Projectile.frame == 2 && frameTimer == 3)
                 {
-                    Projectile.NewProjectile(Projectile.InheritSource(Projectile), Projectile.Center, Projectile.velocity * 15, ModContent.ProjectileType<MuscoreBullet>(), Projectile.damage, 2, Projectile.owner, Projectile.whoAmI);
+                    Projectile.NewProjectile(Terraria.Entity.InheritSource(Projectile), Projectile.Center, Projectile.velocity * 15, ModContent.ProjectileType<MuscoreBullet>(), Projectile.damage, 2, Projectile.owner, Projectile.whoAmI);
                     SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/MuscoreShoot"), player.Center);
                 }
                 if (Projectile.frame == 4)
@@ -236,7 +236,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 // If image isn't centered or symmetrical you can specify origin of the sprite
                 // (0,0) for the upper-left corner
                 float offsetX = 40f;
-                origin.X = (float)(Projectile.spriteDirection == 1 ? sourceRectangle.Width - offsetX : offsetX);
+                origin.X = Projectile.spriteDirection == 1 ? sourceRectangle.Width - offsetX : offsetX;
 
                 // If sprite is vertical
                 // float offsetY = 20f;
@@ -315,7 +315,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 {
                     Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + (velocity * 80f), ModContent.DustType<Glow>(), velocity * 2f, 0, Color.LimeGreen, 0.5f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity * 80f, ModContent.DustType<Glow>(), velocity * 2f, 0, Color.LimeGreen, 0.5f);
 
 
                 }
@@ -337,7 +337,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             {
                 Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + (velocity), ModContent.DustType<Glow>(), velocity * 2f, 0, Color.LimeGreen, 1f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, ModContent.DustType<Glow>(), velocity * 2f, 0, Color.LimeGreen, 1f);
 
 
             }
@@ -385,7 +385,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 float angle1 = Main.rand.NextFloat(MathHelper.TwoPi);
                 Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                Dust dust = Dust.NewDustPerfect(npc.Center + (velocity * 80f), ModContent.DustType<Glow>(), velocity * 6f, 0, Color.LimeGreen, 0.6f);
+                Dust dust = Dust.NewDustPerfect(npc.Center + velocity * 80f, ModContent.DustType<Glow>(), velocity * 6f, 0, Color.LimeGreen, 0.6f);
 
 
             }
@@ -402,7 +402,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 {
                     Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(npc.Center + (velocity * 80f), ModContent.DustType<Glow>(), velocity * 6f, 0, Color.LimeGreen, 0.6f);
+                    Dust dust = Dust.NewDustPerfect(npc.Center + velocity * 80f, ModContent.DustType<Glow>(), velocity * 6f, 0, Color.LimeGreen, 0.6f);
                 }
 
 
@@ -415,7 +415,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 {
                     Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(npc.Center + (velocity * 80f), ModContent.DustType<Glow>(), velocity * 6f, 0, Color.LimeGreen, 0.6f);
+                    Dust dust = Dust.NewDustPerfect(npc.Center + velocity * 80f, ModContent.DustType<Glow>(), velocity * 6f, 0, Color.LimeGreen, 0.6f);
                 }
                 for (int i = 0; i < 10; i++)
                 {
@@ -439,7 +439,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
         public bool canShoot()
         {
-            return (itemReloading == null);
+            return itemReloading == null;
         }
 
         public override void PreUpdate()
@@ -538,9 +538,9 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
             int bulletsLeft = iReloadWeapon.GetRemainingBullets();
 
-            int rowsLeft = (bulletsLeft - (bulletsLeft % iReloadWeapon.StackSize)) / iReloadWeapon.StackSize;
+            int rowsLeft = (bulletsLeft - bulletsLeft % iReloadWeapon.StackSize) / iReloadWeapon.StackSize;
 
-            int firstStackSize = (bulletsLeft % iReloadWeapon.StackSize);
+            int firstStackSize = bulletsLeft % iReloadWeapon.StackSize;
 
             if (firstStackSize == 0)
                 firstStackSize = iReloadWeapon.StackSize;
@@ -556,7 +556,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
                 int stackSize = i == 0 ? firstStackSize : iReloadWeapon.StackSize;
 
-                Vector2 position = new Vector2(-(((12 + spacingX) * rowsLeft) / 2), -spacingY * stackSize);
+                Vector2 position = new Vector2(-((12 + spacingX) * rowsLeft / 2), -spacingY * stackSize);
                 position.X += (12 + spacingX / 2) * i + spacingX;
 
                 for (int bI = 0; bI < stackSize; bI++)
@@ -574,7 +574,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 //Texture2D LoadingBorder = (Texture2D)ModContent.Request<Texture2D>("Divergency/Common/UI/MuscoreUI_ReloadBar");
                 Texture2D Pixel = (Texture2D)ModContent.Request<Texture2D>("Divergency/Assets/Textures/WhitePixel");
 
-                int width = (int)MathF.Floor((float)86 * ((float)modPlr.timeTillReload / ((float)modPlr.secondsToReload * 60)));
+                int width = (int)MathF.Floor(86 * (modPlr.timeTillReload / ((float)modPlr.secondsToReload * 60)));
 
                 Rectangle back = new Rectangle(0, 0, 86, 28);
                 Rectangle fill = new Rectangle(0, 0, width, 12);

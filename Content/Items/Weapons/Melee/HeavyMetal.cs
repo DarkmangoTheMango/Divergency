@@ -1,15 +1,6 @@
-using Divergency.Common.Helpers;
-using Divergency.Common.Helpers.SwordAnimator;
-using Divergency.Common.Players;
-using Divergency.Content.Buffs;
-using Divergency.Content.Items.Weapons.LivingCore;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Globalization;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;

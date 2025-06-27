@@ -1,25 +1,18 @@
-using Divergency.Content.Particles;
 using Divergency.Common.Helpers;
+using Divergency.Common.Helpers.SwordAnimator;
 using Divergency.Common.Players;
-using Divergency.Content.Projectiles.Melee;
+using Divergency.Content.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ParticleLibrary;
 using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Divergency.Common.Helpers.SwordAnimator;
-using Divergency.Content.Dusts;
-using Microsoft.CodeAnalysis;
-using System.Threading;
-using Mono.Cecil;
-using Terraria.GameContent;
-using Divergency.Content.Items.Weapons.LivingCore;
 
 namespace Divergency.Content.Items.Weapons.Melee
 {

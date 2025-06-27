@@ -7,7 +7,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Items.Weapons.LivingCore
+namespace Divergency.Content.Items.Weapons.Magic
 {
     public class Corescillation : ModItem
     {
@@ -30,7 +30,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Item.knockBack = 3f;
             Item.noMelee = true;
 
-            Item.shoot = ModContent.ProjectileType<Projectiles.Magic.CorescillationProj>();
+            Item.shoot = ModContent.ProjectileType<CorescillationProj>();
             Item.shootSpeed = 14f;
             Item.channel = true;
 

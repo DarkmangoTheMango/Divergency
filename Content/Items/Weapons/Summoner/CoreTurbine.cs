@@ -7,7 +7,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 
-namespace Divergency.Content.Items.Weapons.LivingCore
+namespace Divergency.Content.Items.Weapons.Summoner
 {
     public class CoreTurbine : ModItem
     {

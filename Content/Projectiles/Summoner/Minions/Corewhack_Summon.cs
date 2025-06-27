@@ -1,5 +1,5 @@
 ﻿using Divergency.Common.Helpers;
-using Divergency.Content.Items.Weapons.LivingCore;
+using Divergency.Content.Items.Weapons.Summoner;
 using Divergency.Content.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

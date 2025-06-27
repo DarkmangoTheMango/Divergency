@@ -10,7 +10,7 @@ using Terraria;
 using Microsoft.Xna.Framework;
 using Divergency.Content.Projectiles.Ranged;
 
-namespace Divergency.Content.Items.Weapons.LivingCore
+namespace Divergency.Content.Items.Weapons.Ranged
 {
     public class LivingCoreBow : ModItem
     {

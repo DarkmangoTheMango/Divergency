@@ -1,5 +1,5 @@
 ﻿using Divergency.Common.Helpers;
-using Divergency.Content.Items.Weapons.LivingCore;
+using Divergency.Content.Items.Weapons.Melee;
 using Divergency.Content.NPCs.LivingGrove;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;

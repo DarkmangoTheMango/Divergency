@@ -10,7 +10,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Items.Weapons.LivingCore
+namespace Divergency.Content.Items.Weapons.Melee
 {
     public class LivingCoreSpear : ModItem
     {
@@ -199,7 +199,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
     public class LivingCoreSpearPro2 : ModProjectile
     {
-        public override string Texture => "Divergency/Content/Items/Weapons/LivingCore/LivingCoreSpearPro";
+        public override string Texture => "Divergency/Content/Items/Weapons/Melee/LivingCoreSpearPro";
 
         public override void SetStaticDefaults()
         {
@@ -271,7 +271,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
             for (int k = 0; k < Projectile.oldPos.Length; k++)
             {
-                position = (Projectile.oldPos[k] + new Vector2(texture.Width, texture.Height) / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+                position = Projectile.oldPos[k] + new Vector2(texture.Width, texture.Height) / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
 
                 Main.EntitySpriteDraw(texture, position, null, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             }
@@ -350,9 +350,9 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Vector2 position = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
 
             Main.EntitySpriteDraw(texture, position + new Vector2(0f, radius), sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(texture, position + new Vector2(radius, 0f), sourceRectangle, color, Projectile.rotation + (MathHelper.PiOver2), origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, position + new Vector2(radius, 0f), sourceRectangle, color, Projectile.rotation + MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(texture, position + new Vector2(0f, -radius), sourceRectangle, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(texture, position + new Vector2(-radius, 0f), sourceRectangle, color, Projectile.rotation + (MathHelper.PiOver2), origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, position + new Vector2(-radius, 0f), sourceRectangle, color, Projectile.rotation + MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
 
             return false;
         }

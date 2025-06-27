@@ -1,21 +1,14 @@
+using Divergency.Common.Helpers;
+using Divergency.Common.Players;
 using Divergency.Content.Dusts;
-using Divergency.Content.Projectiles.Hostile;
-using Divergency.Content.Projectiles.Magic;
+using Divergency.Content.Projectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ParticleLibrary;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Divergency.Common;
-using static ParticleLibrary.Particle;
-using Divergency.Content.Items.Weapons.LivingCore;
-using Divergency.Content.Projectiles;
-using Divergency.Common.Helpers;
-using Divergency.Common.Players;
 
 namespace Divergency.Content.NPCs.LivingGrove
 {

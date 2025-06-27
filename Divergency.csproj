@@ -13,7 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Content\Effects\SwordTrailShader\Testing.fx" />
-    <None Remove="Content\Items\Weapons\LivingCore\CoreBarrageProj.png" />
     <None Remove="Content\NPCs\LivingGrove\CoreBlockadeRight.png" />
     <None Remove="Content\NPCs\LivingGrove\CorennectorProj.png" />
     <None Remove="Content\NPCs\LivingGrove\MarkscoreArrowHoming.png" />
@@ -31,8 +30,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\ParticleUtils\" />
-    <Folder Include="Common\Systems\SkillNodes\ActiveSkills\" />
-    <Folder Include="Common\Systems\SkillNodes\PassiveSkills\" />
     <Folder Include="Localization\" />
   </ItemGroup>
   <ItemGroup>

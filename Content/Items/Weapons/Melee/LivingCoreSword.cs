@@ -15,7 +15,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Items.Weapons.LivingCore
+namespace Divergency.Content.Items.Weapons.Melee
 {
     public class LivingCoreSword : ModItem
     {
@@ -118,7 +118,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
                 if (freezeFrames > 0)
                 {
-                    SwordSwing proj = (projectile.ModProjectile as SwordSwing);
+                    SwordSwing proj = projectile.ModProjectile as SwordSwing;
                     proj.framesPassed -= 1f / proj.Updates;
                 }
             }
@@ -128,7 +128,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
         public int AttackCounter = 1;
 
         public override int Updates => 10;
-        public override string SwordTexture => "Divergency/Content/Items/Weapons/LivingCore/LivingCoreSword";
+        public override string SwordTexture => "Divergency/Content/Items/Weapons/Melee/LivingCoreSword";
         public override Vector2 Pivot => new Vector2(0, 55);
 
         public override TimedFunction[] SwingFunctions => new TimedFunction[]

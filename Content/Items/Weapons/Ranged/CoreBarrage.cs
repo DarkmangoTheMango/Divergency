@@ -1,6 +1,5 @@
 ﻿using Divergency.Common.Helpers;
 using Divergency.Content.Dusts;
-using Divergency.Content.Items.Weapons.LivingCore;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System;
@@ -10,7 +9,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria;
-namespace Divergency.Content.Items.Weapons.LivingCore
+namespace Divergency.Content.Items.Weapons.Ranged
 {
     public class CoreBarrage : ModItem, IReloadWeapon
     {
@@ -129,7 +128,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             Player player = Main.player[Projectile.owner];
 
             Timer++;
-            if (player.noItems || player.CCed || player.dead || !player.active || !Main.mouseLeft || (player.HeldItem.ModItem as CoreBarrage) == null)
+            if (player.noItems || player.CCed || player.dead || !player.active || !Main.mouseLeft || player.HeldItem.ModItem as CoreBarrage == null)
                 Projectile.Kill();
 
 
@@ -157,7 +156,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
 
             if (Timer == 10)
             {
-                Projectile.NewProjectile(Projectile.InheritSource(Projectile), Projectile.Center, Projectile.velocity * 5, ModContent.ProjectileType<CoreBarrageBullet>(), Projectile.damage + player.GetModPlayer<CoreBarragePlayer>().ShotCounterTotal, 2, Projectile.owner, Projectile.whoAmI);
+                Projectile.NewProjectile(Terraria.Entity.InheritSource(Projectile), Projectile.Center, Projectile.velocity * 5, ModContent.ProjectileType<CoreBarrageBullet>(), Projectile.damage + player.GetModPlayer<CoreBarragePlayer>().ShotCounterTotal, 2, Projectile.owner, Projectile.whoAmI);
                 SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/MuscoreShoot"), player.Center);
                 Timer = 0;
 
@@ -199,7 +198,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 // If image isn't centered or symmetrical you can specify origin of the sprite
                 // (0,0) for the upper-left corner
                 float offsetX = 40f;
-                origin.X = (float)(Projectile.spriteDirection == 1 ? sourceRectangle.Width - offsetX : offsetX);
+                origin.X = Projectile.spriteDirection == 1 ? sourceRectangle.Width - offsetX : offsetX;
 
                 // If sprite is vertical
                 // float offsetY = 20f;
@@ -279,7 +278,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
                 {
                     Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + (velocity * 15f), ModContent.DustType<Glow>(), velocity * 1.1f, 0, Color.LimeGreen, 0.1f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity * 15f, ModContent.DustType<Glow>(), velocity * 1.1f, 0, Color.LimeGreen, 0.1f);
 
 
                 }
@@ -302,7 +301,7 @@ namespace Divergency.Content.Items.Weapons.LivingCore
             {
                 Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
 
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + (velocity), ModContent.DustType<Glow>(), velocity * 1.2f, 0, Color.LimeGreen, 1f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, ModContent.DustType<Glow>(), velocity * 1.2f, 0, Color.LimeGreen, 1f);
 
 
 
