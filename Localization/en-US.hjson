@@ -131,16 +131,6 @@ Mods: {
 				DisplayName: High Shot
 			}
 
-			LivingShardSlayerExplosion: {
-				"": Living Shard Slayer
-				DisplayName: Living Shard Slayer Explosion
-			}
-
-			LivingShardSlayerPro: {
-				"": Living Shard Slayer
-				DisplayName: Living Shard Slayer Pro
-			}
-
 			LivingWoodBullet: {
 				"": Forest Ripper
 				DisplayName: Living Wood Bullet
@@ -384,11 +374,9 @@ Mods: {
 			MarkscoreArrowHoming.DisplayName: Markscore Arrow Homing
 			BigGuySpike.DisplayName: Big Guy Spike
 			CorescillationProj2.DisplayName: Corescillation Proj2
-			WraithIndicator.DisplayName: Wraith Indicator
-			WraithIndicator2.DisplayName: Wraith Indicator2
-			FireBreathWraith.DisplayName: Fire Breath Wraith
-			LivingCoreSwordSwing2.DisplayName: Living Core Sword Swing2
-			ProxRingProj.DisplayName: Prox Ring Proj
+			ShadowlashPro.DisplayName: Shadowlash Pro
+			BloomstickBullet.DisplayName: Bloomstick Bullet
+			ShotgunShell.DisplayName: Shotgun Shell
 		}
 
 		Biomes: {
@@ -676,13 +664,9 @@ Mods: {
 				Tooltip: Uses doors as ammo
 			}
 
-			LivingShardSlayer: {
-				DisplayName: Living Core Slayer
-				Tooltip:
-					'''
-					Overheats when used enough
-					<right> to throw the gun when overheated, detonating it on impact
-					'''
+			Bloomstick: {
+				DisplayName: Bloomstick
+				Tooltip: 50% bark, 50% bite
 			}
 
 			LivingWoodShotgun: {
@@ -1031,6 +1015,11 @@ Mods: {
 
 			SettleTheCore: {
 				DisplayName: Settle The Core
+				Tooltip: ""
+			}
+
+			Shadowlash: {
+				DisplayName: Shadowlash
 				Tooltip: ""
 			}
 		}
