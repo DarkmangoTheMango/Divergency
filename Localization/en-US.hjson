@@ -377,6 +377,9 @@ Mods: {
 			ShadowlashPro.DisplayName: Shadowlash Pro
 			BloomstickBullet.DisplayName: Bloomstick Bullet
 			ShotgunShell.DisplayName: Shotgun Shell
+			FireBreathWraith.DisplayName: Fire Breath Wraith
+			WraithIndicator.DisplayName: Wraith Indicator
+			WraithIndicator2.DisplayName: Wraith Indicator2
 		}
 
 		Biomes: {

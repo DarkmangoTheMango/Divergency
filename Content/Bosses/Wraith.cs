@@ -287,20 +287,9 @@ namespace Divergency.Content.Bosses
             {
                 return true;
 
-        }
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            if (State == (float)Phase.Float || noContactDamage)
-            {
-                return false;
-
-            }
-            else
-            {
-                return true;
-
             }
         }
+        
     
         private void Float()
         {
@@ -737,7 +726,7 @@ namespace Divergency.Content.Bosses
             if (NPC.ai[0] == 1)
             {
                 NPC.ai[3] = 3;
-                DivergencyDraw.ProxRing(NPC.Center, Color.LimeGreen, 0.7f);
+                //DivergencyDraw.ProxRing(NPC.Center, Color.LimeGreen, 0.7f);
 
                 openMouth = true;
                 NPC.frame.X += 180;
