@@ -369,7 +369,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0), ModContent.ProjectileType<CoreElementalDeathProj>(), 120, 2f);
                 float radius = 2;
                 int numberOfDusts = 20;
-                target.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 10;
+                CameraSystem.ScreenShake(10);
 
                 for (int i = 0; i < 30; i++)
                 {

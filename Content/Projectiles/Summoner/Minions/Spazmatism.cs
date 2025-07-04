@@ -115,9 +115,9 @@ namespace Divergency.Content.Projectiles.Summoner.Minions
 
 			if (Main.rand.NextBool(4)) { hit.Crit = true; }
 
-			player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 5;
+            CameraSystem.ScreenShake(3);
 
-			SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
 
 			Projectile.velocity *= Projectile.velocity.SafeNormalize(Vector2.One) * 3f;
 			Projectile.velocity = Projectile.velocity.RotatedByRandom(3.6f);

@@ -232,7 +232,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
         {
             Player player = Main.player[Projectile.owner];
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
+            CameraSystem.ScreenShake(2);
 
             Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center + (Main.rand.NextVector2Circular(1f, 1f) * target.width), Vector2.Zero, ModContent.ProjectileType<BlueRoseFlash>(), 0, 0f, Projectile.owner);
             Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center + (Main.rand.NextVector2Circular(1f, 1f) * target.width), Vector2.Zero, ModContent.ProjectileType<BlueRoseFlash2>(), 0, 0f, Projectile.owner);

@@ -395,7 +395,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
                 hitBullets = 0;
 
                 Player player = Main.LocalPlayer;
-                player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 12;
+                CameraSystem.ScreenShake(12);
 
                 DivergencyDraw.SpawnExplosion(npc.Center, Color.LimeGreen, DustID.TerraBlade, 0);
                 for (int i = 0; i < 20; i++)

@@ -110,7 +110,7 @@ namespace Divergency.Content.Projectiles.Melee
          public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player Player = Main.player[Projectile.owner];
-            Player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 8;
+            CameraSystem.ScreenShake(8);
             if (target.lifeMax <= 500)
             {
                 target.AddBuff(ModContent.BuffType<Earrape>(), 120);

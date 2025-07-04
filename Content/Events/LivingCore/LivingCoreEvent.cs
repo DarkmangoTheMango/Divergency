@@ -86,7 +86,7 @@ namespace Divergency.Content.Events.LivingCore
 
             Player player = Main.LocalPlayer;
             // TODO: Add extension methods for fetching globals to allow player.Divergency().X = X;
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 50;
+            CameraSystem.ScreenShake(50);
 
             int left = i - Main.tile[i, j].TileFrameX / 18;
             int top = j - Main.tile[i, j].TileFrameY / 18;

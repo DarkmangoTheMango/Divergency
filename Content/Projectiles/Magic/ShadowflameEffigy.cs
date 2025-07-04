@@ -79,7 +79,7 @@ namespace Divergency.Content.Projectiles.Magic
 
             if (Projectile.ai[1] == 1)
             {
-                player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 5;
+                CameraSystem.ScreenShake(5);
             }
         }
 

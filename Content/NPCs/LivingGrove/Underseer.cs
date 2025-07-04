@@ -114,7 +114,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     {
 
                         player.KillMe(PlayerDeathReason.LegacyDefault(), 100, 0, false);
-                        player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 35;
+                        CameraSystem.ScreenShake(35);
 
                         DivergencyDraw.SpawnExplosion(player.Center, Color.LimeGreen, DustID.PortalBoltTrail, 0);
                         for (int i = 0; i < 20; i++)

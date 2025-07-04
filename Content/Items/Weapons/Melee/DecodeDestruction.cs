@@ -102,7 +102,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
+            CameraSystem.ScreenShake(1);
 
 
 

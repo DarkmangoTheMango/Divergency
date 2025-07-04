@@ -118,7 +118,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 if (screamtimer == 15)
                 {
                     player.velocity.X -= 30;
-                    player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 25;
+                    CameraSystem.ScreenShake(25);
                     DivergencyDraw.SpawnRing(NPC.Top, Color.LimeGreen, 0.13f * 2f, 0.9f * 2, 2 * 2);
                     DivergencyDraw.SpawnRing(NPC.Top, Color.LimeGreen, 0.13f * 2, 0.9f * 2, 2 * 2);
                     DivergencyDraw.SpawnRing(NPC.Top, Color.LimeGreen, 0.13f * 2, 0.9f * 2, 2 * 2);

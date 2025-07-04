@@ -106,7 +106,7 @@ namespace Divergency.Content.Projectiles.Magic
             }
             DivergencyDraw.SpawnRing(Projectile.Center, new Color(109, 223, 94));
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 4;
+            CameraSystem.ScreenShake(4);
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, Vector2.Zero, ModContent.ProjectileType<LivingExplosion>(), Projectile.damage, Projectile.knockBack / 2, Projectile.owner);
         }
 
@@ -281,7 +281,7 @@ namespace Divergency.Content.Projectiles.Magic
             }
             DivergencyDraw.SpawnRing(Projectile.Center, new Color(109, 223, 94));
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 4;
+            CameraSystem.ScreenShake(4);
         }
 
         public Trail trail;

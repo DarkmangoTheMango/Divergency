@@ -61,7 +61,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
         {
             float rotation = velocity.ToRotation();
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3f;
+            CameraSystem.ScreenShake(3);
 
             Vector2 offset = new Vector2(0.8f, 0).RotatedBy(rotation);
 

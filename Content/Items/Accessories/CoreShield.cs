@@ -223,7 +223,7 @@ namespace Divergency.Content.Items.Accessories
                     }
                     DivergencyDraw.SpawnRing(Projectile.Center, new Color(109, 223, 94));
 
-                    player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 4;
+                    CameraSystem.ScreenShake(4);
                     player.velocity.X /= 15;
                 }
            
@@ -346,7 +346,7 @@ namespace Divergency.Content.Items.Accessories
                 }
                 DivergencyDraw.SpawnRing(Projectile.Center, new Color(109, 223, 94));
 
-                player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 4;
+                CameraSystem.ScreenShake(4);
                 player.velocity.X /= 15;
             }
         }

@@ -329,7 +329,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                 if (Projectile.timeLeft == 1)
                 {
                     Player player = Main.LocalPlayer;
-                    player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 12;
+                    CameraSystem.ScreenShake(12);
 
                     DivergencyDraw.SpawnExplosion(Projectile.Center, Color.LimeGreen, DustID.PortalBoltTrail, 0);
                     for (int i = 0; i < 20; i++)

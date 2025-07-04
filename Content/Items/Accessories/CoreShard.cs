@@ -146,7 +146,7 @@ namespace Divergency.Content.Items.Accessories
 
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 3;
+            CameraSystem.ScreenShake(3);
 
             for (int j = 0; j < 20; j++)
             {

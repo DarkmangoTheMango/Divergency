@@ -74,12 +74,12 @@ namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
       
                 ParticleManager.NewParticle(player.Center, player.velocity * 0, ParticleManager.NewInstance<ResetParticle>(), Color.Purple, 8f);
 
-            
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 20;
 
-            
+            CameraSystem.ScreenShake(20);
 
-            
+
+
+
             SoundEngine.PlaySound(new SoundStyle($"{nameof(Divergency)}/Assets/Sounds/Tiles/Reset")
 
             {

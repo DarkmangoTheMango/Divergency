@@ -80,7 +80,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
                 Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, new Vector2(Main.rand.NextFloat(-5, 6), Main.rand.NextFloat(-20, -10)), ModContent.ProjectileType<BoneDoorBone>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3f;
+            CameraSystem.ScreenShake(3);
         }
 
         public override bool PreDraw(ref Color lightColor)

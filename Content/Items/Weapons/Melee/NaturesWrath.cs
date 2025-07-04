@@ -164,7 +164,7 @@ namespace Divergency.Content.Items.Weapons.Melee
                 if (projectile.type == ModContent.ProjectileType<LivingBranch>() && projectile.active && Projectile.Hitbox.Intersects(projectile.Hitbox) && projectile.friendly)
                 {
                     projectile.Kill();
-                    player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 5;
+                    CameraSystem.ScreenShake(5);
 
                     SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.position);
                 }

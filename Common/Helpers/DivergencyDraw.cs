@@ -1,4 +1,5 @@
-﻿using Divergency.Common.Players;
+﻿using Divergency;
+using Divergency.Common.Players;
 using Divergency.Content.Bosses;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -306,7 +307,7 @@ public class Explosion_Visual : ModProjectile
         {
             Glow = true;
             Projectile.alpha = 255;
-            Main.LocalPlayer.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3;
+            CameraSystem.ScreenShake(3);
             if (!noDust)
             {
                 for (int i = 0; i < 15; i++)

@@ -86,7 +86,7 @@ namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
                 player.GetModPlayer<CorePuzzle>().LivingCoreAmount = 1;
                 ParticleManager.NewParticle(player.Center, player.velocity * 3, ParticleManager.NewInstance<LivingCoreInsertParticle>(), Color.Purple, 1f);
 
-                player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 20;
+                CameraSystem.ScreenShake(20);
 
             for (int jo = 0; jo < 1000; jo++)
             {

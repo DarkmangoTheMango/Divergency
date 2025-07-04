@@ -249,7 +249,7 @@
                         WorldGen.KillTile(checkX, checkY - 1);
 
 
-                        player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 20;
+                        CameraSystem.ScreenShake(20);
                         for (int j = 0; j < 10; j++)
                         {
                             ParticleManager.NewParticle(Projectile.Center, speed * 5, ParticleManager.NewInstance<StarParticle>(), new Color(0.50f, 2f, 0.5f, 0), 0.3f);

@@ -91,7 +91,7 @@ namespace Divergency.Content.Tiles.LivingGrove.CorePuzzle
             {
 
             }
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 20;
+            CameraSystem.ScreenShake(20);
 
             player.GetModPlayer<CorePuzzle>().LivingCoreAmount = 3;
 

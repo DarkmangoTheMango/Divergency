@@ -66,7 +66,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
             SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Impacts/WoodenDoorBreak") with { PitchVariance = 0.4f });
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3f;
+            CameraSystem.ScreenShake(3);
 
             if (!Main.dedServ)
             {

@@ -99,7 +99,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 3;
+            CameraSystem.ScreenShake(3);
 
             
 
@@ -297,7 +297,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 4;
+            CameraSystem.ScreenShake(4);
             player.SetImmuneTimeForAllTypes(60);
   
             bool knockbacked = false;
@@ -539,7 +539,7 @@ namespace Divergency.Content.Items.Weapons.Melee
         {
             Player player = Main.player[Projectile.owner];
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 1;
+            CameraSystem.ScreenShake(4);
             for (int i = 0; i < 2; i++)
             {
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), target.Center, new Vector2(7, 10).RotateRandom(3), ModContent.ProjectileType<SacrifeBallThing>(), 0, 0, Projectile.owner); //spawn gauge energy

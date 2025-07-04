@@ -73,7 +73,7 @@ namespace Divergency.Content.Projectiles.Ranged.Doors
 
             Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<MushroomDoorWave>(), 0, 0, Projectile.owner);
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity = 3f;
+            CameraSystem.ScreenShake(3);
         }
 
         public override bool PreDraw(ref Color lightColor)

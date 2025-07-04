@@ -141,7 +141,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                     if (NPC.collideY)
                     {
-                        player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 12;
+                        CameraSystem.ScreenShake(12);
                         NPC.Center += new Vector2(0, 5);
                         Vector2 spawnPosition = NPC.Center;
 
@@ -343,7 +343,7 @@ namespace Divergency.Content.NPCs.LivingGrove
 
                     if (NPC.collideY)
                     {
-                        player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 12;
+                        CameraSystem.ScreenShake(12);
                         NPC.Center += new Vector2(0, 5);
                         Vector2 spawnPosition = NPC.Center;
 

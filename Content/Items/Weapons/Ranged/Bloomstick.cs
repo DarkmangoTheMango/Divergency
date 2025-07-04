@@ -102,7 +102,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
                 Dust.NewDustPerfect(position, DustID.Smoke, newVelocity, 100, default, 1.5f).noGravity = true;
             }
 
-            player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 2;
+            CameraSystem.ScreenShake(2);
             
             return false;
         }
