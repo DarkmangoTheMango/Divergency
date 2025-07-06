@@ -32,8 +32,6 @@ namespace Divergency.Content.Items.Weapons.Melee
         //{
         //    Player player = Main.player[projectile.owner];
 
-        //    player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 7;
-
         //    if (Main.rand.NextBool(10))
         //    {
         //        target.AddBuff(BuffID.Confused, 600);

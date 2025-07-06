@@ -1,7 +1,11 @@
 using Divergency.Common.Helpers;
+using Divergency.Content.Items.Weapons.Magic;
 using Divergency.Content.Items.Weapons.Melee;
+using Divergency.Content.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ParticleLibrary;
+using Stratum.Content.Particles;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -25,20 +29,17 @@ namespace Divergency.Content.Items.Weapons.Ranged
             Item.Size = new Vector2(16, 16);
             Item.scale = 0.5f;
 
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = DamageClass.Ranged;
             Item.noMelee = true;
-            Item.damage = 1;
-            Item.knockBack = 1;
-
-            Item.axe = 11;
-            Item.tileBoost = 1;
+            Item.damage = 120;
+            Item.knockBack = 5;
 
             Item.shoot = ModContent.ProjectileType<WrathfirePro>();
             Item.shootSpeed = 1;
 
             Item.channel = true;
             Item.noUseGraphic = true;
-            Item.useTime = Item.useAnimation = 5;
+            Item.useTime = Item.useAnimation = 60;
             Item.useStyle = ItemUseStyleID.Shoot;
 
             Item.UseSound = SoundID.Item73;
@@ -59,6 +60,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
         public override bool ShouldUpdatePosition() => false;
 
         public override bool? CanCutTiles() => false;
+
+        float charge;
 
         public override void SetStaticDefaults()
         {
@@ -95,6 +98,8 @@ namespace Divergency.Content.Items.Weapons.Ranged
             player.ChangeDir(Projectile.direction);
             Projectile.spriteDirection = Projectile.direction;
 
+            shakeOffset = Main.rand.NextVector2Circular(1, 1) * (Math.Clamp(charge, 0, 60) * 0.05f);
+
             Projectile.velocity += (player.DirectionTo(Main.MouseWorld) - Projectile.velocity) * 0.2f;
             Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX);
             Projectile.Center = player.RotatedRelativePoint(player.MountedCenter, false, true) + Projectile.velocity * 30f;
@@ -107,13 +112,28 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
             Dust.NewDustPerfect(player.RotatedRelativePoint(player.MountedCenter, false, true) + Projectile.velocity * 90f, DustID.Terra, -Projectile.velocity * 3, 0, default, 1).noGravity = true;
             Lighting.AddLight(Projectile.Center, new Vector3(0, 1, 0) * 0.1f);
+
+            charge++;
+
+            if (charge == 120)
+            {
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/RechargeDash"), player.Center);
+            }
+
+            if (charge >= 120 && !player.channel)
+            {
+                Projectile.Kill();
+                Projectile.NewProjectile(Entity.GetSource_FromAI(), player.Center, Vector2.Normalize(Projectile.velocity) * 20, ModContent.ProjectileType<WrathBlast>(), 1, Projectile.knockBack, Projectile.owner, 0, Projectile.damage);
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot"), player.Center);
+                CameraSystem.ScreenShake(5);
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + shakeOffset;
 
             int frameHeight = texture.Height / Main.projFrames[Projectile.type];
             int startY = frameHeight * Projectile.frame;
@@ -145,8 +165,6 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override string Texture => "Divergency/Assets/Textures/Empty";
 
-        public override void Kill(int timeLeft) => SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
-
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
@@ -155,12 +173,12 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 1;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            Projectile.Size = new Vector2(50);
+            Projectile.Size = new Vector2(16);
             Projectile.scale = 1f;
 
             Projectile.tileCollide = true;
@@ -171,32 +189,117 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
         public override void AI()
         {
-
+            ParticleManager.NewParticle<StarParticle2>(Projectile.Center, Projectile.velocity.RotatedByRandom(0.2f) * -Main.rand.Next(1, 2), default, 0.2f);
+            Projectile.velocity.Y += 0.1f;
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        public override void OnKill(int timeLeft)
         {
-            return false;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+            Projectile.NewProjectile(Entity.GetSource_Death(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WrathBlast2>(), (int)Projectile.ai[1], Projectile.knockBack, Projectile.owner);
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/WrathfireBlast"), Projectile.Center);
         }
 
         public Trail trail;
+        public Trail trail2;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Shadow").Value;
+            Texture2D trailTexture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Trails/Light").Value;
 
             if (trail == null)
             {
                 trail = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(60f), (p) => Projectile.GetAlpha(new Color(0, 255, 0, 0)) * (float)Math.Pow(1f - p, 2f));
                 trail.drawOffset = Projectile.Size / 2f;
             }
+            if (trail2 == null)
+            {
+                trail2 = new Trail(trailTexture, Trail.DefaultPass, (p) => new Vector2(60f), (p) => Projectile.GetAlpha(new Color(255, 255, 255, 0)) * (float)Math.Pow(1f - p, 2f));
+                trail2.drawOffset = Projectile.Size / 2f;
+            }
 
             trail.Draw(Projectile.oldPos, timer);
+            trail2.Draw(Projectile.oldPos, timer);
             timer -= 0.05f;
+
+            return false;
+        }
+    }
+
+    public class WrathBlast2 : ModProjectile
+    {
+        public override bool ShouldUpdatePosition() => false;
+
+        public override string Texture => "Divergency/Assets/Textures/ParticleTextures/AnimatedFire";
+
+        public override bool? CanDamage() => Projectile.ai[0] >= 30;
+
+        public override void SetStaticDefaults()
+        {
+            Main.projFrames[Projectile.type] = 7;
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.friendly = true;
+
+            Projectile.Size = new Vector2(500);
+            Projectile.scale = 1f;
+
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = false;
+
+            Projectile.aiStyle = -1;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            Projectile.rotation = Main.rand.NextFloat(MathHelper.Pi);
+            Projectile.hide = true;
+        }
+
+        public override void AI()
+        {
+            if (Projectile.ai[0] == 20)
+            {
+                CombatText.NewText(new Rectangle((int)Projectile.Center.X, (int)Projectile.Center.Y, 0, 0), Color.Lime, "BOOM!", true);
+                CameraSystem.ScreenShake(50, 0.95f, Projectile.Center);
+                
+                ParticleManager.NewParticle<StarParticle2>(Projectile.Center, Vector2.Zero, default, 10);
+                ParticleManager.NewParticle<Flash>(Projectile.Center, Vector2.Zero, default, 0);
+
+                for (int k = 0; k < 60; k++)
+                    ParticleManager.NewParticle<StarParticle2>(Projectile.Center, Main.rand.NextVector2Circular(1, 1) * 60, default, 1);
+            }
+
+            if (++Projectile.ai[0] >= 20)
+            {
+                Projectile.hide = false;
+                Projectile.scale += 0.1f;
+
+                if (++Projectile.frameCounter >= 5)
+                {
+                    Projectile.frameCounter = 0;
+                    if (++Projectile.frame >= Main.projFrames[Projectile.type]) Projectile.Kill();
+                }
+            }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+
+            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameY = frameHeight * Projectile.frame;
+
+            Rectangle sourceRectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+
+            float t = (float)(Math.Sin(Main.GameUpdateCount * 0.5f) * 0.5f + 0.5f);
+            Color interpolatedColor = Color.Lerp(new(0, 255, 0, 0), new(255, 255, 255, 0), t);
+
+            Main.EntitySpriteDraw(texture, drawPosition, sourceRectangle, Projectile.GetAlpha(interpolatedColor), Projectile.rotation, sourceRectangle.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0f);
 
             return false;
         }

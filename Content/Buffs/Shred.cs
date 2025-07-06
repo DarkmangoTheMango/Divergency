@@ -60,7 +60,7 @@ namespace Divergency.Content.Buffs
             if (shred)
 			{
 				Player player = Main.LocalPlayer;
-				player.GetModPlayer<ScreenShakePlayer>().ScreenShakeIntensity += 5f;
+				CameraSystem.ScreenShake(5);
 
 				SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Impacts/FleshyExplosion"), npc.Center);
 				for (int i = 0; i < 20; i++) { Dust.NewDustPerfect(npc.Center, ModContent.DustType<ShredBlood>(), Main.rand.NextVector2Circular(1f, 1f) * 10f, 50, default, 2f).noGravity = true; }

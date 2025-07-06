@@ -379,6 +379,12 @@ Mods: {
 			ShotgunShell.DisplayName: Shotgun Shell
 			WrathfirePro.DisplayName: Wrathfire Pro
 			WrathBlast.DisplayName: Wrath Blast
+			FireBreathWraith.DisplayName: Fire Breath Wraith
+			WraithIndicator.DisplayName: Wraith Indicator
+			WraithIndicator2.DisplayName: Wraith Indicator2
+			ProxRingProj.DisplayName: Prox Ring Proj
+			WraithFire.DisplayName: Wraith Fire
+			WrathBlast2.DisplayName: Wrath Blast2
 		}
 
 		Biomes: {
