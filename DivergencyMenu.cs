@@ -1,26 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Divergency.Assets.Backgrounds;
 using ReLogic.Content;
-using Terraria.ModLoader;
 
-namespace Divergency
+namespace Divergency;
+
+public class DivergencyMenu : ModMenu
 {
-    public class DivergencyMenu : ModMenu
-	{
-		public override Asset<Texture2D> Logo => Mod.Assets.Request<Texture2D>("Assets/Textures/Title");
+    public override Asset<Texture2D> Logo => Mod.Assets.Request<Texture2D>("Assets/Textures/Title");
 
-		public override int Music => MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/TheDivergencyIsReal");
+    public override ModSurfaceBackgroundStyle MenuBackgroundStyle => ModContent.GetInstance<LivingCoreBiomeSurfaceStyle>();
 
-        public override ModSurfaceBackgroundStyle MenuBackgroundStyle => ModContent.Find<ModSurfaceBackgroundStyle>("Divergency/LivingCoreBiomeSurfaceStyle");
+    public override int Music => MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/MainMenu");
 
-        //public override string  => "(Divergency) Living Grove";
+    public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
+    {
+        drawColor = Color.White;
 
-        public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
-        {
-			logoRotation = 0f;
-			logoScale = 1f;
-
-            return true;
-        }
+        return base.PreDrawLogo(spriteBatch, ref logoDrawCenter, ref logoRotation, ref logoScale, ref drawColor);
     }
 }

@@ -1,5 +1,4 @@
- = Divergency
-author = The Divergency Team
-version = 0.0.0.1
+displayName = Divergency
+author = Brise
+version = 0.0
 modReferences = ParticleLibrary
-version = 0.1

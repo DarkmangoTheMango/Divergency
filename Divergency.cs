@@ -1,10 +1,11 @@
-using Divergency.Common.Helpers;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+global using Microsoft.Xna.Framework;
+global using Microsoft.Xna.Framework.Graphics;
+global using Terraria;
+global using Terraria.DataStructures;
+global using Terraria.ID;
+global using Terraria.ModLoader;
 using ReLogic.Content;
 using System.Reflection;
-using Terraria;
-using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
 namespace Divergency
@@ -33,9 +34,14 @@ namespace Divergency
                 Instance = null;
             }
         }
+
+        internal static Asset<Effect> Supernova;
+
         public override void Load()
         {
             BeamShader = ModContent.Request<Effect>("Divergency/Common/Helpers/Beam", (AssetRequestMode)1).Value;
+            Supernova = ModContent.Request<Effect>("Divergency/Content/Effects/Supernova");
+            TrailShader = ModContent.Request<Effect>("Divergency/Content/Effects/Trailshader", (AssetRequestMode)1).Value;
         }
     }
 

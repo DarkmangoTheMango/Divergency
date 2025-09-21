@@ -1,5 +1,12 @@
 Mods: {
 	Divergency: {
+		Achievements: {
+			TestAchievement: {
+				Description: yummy mulch...
+				FriendlyName: Mulch
+			}
+		}
+
 		Projectiles: {
 			CirclePulse_Visual: {
 				"": Pulse
@@ -385,6 +392,11 @@ Mods: {
 			ProxRingProj.DisplayName: Prox Ring Proj
 			WraithFire.DisplayName: Wraith Fire
 			WrathBlast2.DisplayName: Wrath Blast2
+			IronStarPro.DisplayName: Iron Star Pro
+			Supernova.DisplayName: Supernova
+			PhotosynthesisBolt.DisplayName: Photosynthesis Bolt
+			CoreCrystalizePro.DisplayName: Core Crystalize Pro
+			TestProjectile.DisplayName: Test Projectile
 		}
 
 		Biomes: {
@@ -480,6 +492,11 @@ Mods: {
 				DisplayName: Dice6
 				Description: Mods.Divergency.Buffs.Dice6.Description
 			}
+
+			SavageTalismanDebuff: {
+				DisplayName: Savage Talisman Debuff
+				Description: Mods.Divergency.Buffs.SavageTalismanDebuff.Description
+			}
 		}
 
 		Items: {
@@ -554,11 +571,7 @@ Mods: {
 
 			SavageTalisman: {
 				DisplayName: Savage Talisman
-				Tooltip:
-					'''
-					Critical strikes inflict Shred [i:5198] 
-					7% increased critical strike chance
-					'''
+				Tooltip: Hi!
 			}
 
 			SageMask: {
@@ -1035,6 +1048,36 @@ Mods: {
 				DisplayName: Wrathfire
 				Tooltip: ""
 			}
+
+			IronStar: {
+				DisplayName: Iron Star
+				Tooltip: ""
+			}
+
+			Photosynthesis: {
+				DisplayName: Photosynthesis
+				Tooltip: ""
+			}
+
+			CoreCrystalize: {
+				DisplayName: Core Crystalize
+				Tooltip: ""
+			}
+
+			MulchBlock: {
+				DisplayName: Mulch Block
+				Tooltip: ""
+			}
+
+			TheGlabomator: {
+				DisplayName: The Glabomator
+				Tooltip: ""
+			}
+
+			Corrage: {
+				DisplayName: Corrage
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
@@ -1143,5 +1186,7 @@ Mods: {
 				}
 			}
 		}
+
+		ResourceDisplaySets.OtherworldDisplaySet.DisplayName: Otherworld Display Set
 	}
 }
