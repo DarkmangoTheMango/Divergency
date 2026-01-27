@@ -43,9 +43,7 @@ public class SavageTalismanPlayer : ModPlayer
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
         if (Equipped)
-        {
             target.AddBuff(ModContent.BuffType<SavageTalismanDebuff>(), 60);
-        }
     }
 }
 
@@ -55,6 +53,7 @@ public class SavageTalismanDebuff : ModBuff
     {
         Main.debuff[Type] = true;
     }
+
     public override void Update(NPC npc, ref int buffIndex)
     {
         npc.GetGlobalNPC<SavageTalismanNPC>().Shred = true;
@@ -76,6 +75,9 @@ public class SavageTalismanNPC : GlobalNPC
 
     public override void OnKill(NPC npc)
     {
+        if (!Shred)
+            return;
+
         CameraSystem.ScreenShake(5, 0.9f, npc.Center);
         SoundEngine.PlaySound(new SoundStyle($"Divergency/Assets/Sounds/Custom/Blood{Main.rand.Next(3)}"), npc.Center);
 
