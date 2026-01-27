@@ -497,6 +497,11 @@ Mods: {
 				DisplayName: Savage Talisman Debuff
 				Description: Mods.Divergency.Buffs.SavageTalismanDebuff.Description
 			}
+
+			CoreBurn: {
+				Description: Mods.Divergency.Buffs.CoreBurn.Description
+				DisplayName: Core Burn
+			}
 		}
 
 		Items: {
@@ -847,8 +852,8 @@ Mods: {
 			}
 
 			CradleWoodItem: {
-				DisplayName: Cradle Wood
-				Tooltip: Used for crafting living core items
+				DisplayName: Living Oak Wood
+				Tooltip: ""
 			}
 
 			FancyCoreCrystalItem: {
@@ -1077,6 +1082,11 @@ Mods: {
 			Corrage: {
 				DisplayName: Corrage
 				Tooltip: ""
+			}
+
+			CoreBurnIcon: {
+				Tooltip: ""
+				DisplayName: Core Burn Icon
 			}
 		}
 

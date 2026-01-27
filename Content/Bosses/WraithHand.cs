@@ -13,6 +13,7 @@ using Divergency.Common.Helpers;
 using Divergency.Content.Projectiles.Hostile;
 using Terraria.Utilities;
 using System.Diagnostics.Metrics;
+using Divergency.Content.Buffs;
 
 
 
@@ -397,7 +398,45 @@ namespace Divergency.Content.Bosses
                         }
                     }
                 }
-            
+            if (cachedNPC.ai[3] == 4)
+                {
+                    Player player = Main.player[NPC.target];
+
+                    NPC.ai[0]++;
+                    if (NPC.ai[0] == 1)
+                    {
+                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, new Vector2(0), ModContent.ProjectileType<WraithIndicator2>(), 0, 0);
+                        SoundEngine.PlaySound(new SoundStyle($"{nameof(Divergency)}/Assets/Sounds/Wraith/Indicator")
+
+                        {
+                            Pitch = Main.rand.NextFloat(1f, 3f),
+                            Volume = 0.7f,
+                            MaxInstances = 5,
+
+                        });
+                    }
+                    NPC.frame.Y = 0 * NPC.frame.Height;
+                    Vector2 vector; float speed; float turnResistance = 10f; bool toNPC = false;
+                    Vector2 WraithPos = cachedNPC.Center;
+                    NPC.spriteDirection = -NPC.direction;
+                    NPC.rotation = cachedNPC.rotation;
+                    speed = NPC.Distance(WraithPos);
+
+                    Vector2 moveTo = cachedNPC.Center + new Vector2(NPC.direction * 120, 0); ;
+                    Vector2 move = moveTo - NPC.Center;
+                    float magnitude = Magnitude(move);
+                    if (magnitude > speed)
+                    {
+                        move *= speed / magnitude;
+                    }
+
+                    move = (NPC.velocity * turnResistance + move) / (turnResistance + 2f);
+                    magnitude = Magnitude(move);
+                 
+                    
+                    NPC.velocity = move;
+                    NPC.TargetClosest(true);
+                }
                 
                     
                 
@@ -434,7 +473,10 @@ namespace Divergency.Content.Bosses
         private int counter1;
 
         public bool incircle { get; private set; }
-
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            target.AddBuff(ModContent.BuffType<CoreBurn>(), 120);
+        }
         public override void HitEffect(NPC.HitInfo hit)
         {
             if (Main.netMode == NetmodeID.Server)

@@ -7,6 +7,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria;
 using Microsoft.Xna.Framework;
+using Divergency.Content.Buffs;
 
 namespace Divergency.Content.Bosses
 {
@@ -66,6 +67,10 @@ namespace Divergency.Content.Bosses
             Lighting.AddLight(Projectile.position, RGB.X, RGB.Y, RGB.Z);
 
         }
-  
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<CoreBurn>(), 120);
+        }
     }
+  
 }

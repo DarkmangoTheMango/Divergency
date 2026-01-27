@@ -78,7 +78,7 @@ namespace Divergency.Content.Bosses
             RegenerateHand,
             FireBreathFollowUp,
             FireBreath,
-            
+            Shoot,
 
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -264,6 +264,9 @@ namespace Divergency.Content.Bosses
                     case (float)Phase.FireBreath:
                         FireBreath();
                             break;
+                    case (float)Phase.Shoot:
+                        Shoot();
+                        break;
 
                 }
             }
@@ -287,8 +290,27 @@ namespace Divergency.Content.Bosses
 
             }
         }
-        
-    
+
+        private void Shoot()
+        {
+            NPC.ai[0]++;
+            NPC.ai[3] = 4;
+            Player target = Main.player[NPC.target];
+            NPC.Move(target.Center, 1.75f);
+            NPC.direction = NPC.spriteDirection = (NPC.velocity.X >= 0f) ? 1 : -1;
+            NPC.rotation = NPC.velocity.ToRotation();
+            if (NPC.ai[0] == 480)
+            {
+                State = (float)Phase.Float;
+                NPC.frame.X = 0;
+                NPC.frame.Y = 0;
+                openMouth = false;
+                closeMouth = false;
+                laugh = false;
+                NPC.ai[0] = 0;
+                NPC.ai[4] = 0;
+            }
+        }
         private void Float()
         {
             NPC.immortal = false;
@@ -323,7 +345,7 @@ namespace Divergency.Content.Bosses
             {
                     NPC.Move(player.Center, 3f);
             }
-            if (NPC.ai[0] == 120)
+            if (NPC.ai[0] == 65)
             {
                 WeightedRandom<Phase> phase = new WeightedRandom<Phase>();
                 phase.Add(Phase.HandDash, 1f);
@@ -333,6 +355,8 @@ namespace Divergency.Content.Bosses
                 //phase.Add(Phase.FireBreathFollowUp, 1);
                 State = (float)phase.Get();
                 NPC.ai[0] = 0;
+                NPC.frame.X = 0;
+                NPC.frame.Y = 0;
 
             }
 
@@ -347,6 +371,11 @@ namespace Divergency.Content.Bosses
         {
             Player target = Main.player[NPC.target];
             NPC.ai[0]++;
+            if (NPC.ai[0] < 1)
+            {
+                NPC.frame.X = 180;
+                NPC.frame.Y = 180;
+            }
             if (NPC.ai[0] == 1)
             {
                 openMouth = true;
@@ -462,9 +491,9 @@ namespace Divergency.Content.Bosses
         private void HandDash2()
         {
 
-            Player target = Main.player [NPC.target];
-            NPC.ai [0]++;
-            if (NPC.ai[0]  == 1)
+            Player target = Main.player[NPC.target];
+            NPC.ai[0]++;
+            if (NPC.ai[0] == 1)
             {
                 SoundEngine.PlaySound(new SoundStyle($"{nameof(Divergency)}/Assets/Sounds/Wraith/Indicator")
 
@@ -474,10 +503,10 @@ namespace Divergency.Content.Bosses
                     MaxInstances = 5,
 
                 });
-            
-                    NPC.ai[3] = 2;
-               
-  
+
+                NPC.ai[3] = 2;
+
+
 
             }
             if (NPC.ai[0] == 60)
@@ -512,15 +541,15 @@ namespace Divergency.Content.Bosses
                 {
                     State = (float)Phase.Float;
 
+
+                    NPC.frame.X = 0;
+                    NPC.frame.Y = 0;
+                    openMouth = false;
+                    closeMouth = false;
+                    NPC.ai[0] = 0;
+                    NPC.ai[3] = 0;
+
                 }
-                 NPC.frame.X = 0;
-                NPC.frame.Y = 0;
-                openMouth = false;
-                closeMouth = false;
-                NPC.ai[0] = 0;
-                NPC.ai[3] = 0;
-
-
             }
         }
         private void RegenerateHand()
@@ -681,21 +710,19 @@ namespace Divergency.Content.Bosses
             Player target = Main.player[NPC.target];
             if (NPC.direction == 1)
             {
-                if (slowdowntimerminus < 60)
+                if (slowdowntimerminus < 120)
                     slowdowntimerminus++;
                 if (slowdowntimerminus > 0 && slowdowntimer > 0)
                     slowdowntimer--;
 
 
-                Main.NewText(slowdowntimerminus);
             }
             if (NPC.direction == -1)
             {
-                if (slowdowntimer < 60)
+                if (slowdowntimer < 120)
                     slowdowntimer++;
                 if (slowdowntimer > 0 && slowdowntimerminus > 0)
                     slowdowntimerminus--;
-                Main.NewText(slowdowntimer);
 
             }
             if (NPC.direction == -1)
@@ -719,12 +746,16 @@ namespace Divergency.Content.Bosses
             NPC.rotation = NPC.velocity.ToRotation();
             NPC.Move(target.Center, 1.75f);
             NPC.ai[0]++;
-            NPC.ai[2]++;
+            if (NPC.ai[0] > 90)
+            {
+                NPC.ai[2]++;
+            }
+           
             NPC.immortal = true;
             if (NPC.ai[0] == 1)
             {
                 NPC.ai[3] = 3;
-                //DivergencyDraw.ProxRing(NPC.Center, Color.LimeGreen, 0.7f);
+                DivergencyDraw.ProxRing(NPC.Center, Color.LimeGreen, 0.7f);
 
                 openMouth = true;
                 NPC.frame.X += 180;
@@ -742,7 +773,7 @@ namespace Divergency.Content.Bosses
 
                     ParticleManager.NewParticle(NPC.Center + new Vector2(Main.rand.NextFloat(5)), (NPC.rotation.ToRotationVector2() * Main.rand.NextFloat(14, 16)).RotatedByRandom(MathHelper.ToRadians(10)), ParticleManager.NewInstance<CoreFireParticle>(), Color.Purple, 1.6f);
                 }
-                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center + new Vector2(Main.rand.NextFloat(10)), NPC.rotation.ToRotationVector2() * Main.rand.NextFloat(6, 10), ModContent.ProjectileType<FireBreathWraith>(), 30, 0);
+                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center + new Vector2(Main.rand.NextFloat(10)), NPC.rotation.ToRotationVector2() * Main.rand.NextFloat(6, 10), ModContent.ProjectileType<FireBreathWraith>(), NPC.damage / 7, 0);
 
                 Dust dust = Dust.NewDustPerfect(NPC.Center, ModContent.DustType<Smoke>(), new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, -1f)) * 5, 0, Color.LimeGreen, 0.9f);
                 dust.noGravity = true;
@@ -786,5 +817,7 @@ namespace Divergency.Content.Bosses
             }
 
         }
+ 
+
     }
 }

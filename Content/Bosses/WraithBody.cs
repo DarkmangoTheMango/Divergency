@@ -113,7 +113,6 @@ namespace Divergency.Content.Bosses
             {
 
                 NPC.ai[3] = cachedNPC.ai[3];
-           
              
                 if (NPC.ai[4] == 2)
                 {
