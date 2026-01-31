@@ -35,12 +35,13 @@ namespace Divergency
             }
         }
 
-        internal static Asset<Effect> Supernova;
+        internal static Asset<Effect> Supernova, Storm;
 
         public override void Load()
         {
             BeamShader = ModContent.Request<Effect>("Divergency/Common/Helpers/Beam", (AssetRequestMode)1).Value;
             Supernova = ModContent.Request<Effect>("Divergency/Content/Effects/Supernova");
+            Storm = ModContent.Request<Effect>("Divergency/Content/Effects/Storm");
             TrailShader = ModContent.Request<Effect>("Divergency/Content/Effects/Trailshader", (AssetRequestMode)1).Value;
         }
     }
