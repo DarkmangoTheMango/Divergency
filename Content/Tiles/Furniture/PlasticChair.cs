@@ -1,64 +1,58 @@
-﻿using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.DataStructures;
+﻿using Divergency.Content.Particles;
+using ParticleLibrary;
+using System;
+using System.Collections.Generic;
 using Terraria.Enums;
 using Terraria.GameContent;
-using Terraria.GameContent.ObjectInteractions;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ObjectData;
 using Terraria.GameContent.Creative;
+using Terraria.GameContent.ObjectInteractions;
 using Terraria.Graphics.Effects;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.Graphics.Shaders;
-using ParticleLibrary;
-using Divergency.Content.Dusts;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace Divergency.Content.Tiles.Furniture
 {
     public class PlasticChair : ModTile
     {
-        public const int NextStyleHeight = 40; // Calculated by adding all CoordinateHeights + CoordinatePaddingFix.Y applied to all of them + 2
+        public const int NextStyleHeight = 40;
 
         public override void SetStaticDefaults()
         {
-            // Properties
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
-            Main.tileLavaDeath[Type] = false;
-            //TileID.Sets.HasOutlines[Type] = true;
-            //TileID.Sets.CanBeSatOnForNPCs[Type] = true; // Facilitates calling ModifySittingTargetInfo for NPCs
-            TileID.Sets.CanBeSatOnForPlayers[Type] = true; // Facilitates calling ModifySittingTargetInfo for Players
+            Main.tileLavaDeath[Type] = true;
+            TileID.Sets.HasOutlines[Type] = true;
+            TileID.Sets.CanBeSatOnForNPCs[Type] = true;
+            TileID.Sets.CanBeSatOnForPlayers[Type] = true;
             TileID.Sets.DisableSmartCursor[Type] = true;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsChair);
 
-            DustType = ModContent.DustType<Smoke>();
+            DustType = DustID.Asphalt;
+            AdjTiles = [TileID.Chairs];
 
-            // Names
-            AddMapEntry(new Color(200, 200, 200), Language.GetText("MapObject.Chair"));
+            AddMapEntry(new Color(214, 215, 207), Language.GetText("MapObject.Chair"));
 
-            // Placement
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
-            TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };
+            TileObjectData.newTile.CoordinateHeights = [16, 18];
             TileObjectData.newTile.CoordinatePaddingFix = new Point16(0, 2);
-            // The following 3 lines are needed if you decide to add more styles and stack them vertically
+            TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
+
             TileObjectData.newTile.StyleWrapLimit = 2;
             TileObjectData.newTile.StyleMultiplier = 2;
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.addTile(Type);
 
+            TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
+            TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
+            TileObjectData.addAlternate(1);
+            TileObjectData.addTile(Type);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            // Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 16, 32, ModContent.ItemType<>());
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
@@ -68,41 +62,22 @@ namespace Divergency.Content.Tiles.Furniture
 
         public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info)
         {
-            // It is very important to know that this is called on both players and NPCs, so do not use Main.LocalPlayer for example, use info.restingEntity
+            Tile tile = Framing.GetTileSafely(i, j);
 
-            int left = i - Main.tile[i, j].TileFrameX / 18;
-            int right = i + Main.tile[i, j].TileFrameX / 18;
+            int left = i - (tile.TileFrameX / 18) % 2;
+            int top = j - (tile.TileFrameY / 18) % 2;
+            int bottom = top + 1;
 
-            int top = j - Main.tile[i, j].TileFrameY / 18;
+            bool facingRight = tile.TileFrameX >= 36;
 
+            info.TargetDirection = facingRight ? 1 : -1;
 
-            Vector2 pos = new Vector2(left * 16f + 32f, top * 16f + 8f);
-            Tile tile = Framing.GetTileSafely(left, top);
+            int seatX = facingRight ? left + 1 : left;
 
-            //info.directionOffset = info.restingEntity is Player ? 6 : 2; // Default to 6 for players, 2 for NPCs
-            info.VisualOffset = new Vector2(-10, 0); // Defaults to (0,0)
+            info.AnchorTilePosition = new Point(seatX, bottom);
 
-            info.TargetDirection = -1;
-            if (tile.TileFrameX != 0)
-            {
-                info.TargetDirection = 1; // Facing right if sat down on the right alternate (added through addAlternate in SetStaticDefaults earlier)
-            }
-
-
-            // The anchor represents the bottom-most tile of the chair. This is used to align the entity hitbox
-            // Since i and j may be from any coordinate of the chair, we need to adjust the anchor based on that
-
-            info.AnchorTilePosition.X = left; // Our chair is only 1 wide, so nothing special required
-            info.AnchorTilePosition.Y = top;
-
-
-
-
-            if (tile.TileFrameY % NextStyleHeight == 0)
-            {
-                info.AnchorTilePosition.Y++; // Here, since our chair is only 2 tiles high, we can just check if the tile is the top-most one, then move it 1 down
-
-            }
+            info.DirectionOffset = info.RestingEntity is Player ? 6 : 2;
+            info.VisualOffset = new Vector2(facingRight ? -10 : -10, 0);
         }
 
         public override bool RightClick(int i, int j)
@@ -110,11 +85,10 @@ namespace Divergency.Content.Tiles.Furniture
             Player player = Main.LocalPlayer;
 
             if (player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance))
-            { // Avoid being able to trigger it from long range
+            {
                 player.GamepadEnableGrappleCooldown();
                 player.sitting.SitDown(player, i, j);
-                player.GetModPlayer<ChairPlayer>().Motivated = true;
-
+                player.GetModPlayer<StormPlayer>().Motivated = true;
             }
 
             return true;
@@ -125,165 +99,174 @@ namespace Divergency.Content.Tiles.Furniture
             Player player = Main.LocalPlayer;
 
             if (!player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance))
-            { // Match condition in RightClick. Interaction should only show if clicking it does something
                 return;
-            }
 
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
             player.cursorItemIconID = ModContent.ItemType<PlasticChairItem>();
 
             if (Main.tile[i, j].TileFrameX / 18 < 1)
-            {
                 player.cursorItemIconReversed = true;
-            }
         }
     }
+
     public class PlasticChairItem : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-            ////.setdefault("Forsakened, I am awakened...");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
-        }
-
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<PlasticChair>());
-            Item.value = 150;
-            Item.maxStack = 9999;
-            Item.width = 12;
-            Item.height = 30;
-        }
-
-        // Please see Content/ExampleRecipes.cs for a detailed explanation of recipe creation.
-        public override void AddRecipes()
-        {
-                
         }
     }
-    public class ChairPlayer : ModPlayer
+
+    public class StormPlayer : ModPlayer
     {
         public bool Motivated;
-        public int timer;
-        private int timer2;
 
         public override void PostUpdate()
         {
             if (!Player.sitting.isSitting)
-            {
                 Motivated = false;
-                Main.StopRain();
-            }
-            if (Motivated && Player.sitting.isSitting)
-            {
-                timer++;
-                timer2++;
-                Main.StartRain();
-                Main.maxRaining = 0.5f;
-                Main.windSpeedCurrent = 0.5f;
-                Main.UseStormEffects = true;
-                if (timer == 10)
-                {
-                    for (int j = 0; j < 3; j++)
-
-                    {
-                        Vector2 ParticleLoc = Player.Center + Main.rand.NextVector2Circular(1, 1f) * 1000;
-                        ParticleManager.NewParticle(ParticleLoc - new Vector2(1500, 0), new Vector2(Player.direction * -9, 0), ParticleManager.NewInstance<WindParticle>(), new(2.55f, 2.55f, 2.55f, 0), 0.2f, Main.rand.NextFloat(0.5f, 2f), Layer: Particle.Layer.BeforeNPCsBehindTiles);
-
-
-                    }
-                    timer = 0;
-
-                }
-                if (timer2 == 60)
-                {
-                    Main.NewLightning();
-                    timer2 = 0;
-                }
-       
-
-            }
-            
         }
     }
-    public class VergilEffect : ModSceneEffect
+
+    public class StormSkyScene : ModSceneEffect
     {
+        public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
+
         public override int Music => MusicLoader.GetMusicSlot("Divergency/Assets/Sounds/Music/BuryTheLight");
 
-        public const string ScreenFilterKey = "Divergency: VergilFilter";
-        public override SceneEffectPriority Priority => SceneEffectPriority.Environment; // We have set the SceneEffectPriority to be BiomeLow for purpose of example, however default behavour is BiomeLow.
+        public override void SpecialVisuals(Player player, bool isActive) => player.ManageSpecialBiomeVisuals("Divergency:StormSky", isActive);
+
+        public override bool IsSceneEffectActive(Player player) => player.GetModPlayer<StormPlayer>().Motivated;
+
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
-                float r = 1.64f;
-                float g = 2.11f;
-                float b = 2.38f;
-                r += 0.5f;
-                g += 0.5f;
-                Filters.Scene[ScreenFilterKey] = new Filter(new ScreenShaderData("FilterMoonLord").UseColor(r / 2, g / 2, b), EffectPriority.High); 
-
-
-                // To bind a screen shader, use this.
-                // EffectPriority should be set to whatever you think is reasonable.   
-
-
+                Filters.Scene["Divergency:StormSky"] = new Filter(new ScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
+                SkyManager.Instance["Divergency:StormSky"] = new StormSky();
             }
         }
-        public override void Unload()
-        {
-        }
-        public override bool IsSceneEffectActive(Player player)
-        {
-            return player.sitting.isSitting && player.GetModPlayer<ChairPlayer>().Motivated;
-        }
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
-            if (isActive)
-            {
-                if (!Filters.Scene[ScreenFilterKey].Active)
-                {
-                    Filters.Scene.Activate(ScreenFilterKey, player.Center);
-                }
-            }
-            else if (Filters.Scene[ScreenFilterKey].Active)
-            {
-                Filters.Scene.Deactivate(ScreenFilterKey);
-            }
-        }
-
     }
-    public class WindParticle : Particle
+
+    public class StormSky : CustomSky
     {
-        public override string Texture => "Divergency/Assets/Textures/ParticleTextures/SoftCircle";
-
-        public override void SetDefaults()
+        public class Particle(Vector2 position, Vector2 velocity, int lifetime)
         {
-            width = 1;
-            height = 1;
-            timeLeft = 200;
-            opacity = 125;
-            layer = Layer.BeforeNPCsBehindTiles;
+            public int TimeLeft;
+            public int Lifetime = lifetime;
+            public int ID = Particles.Count;
+            public Vector2 Velocity = velocity;
+            public Vector2 Position = position;
         }
 
-        public override void AI()
+        public static List<Particle> Particles
         {
-            rotation = velocity.ToRotation();
+            get;
+            internal set;
+        } = [];
 
-            Scale = ai[0] == 0f ? 1f : ai[0];
+
+        private bool Active
+        {
+            get;
+            set;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
+        private float Intensity
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            get;
+            set;
+        }
 
-            float alpha = timeLeft <= 20 ? 1f - 1f / 20f * (20 - timeLeft) : 1f;
-            if (alpha < 0f) alpha = 0f;
-            spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color * alpha, rotation, texture.Size() * 0.5f, Scale * new Vector2(0.1f, 0.005f), SpriteEffects.None, 0f);
+        public override float GetCloudAlpha() => MathHelper.Lerp(1, 0, Intensity);
 
-            return false;
+        public override Color OnTileColor(Color inColor) => inColor * MathHelper.Lerp(1, 0.1f, Intensity);
+
+        public override bool IsActive() => Active || Intensity > 0;
+
+        public override void Activate(Vector2 position, params object[] args)
+        {
+            Active = true;
+        }
+
+        public override void Deactivate(params object[] args)
+        {
+            Active = false;
+        }
+
+        public override void Reset()
+        {
+            Active = false;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+
+            for (int k = 0; k < 20; k++)
+                Particles.Add(new Particle(new Vector2(Main.screenWidth * Main.rand.NextFloat(-1, 1), -Main.screenHeight), Vector2.UnitY.RotatedBy(-0.1f) * 200, 100));
+
+            UpdateParticles();
+
+            if (Main.gamePaused)
+                return;
+
+            if (Active && Intensity < 1f)
+                Intensity += 0.01f;
+            else if (!Active && Intensity > 0)
+                Intensity -= 0.01f;
+        }
+
+        private static void UpdateParticles()
+        {
+            for (int k = 0; k < Particles.Count; k++)
+            {
+                var particle = Particles[k];
+
+                particle.TimeLeft++;
+                particle.Position += particle.Velocity;
+            }
+
+            Particles.RemoveAll(p => p.TimeLeft >= p.Lifetime);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
+        {
+            DrawBackground(spriteBatch);
+            DrawParticles(spriteBatch);
+        }
+
+        private void DrawBackground(SpriteBatch spriteBatch)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Noise/CloudyNoise").Value;
+
+            Effect shader = Divergency.Storm.Value;
+
+            Main.graphics.GraphicsDevice.Textures[1] = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Noise/TurbulentNoise").Value;
+
+            shader.Parameters["uTime"]?.SetValue((float)Main.timeForVisualEffects * 0.0005f);
+            shader.Parameters["alpha"]?.SetValue(Intensity);
+            shader.CurrentTechnique.Passes[0].Apply();
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, shader, Main.UIScaleMatrix);
+
+            spriteBatch.Draw(texture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+        }
+
+        private void DrawParticles(SpriteBatch spriteBatch)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Beam").Value;
+
+            for (int k = 0; k < Particles.Count; k++)
+            {
+                var particle = Particles[k];
+
+                spriteBatch.Draw(texture, particle.Position, texture.Bounds, new Color(90, 150, 255, 0) * 0.1f * Intensity, particle.Velocity.ToRotation() + MathHelper.PiOver2, texture.Size() * 0.5f, new Vector2(0.4f, 10), SpriteEffects.None, 0f);
+            }
         }
     }
 }
