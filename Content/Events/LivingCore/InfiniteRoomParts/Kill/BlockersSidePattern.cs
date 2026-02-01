@@ -1,11 +1,12 @@
-﻿using Divergency.Content.NPCs.LivingGrove;
+﻿using Divergency.Content.Events.LivingCore.InfiniteRoomParts;
+using Divergency.Content.NPCs.LivingGrove;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts.Kill
 {
     public class BlockersSidePattern : Pattern
     {
@@ -16,14 +17,14 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
 
             foreach (ActivePattern ap in activePatterns)
             {
-                if (ap.unit.id == ModContent.NPCType<CoreBlockadeRight>())
+                if (ap.unit.fullName == "Divergency/CoreBlockadeRight")
                 {
                     if (ap.position.X <= 0)
                         return true;
                     blockerCountL++;
                 }
 
-                if (ap.unit.id == ModContent.NPCType<CoreBlockadeLeft>())
+                if (ap.unit.fullName == "Divergency/CoreBlockadeLeft")
                 {
                     if (ap.position.X >= 0)
                         return true;

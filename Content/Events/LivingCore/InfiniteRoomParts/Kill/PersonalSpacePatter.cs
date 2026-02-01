@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Divergency.Content.Events.LivingCore.InfiniteRoomParts;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Composition.Convention;
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts.Kill
 {
     public class PersonalSpacePatter : Pattern
     {

@@ -1088,6 +1088,11 @@ Mods: {
 				Tooltip: ""
 				DisplayName: Core Burn Icon
 			}
+
+			WaveEditor: {
+				DisplayName: Wave Editor
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {

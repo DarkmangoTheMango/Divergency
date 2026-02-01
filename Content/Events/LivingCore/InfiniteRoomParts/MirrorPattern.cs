@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Terraria;
 
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts
 {
     public class MirrorPattern : Pattern
     {

@@ -6,7 +6,8 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
 namespace Divergency.Common.Helpers
-    {
+{
+    /*
     // Acts as a container for "downed boss" flags.
     // Set a flag like this in your bosses OnKill hook:
     //    NPC.SetEventFlagCleared(ref DownedBossSystem.downedMinionBoss, -1);
@@ -57,9 +58,8 @@ namespace Divergency.Common.Helpers
                     livingCoreRoomCompletionTracker[i] = val;
                 }
             }
-        }
+        } 
 
-        /*
         public override void NetSend(BinaryWriter writer)
         {
             var flags = new BitsByte();
@@ -78,6 +78,5 @@ namespace Divergency.Common.Helpers
                 livingCoreRoomCompletionTracker[i] = flags[i];
             }
         }
-        */
-    }
+    }*/
 }
