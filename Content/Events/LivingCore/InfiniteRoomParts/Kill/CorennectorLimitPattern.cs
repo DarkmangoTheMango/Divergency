@@ -1,10 +1,11 @@
-﻿using Divergency.Content.NPCs.LivingGrove;
+﻿using Divergency.Content.Events.LivingCore.InfiniteRoomParts;
+using Divergency.Content.NPCs.LivingGrove;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts.Kill
 {
     public class CorennectorLimitPattern : Pattern
     {
@@ -14,7 +15,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
             int corennectorCount = 0;
             foreach (ActivePattern ap in activePatterns)
             {
-                if (ap.unit.id == ModContent.NPCType<Corennector>())
+                if (ap.unit.fullName == "Divergency/Corennector")
                     corennectorCount++;
                 else
                     npcCount++;

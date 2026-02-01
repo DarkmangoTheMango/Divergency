@@ -15,7 +15,7 @@ namespace Divergency.Content.Events.LivingCore
 
             if (KeybindSystem.Begin.JustPressed)
             {
-                LivingCoreEvent.Begin(LivingCoreEvent.lastI, LivingCoreEvent.lastJ, new Rooms.InfiniteRoom());
+                LivingCoreEvent.Begin(LivingCoreEvent.lastI, LivingCoreEvent.lastJ, new InfiniteRoom());
             }
         }
 

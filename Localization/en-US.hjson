@@ -1027,6 +1027,11 @@ Mods: {
 				DisplayName: Shadowlash
 				Tooltip: ""
 			}
+
+			WaveEditor: {
+				DisplayName: Wave Editor
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
