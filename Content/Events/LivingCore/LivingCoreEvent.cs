@@ -41,6 +41,12 @@ namespace Divergency.Content.Events.LivingCore
         }
         public static void Begin(int i, int j, LivingCoreRoom room)
         {
+            if (!room.Valid)
+            {
+                Console.WriteLine("Room was not valid.");
+                return;
+            }
+
             if (Active)
                 return;
             if (Main.tile[i, j].TileType != ModContent.TileType<LivingCoreAltarTile>())

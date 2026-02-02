@@ -48,6 +48,23 @@ namespace Divergency.Content.Events.LivingCore
 
         public LivingCoreAltarTileEntity RoomBase = roomBase;
 
+        public virtual bool Valid
+        {
+            get {
+                foreach (Wave wave in RoomBase.Waves)
+                {
+                    foreach (Instance enemy in wave.enemies)
+                    {
+                        if (enemy.NPCID == -1)
+                        {
+                            Console.WriteLine($"'{enemy.FullName}' is not a valid name/vanila Mob ID.");
+                            return false; // an invalid npc.
+                        }
+                    }
+                }
+                return true;  }
+        }
+
         private Vector3 lerp(Vector3 start, Vector3 stop, float t, bool curve = true)
         {
             if (curve)
@@ -174,8 +191,8 @@ namespace Divergency.Content.Events.LivingCore
                 {
                     Color c = Color.White;
 
-                    RewardH = Main.GlobalTimeWrappedHourly;
-                    float r = (RewardH + (MathF.PI * 2f) * i / Rewards.Count) % MathF.PI;
+                    RewardH = Main.GlobalTimeWrappedHourly * 4 / Rewards.Count;
+                    float r = (RewardH + MathF.PI * i / Rewards.Count) % MathF.PI;
                     float x = MathF.Cos(r);
                     float y = MathF.Sin(r);
 
@@ -206,7 +223,7 @@ namespace Divergency.Content.Events.LivingCore
                         xrot = r - hpi;
                     */
 
-                    float dist = 80f;
+                    float dist = Rewards.Count * 20;
                     rewardEffect.Parameters["Model"].SetValue(FromEuler(new Vector3(target.X + x * dist, -target.Y, y * dist), new Vector3(xrot, r + MathF.PI / 2f, 0f), new Vector3(1f, 1f, 1f)));
 
                     if (RoomBase.ClaimedRewards.Count < i || RoomBase.ClaimedRewards[i] == true) // if it has been claimed
@@ -221,11 +238,9 @@ namespace Divergency.Content.Events.LivingCore
             {
                 if (rewardLastTransition < 0f)
                 {
-                    // ^^ list is a list of all rewards having been clamed are true
-
                     for (int i = 0; i < Rewards.Count; i++)
                     {
-                        float r = (RewardH + (MathF.PI * 2f) * i / Rewards.Count) % MathF.PI;
+                        float r = (RewardH + MathF.PI * i / Rewards.Count) % MathF.PI;
                         float x = MathF.Cos(r);
                         float y = MathF.Sin(r);
 
@@ -256,12 +271,15 @@ namespace Divergency.Content.Events.LivingCore
                             xrot = r - hpi;
                         */
 
-                        float dist = 80f;
+                        float dist = 80f + Rewards.Count * 20;
 
                         Vector3 prePos = new Vector3(target.X + x * dist, -target.Y, y * dist);
                         Vector3 preRot = new Vector3(xrot, r + MathF.PI / 2f, 0f);
+                        float rr = MathF.PI / 2f;
 
-                        float rr = MathF.PI * ((float)i / (Rewards.Count - 1));
+                        if (Rewards.Count > 1)
+                            rr = MathF.PI * ((float)i / (Rewards.Count - 1));
+                        
                         float rx = MathF.Cos(rr);
                         float ry = MathF.Sin(rr);
                         Vector3 tPos = new Vector3(target.X + rx * dist, -target.Y + ry * dist, 0f);
@@ -316,9 +334,13 @@ namespace Divergency.Content.Events.LivingCore
 
                     Vector2 target = pos + new Vector2(0f, -80f);
 
-                    float dist = 80f;
+                    float dist = 80f + Rewards.Count * 20;
 
-                    float rr = MathF.PI * ((float)hoverReward / (Rewards.Count - 1));
+                    float rr = MathF.PI / 2f;
+
+                    if (Rewards.Count > 1)
+                        rr = MathF.PI * ((float)hoverReward / (Rewards.Count - 1));
+
                     float rx = MathF.Cos(rr);
                     float ry = MathF.Sin(rr);
                     Vector3 tPos = new Vector3(target.X + rx * dist, -target.Y + ry * dist, 0f);
@@ -578,7 +600,7 @@ namespace Divergency.Content.Events.LivingCore
 
             if (hoverReward != -1)
             {
-                if (RoomBase.ClaimedRewards.Count < hoverReward || RoomBase.ClaimedRewards[hoverReward] == true)
+                if (RoomBase.ClaimedRewards.Count < hoverReward || RoomBase.ClaimedRewards[hoverReward] == false)
                 {
                     Item item = ItemIO.Load(Rewards[hoverReward].item);
                     Item.NewItem(null, LivingCoreEvent.Center, item);
@@ -586,7 +608,7 @@ namespace Divergency.Content.Events.LivingCore
                 }
                 else
                 {
-                    // drop currency
+                    // TODO: drop currency?
                 }
 
                 RoomBase.ClaimedRewards[hoverReward] = true;
