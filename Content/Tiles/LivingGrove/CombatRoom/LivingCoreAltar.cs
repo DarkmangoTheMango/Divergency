@@ -43,14 +43,11 @@ namespace Divergency.Tiles.LivingTree
 
         public override bool RightClick(int i, int j)
         {
-            Console.WriteLine("a");
             int left = i - Main.tile[i, j].TileFrameX / 18;
             int top = j - Main.tile[i, j].TileFrameY / 18;
 
             if (TileEntity.ByPosition.TryGetValue(new Point16(left, top), out TileEntity te) && te is LivingCoreAltarTileEntity altarEntity)
             {
-                Console.WriteLine("b");
-                Console.WriteLine(altarEntity.Waves.Count);
                 if (altarEntity.Waves.Count > 0)
                     LivingCoreEvent.Begin(left, top, new LivingCoreRoom(altarEntity));
                 else

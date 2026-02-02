@@ -119,7 +119,7 @@ namespace Divergency.Content.Events.LivingCore
 
         private int[] savedTiles = new int[0];
 
-        public virtual int Music { get { return 0; } }
+        public virtual int Music { get { return MusicLoader.GetMusicSlot("Divergency/Assets/Sounds/Music/LivingGroveBattle1"); } }
         
         public virtual List<Reward> Rewards { get { return RoomBase.Rewards; } }
 
@@ -135,7 +135,7 @@ namespace Divergency.Content.Events.LivingCore
 
         public virtual int getWaves()
         {
-            return RoomBase.Waves.Count;
+            return RoomBase.Waves.Count - (Math.Max(0, RoomBase.ClaimedRewards.Select(t => t ? 0 : 1).Sum() - 1));
         }
 
         private void updateAltarReward()
