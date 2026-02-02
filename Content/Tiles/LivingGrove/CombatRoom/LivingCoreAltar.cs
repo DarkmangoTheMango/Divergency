@@ -1,6 +1,5 @@
 ﻿using Divergency.Common.Helpers;
 using Divergency.Content.Events.LivingCore;
-using Divergency.Content.Items.Weapons.LivingCore;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;

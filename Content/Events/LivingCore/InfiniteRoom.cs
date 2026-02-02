@@ -1,5 +1,4 @@
 ﻿using Divergency.Content.Events.LivingCore.InfiniteRoomParts;
-using Divergency.Content.Items.Weapons.LivingCore;
 using Divergency.Content.NPCs.LivingGrove;
 using Microsoft.Xna.Framework;
 using System;

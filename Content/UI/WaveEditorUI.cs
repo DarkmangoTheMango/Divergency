@@ -75,13 +75,10 @@ namespace Divergency.Content.UI
     {
         public LivingCoreAltarTileEntity TargetObject;
         private UIPanel mainPanel;
-        private UIPanel tabScrollContainer;
         private UIPanel tabButtonPanel;
         private InnerUI innerList;
         private UIPanel contentPanel;
         private int currentWaveIndex = 0;
-        private List<UIPanel> waveContentPanels = new List<UIPanel>();
-        private float tabScrollOffset = 0f;
 
         private UIPanel rewards;
         private InnerUI rewardsInnerList;
@@ -91,7 +88,6 @@ namespace Divergency.Content.UI
         private UIPanel dragHandle;
 
         private int draggingNpc = -1;
-        private Vector2 dragNpcScreenOffset;
 
         private string _tempText = "";
         private bool _isEditing = false;
@@ -269,7 +265,7 @@ namespace Divergency.Content.UI
 
             // update waves
             innerList.RemoveAllChildren();
-            waveContentPanels.Clear();
+            contentPanel.RemoveAllChildren();
 
             float currentLeft = 5;
 
@@ -298,13 +294,11 @@ namespace Divergency.Content.UI
                 };
 
                 innerList.Append(tabButton);
-
-                if (currentWaveIndex == waveIndex)
-                {
-                    UIPanel wavePanel = CreateWavePanel(waveIndex);
-                    waveContentPanels.Add(wavePanel);
-                }
             }
+
+            Console.WriteLine(currentWaveIndex);
+            UIPanel wavePanel = CreateWavePanel(currentWaveIndex);
+            contentPanel.Append(wavePanel);
 
             // innerList.Width.Set(currentLeft, 0f);
 
@@ -383,9 +377,6 @@ namespace Divergency.Content.UI
 
             rewardsMaxScroll = Math.Max(0f, currentLeft - mainPanel.Width.Pixels + 45);
             rewardsTargetScroll = MathHelper.Clamp(rewardsTargetScroll, 0, rewardsMaxScroll);
-
-
-            UpdateContentPanel();
         }
 
         private UIPanel CreateWavePanel(int waveIndex)
@@ -534,15 +525,6 @@ namespace Divergency.Content.UI
         {
             currentWaveIndex = waveIndex;
             RefreshUI();
-        }
-
-        private void UpdateContentPanel()
-        {
-            contentPanel.RemoveAllChildren();
-            if (currentWaveIndex < waveContentPanels.Count)
-            {
-                contentPanel.Append(waveContentPanels[currentWaveIndex]);
-            }
         }
 
         private void AddNewWave()
