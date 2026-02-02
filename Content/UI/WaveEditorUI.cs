@@ -10,14 +10,15 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.UI;
-using System.Windows.Forms;
 
 namespace Divergency.Content.UI
 {
@@ -40,6 +41,7 @@ namespace Divergency.Content.UI
         {
             InspectorState.TargetObject = target;
             InspectorInterface.SetState(InspectorState);
+            InspectorState.RefreshUI();
         }
 
         public override void UpdateUI(GameTime gameTime)
@@ -66,25 +68,30 @@ namespace Divergency.Content.UI
             }
         }
     }
+    public class InnerUI : UIElement { public override bool ContainsPoint(Vector2 point) { return true; } }
+    // makes you not be able to click - but at least it makes scrolling stuff work...
+    
     public class WaveEditorUIState : UIState
     {
         public LivingCoreAltarTileEntity TargetObject;
         private UIPanel mainPanel;
         private UIPanel tabScrollContainer;
         private UIPanel tabButtonPanel;
-        private UIElement innerList;
+        private InnerUI innerList;
         private UIPanel contentPanel;
         private int currentWaveIndex = 0;
         private List<UIPanel> waveContentPanels = new List<UIPanel>();
         private float tabScrollOffset = 0f;
 
         private UIPanel rewards;
-        private UIElement rewardsInnerList;
+        private InnerUI rewardsInnerList;
 
-        // Panel dragging
         private bool isDraggingPanel = false;
         private Vector2 dragOffset;
         private UIPanel dragHandle;
+
+        private int draggingNpc = -1;
+        private Vector2 dragNpcScreenOffset;
 
         private string _tempText = "";
         private bool _isEditing = false;
@@ -100,6 +107,8 @@ namespace Divergency.Content.UI
         private Item[] items = [];
         private UIPanel[] panels = [];
 
+        private Action[] entityPositionChange = [];
+
         public override void OnInitialize()
         {
             mainPanel = new UIPanel();
@@ -114,7 +123,7 @@ namespace Divergency.Content.UI
             rewards.Height.Set(60, 0);
             rewards.Top.Set(-60f, 1f);
             rewards.BackgroundColor = new Color(73, 94, 171) * 0.9f;
-            rewards.OverflowHidden = false;
+            rewards.OverflowHidden = true;
             mainPanel.Append(rewards);
 
             rewards.OnScrollWheel += (evt, element) => { // block scrolling somehow
@@ -123,10 +132,9 @@ namespace Divergency.Content.UI
                 rewardsTargetScroll = MathHelper.Clamp(rewardsTargetScroll, 0, rewardsMaxScroll);
             };
 
-            rewardsInnerList = new UIElement();
+            rewardsInnerList = new InnerUI();
             rewardsInnerList.Width.Set(0, 1f);
             rewardsInnerList.Height.Set(0, 1f);
-            rewardsInnerList.OverflowHidden = false;
             rewards.Append(rewardsInnerList);
 
             rewardsInnerList.OnUpdate += (element) => {
@@ -138,7 +146,7 @@ namespace Divergency.Content.UI
             rewardsInnerList.OnDraw += (_) =>
             {
                 SpriteBatch spriteBatch = Main.spriteBatch;
-                
+
                 for (int i = 0; i < items.Length; i++)
                 {
                     CalculatedStyle dims = panels[i].GetDimensions();
@@ -147,12 +155,42 @@ namespace Divergency.Content.UI
                     Main.LocalPlayer.mouseInterface = true;
                     if (i >= TargetObject.Rewards.Count)
                     {
-                        ItemSlot.Draw(spriteBatch, ref items[i], ItemSlot.Context.ChestItem, slotPos);
+                        ItemSlot.Draw(spriteBatch, ref items[i], ItemSlot.Context.EquipAccessory, slotPos);
                         continue;
                     }
 
-                    ItemSlot.Draw(spriteBatch, ref items[i], !TargetObject.ClaimedRewards[i] ? ItemSlot.Context.ChestItem : ItemSlot.Context.BankItem, slotPos);
+                    ItemSlot.Draw(spriteBatch, ref items[i], !TargetObject.ClaimedRewards[i] ? ItemSlot.Context.EquipAccessory : ItemSlot.Context.ChestItem, slotPos);
                 }
+
+                RasterizerState originalState = spriteBatch.GraphicsDevice.RasterizerState;
+                Rectangle originalScissor = spriteBatch.GraphicsDevice.ScissorRectangle;
+                spriteBatch.End();
+
+                spriteBatch.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, Main.screenWidth, Main.screenHeight);
+                spriteBatch.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
+
+                for (int i = 0; i < items.Length; i++)
+                {
+                    CalculatedStyle dims = panels[i].GetDimensions();
+                    Vector2 slotPos = dims.Position() + new Vector2(dims.Width, dims.Height) / 2f;
+
+                    if (i >= TargetObject.Rewards.Count)
+                        continue;
+                    
+                    if (dims.ToRectangle().Contains(Main.mouseX, Main.mouseY) && ModContent.RequestIfExists<Texture2D>(TargetObject.Rewards[i].texturePath, out var texture))
+                    {
+                        Rectangle rect2 = new(0, 0, texture.Value.Width, texture.Value.Height);
+                        Main.spriteBatch.Draw(texture.Value, slotPos + new Vector2(0, 48 + texture.Value.Height / 2f), rect2, Color.White, 0f, new Vector2(texture.Value.Width, texture.Value.Height) / 2f, 1f, SpriteEffects.None, 0);
+                    }
+                }
+
+                spriteBatch.End();
+
+                spriteBatch.GraphicsDevice.ScissorRectangle = originalScissor;
+                spriteBatch.GraphicsDevice.RasterizerState = originalState;
+
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, originalState, null, Main.UIScaleMatrix);
             };
 
             UIText title = new UIText("Wave Editor", 1f);
@@ -196,7 +234,7 @@ namespace Divergency.Content.UI
 
             mainPanel.Append(tabButtonPanel);
 
-            innerList = new UIElement();
+            innerList = new InnerUI();
             innerList.Width.Set(0, 1f);
             innerList.Height.Set(0, 1f);
             tabButtonPanel.Append(innerList);
@@ -224,13 +262,9 @@ namespace Divergency.Content.UI
             Append(mainPanel);
         }
 
-        private void RewardsInnerList_OnDraw(UIElement affectedElement)
-        {
-            throw new NotImplementedException();
-        }
-
         public void RefreshUI()
         {
+            draggingNpc = -1;
             if (TargetObject == null) return;
 
             // update waves
@@ -265,12 +299,15 @@ namespace Divergency.Content.UI
 
                 innerList.Append(tabButton);
 
-                UIPanel wavePanel = CreateWavePanel(waveIndex);
-                waveContentPanels.Add(wavePanel);
+                if (currentWaveIndex == waveIndex)
+                {
+                    UIPanel wavePanel = CreateWavePanel(waveIndex);
+                    waveContentPanels.Add(wavePanel);
+                }
             }
 
-            innerList.Width.Set(currentLeft, 0f);
-            innerList.Recalculate();
+            // innerList.Width.Set(currentLeft, 0f);
+
             maxScroll = Math.Max(0f, currentLeft - mainPanel.Width.Pixels + 45);
             targetScroll = MathHelper.Clamp(targetScroll, 0, maxScroll);
 
@@ -342,12 +379,7 @@ namespace Divergency.Content.UI
                 rewardsInnerList.Append(itemSlotPanel);
             }
 
-            rewardsInnerList.Width.Set(currentLeft, 0f);
-            rewardsInnerList.Recalculate();
-            foreach (UIElement panel in rewardsInnerList.Children)
-            {
-                panel.Recalculate();
-            }
+            // rewardsInnerList.Width.Set(currentLeft, 0f);
 
             rewardsMaxScroll = Math.Max(0f, currentLeft - mainPanel.Width.Pixels + 45);
             rewardsTargetScroll = MathHelper.Clamp(rewardsTargetScroll, 0, rewardsMaxScroll);
@@ -395,6 +427,7 @@ namespace Divergency.Content.UI
             addEntityButton.OnLeftClick += (evt, element) => AddEntityToWave(waveIndex);
             panel.Append(addEntityButton);
 
+            entityPositionChange = new Action[wave.enemies.Count];
             for (int i = 0; i < wave.enemies.Count; i++)
             {
                 int entityIndex = i;
@@ -445,7 +478,7 @@ namespace Divergency.Content.UI
             offsetXMinus.Left.Set(120, 0);
             offsetXMinus.OnLeftClick += (evt, element) => {
                 entity.SpawnOffset.X -= 16;
-                RefreshUI();
+                offsetXLabel.SetText($"Offset X: {entity.SpawnOffset.X}");
             };
             item.Append(offsetXMinus);
 
@@ -454,7 +487,7 @@ namespace Divergency.Content.UI
             offsetXPlus.Left.Set(145, 0);
             offsetXPlus.OnLeftClick += (evt, element) => {
                 entity.SpawnOffset.X += 16;
-                RefreshUI();
+                offsetXLabel.SetText($"Offset X: {entity.SpawnOffset.X}");
             };
             item.Append(offsetXPlus);
 
@@ -468,7 +501,7 @@ namespace Divergency.Content.UI
             offsetYMinus.Left.Set(120, 0);
             offsetYMinus.OnLeftClick += (evt, element) => {
                 entity.SpawnOffset.Y -= 16;
-                RefreshUI();
+                offsetYLabel.SetText($"Offset Y: {entity.SpawnOffset.Y}");
             };
             item.Append(offsetYMinus);
 
@@ -477,9 +510,15 @@ namespace Divergency.Content.UI
             offsetYPlus.Left.Set(145, 0);
             offsetYPlus.OnLeftClick += (evt, element) => {
                 entity.SpawnOffset.Y += 16;
-                RefreshUI();
+                offsetYLabel.SetText($"Offset Y: {entity.SpawnOffset.Y}");
             };
             item.Append(offsetYPlus);
+
+            entityPositionChange[entityIndex] = () =>
+            {
+                offsetXLabel.SetText($"Offset X: {entity.SpawnOffset.X}");
+                offsetYLabel.SetText($"Offset Y: {entity.SpawnOffset.Y}");
+            };
 
             UIText deleteButton = new UIText("[Remove]", 0.75f);
             deleteButton.Top.Set(45, 0);
@@ -535,58 +574,54 @@ namespace Divergency.Content.UI
         {
             base.Draw(spriteBatch);
 
-            // Draw world-space indicators for spawn positions
             if (TargetObject == null || currentWaveIndex >= TargetObject.Waves.Count) return;
 
-            // Get tile entity position (you'll need to get this from TargetObject)
-            // Assuming TargetObject has Position property or similar
             Vector2 tileWorldPosition = TargetObject.Position.ToWorldCoordinates() + new Vector2(0, 0); // Adjust this to your actual property
 
             Texture2D pixel = TextureAssets.MagicPixel.Value;
 
             var wave = TargetObject.Waves[currentWaveIndex];
-            foreach (var entity in wave.enemies)
-            {
-                // 1. Get the absolute position in the world
-                Vector2 spawnWorldPos = tileWorldPosition + entity.SpawnOffset;
 
-                // 2. Subtract screen position (this gets the offset from the top-left of the screen)
+            bool allowPassthrough = draggingNpc == -1;
+            for (int i = 0; i < wave.enemies.Count; i ++)
+            {
+                var entity = wave.enemies[i];
+                Vector2 spawnWorldPos = tileWorldPosition + entity.SpawnOffset + new Vector2(16, 0);
                 Vector2 screenPos = spawnWorldPos - Main.screenPosition;
 
-                // 3. TRANSFORM by the GameViewMatrix
-                // This is the most important part. It accounts for the player's Zoom level.
                 screenPos = Vector2.Transform(screenPos, Main.GameViewMatrix.TransformationMatrix);
-
-                // 4. DIVIDE by UI Scale
-                // Since your layer is 'InterfaceScaleType.UI', Terraria expects coordinates 
-                // relative to the UI scale, not the raw screen pixels.
                 screenPos /= Main.UIScale;
 
-                // 5. Calculate size (optional: scale the box size with zoom so it doesn't look tiny)
                 float scale = Main.GameViewMatrix.Zoom.X / Main.UIScale;
-                int size = (int)(16 * scale);
 
-                // 6. Draw the box
-                Rectangle box = new Rectangle((int)screenPos.X - size / 2, (int)screenPos.Y - size / 2, size, size);
+                Texture2D npcTexture = TextureAssets.MagicPixel.Value;
+                int width = (int)(16 * scale);
+                int height = (int)(16 * scale);
 
-                // Draw your pixel and border using this 'box'
-                spriteBatch.Draw(TextureAssets.MagicPixel.Value, box, Color.Red * 0.5f);
-                DrawBorder(spriteBatch, box, 2, Color.Yellow);
+                if (entity.NPCID != -1)
+                {
+                    if (Int64.TryParse(entity.FullName, out long _)) // if vanilla (just a number) - then make sure it's loaded
+                    {
+                        Main.instance.LoadNPC(entity.NPCID);
+                    }
+
+                    npcTexture = TextureAssets.Npc[entity.NPCID].Value;
+                    int frameCount = Main.npcFrameCount[entity.NPCID];
+                    int frameHeight = npcTexture.Height / frameCount;
+                    width = (int)(npcTexture.Width * scale);
+                    height = (int)(frameHeight * scale);
+                }
+
+                Rectangle box = new Rectangle((int)screenPos.X - width / 2, (int)screenPos.Y - height / 2, width, height);
+                Rectangle srcRect = new Rectangle(0, 0, width, height);
+
+                spriteBatch.Draw(npcTexture, box, srcRect, Color.White);
+
+                if (allowPassthrough && box.Contains(Main.mouseX, Main.mouseY) && Main.mouseMiddle)
+                {
+                    draggingNpc = i;
+                }
             }
-        }
-
-        private void DrawBorder(SpriteBatch spriteBatch, Rectangle rect, int thickness, Color color)
-        {
-            Texture2D pixel = TextureAssets.MagicPixel.Value;
-
-            // Top
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, rect.Width, thickness), color);
-            // Bottom
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y + rect.Height - thickness, rect.Width, thickness), color);
-            // Left
-            spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
-            // Right
-            spriteBatch.Draw(pixel, new Rectangle(rect.X + rect.Width - thickness, rect.Y, thickness, rect.Height), color);
         }
 
         public override void LeftMouseDown(UIMouseEvent evt)
@@ -612,13 +647,6 @@ namespace Divergency.Content.UI
         {
             base.Update(gameTime);
 
-            // Call RefreshUI when TargetObject changes
-            if (TargetObject != null && waveContentPanels.Count != TargetObject.Waves.Count)
-            {
-                RefreshUI();
-            }
-
-            // Handle panel dragging
             if (isDraggingPanel)
             {
                 Vector2 mousePos = new Vector2(Main.mouseX, Main.mouseY);
@@ -635,6 +663,21 @@ namespace Divergency.Content.UI
                 mainPanel.VAlign = 0f;
 
                 mainPanel.Recalculate();
+            }
+
+            if (Main.mouseMiddleRelease)
+            {
+                draggingNpc = -1;
+            }
+
+            if (draggingNpc != -1)
+            {
+                var wave = TargetObject.Waves[currentWaveIndex];
+                var entity = wave.enemies[draggingNpc];
+
+                entity.SpawnOffset = entity.SpawnOffset + new Vector2(Main.mouseX - Main.lastMouseX, Main.mouseY - Main.lastMouseY) + (Main.screenPosition - Main.screenLastPosition);
+
+                entityPositionChange[draggingNpc]();
             }
 
 
