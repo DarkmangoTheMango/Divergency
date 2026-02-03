@@ -8,7 +8,22 @@ namespace Divergency.Common.Helpers
 	{
 		public static readonly EaseFunction Linear = new PolynomialEase((float x) => { return x; });
 
-		public static readonly EaseFunction EaseQuadIn = new PolynomialEase((float x) => { return x * x; });
+        public static readonly EaseFunction EaseSineIn = new PolynomialEase((float x) =>
+        {
+            return 1f - (float)Math.Cos((x * Math.PI) / 2f);
+        });
+
+        public static readonly EaseFunction EaseSineOut = new PolynomialEase((float x) =>
+        {
+            return (float)Math.Sin((x * Math.PI) / 2f);
+        });
+
+        public static readonly EaseFunction EaseSineInOut = new PolynomialEase((float x) =>
+        {
+            return -(float)Math.Cos(Math.PI * x) * 0.5f + 0.5f;
+        });
+
+        public static readonly EaseFunction EaseQuadIn = new PolynomialEase((float x) => { return x * x; });
 		public static readonly EaseFunction EaseQuadOut = new PolynomialEase((float x) => { return 1f - EaseQuadIn.Ease(1f - x); });
 		public static readonly EaseFunction EaseQuadInOut = new PolynomialEase((float x) => { return (x < 0.5f) ? 2f * x * x : -2f * x * x + 4f * x - 1f; });
 
