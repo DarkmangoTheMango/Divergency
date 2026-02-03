@@ -1,155 +1,136 @@
 using Divergency.Common.Helpers;
-using Divergency.Common.Helpers.SwordAnimator;
-using Divergency.Content.Dusts;
-using Divergency.Content.Items.Weapons.Ranged;
-using Divergency.Content.Particles;
-using ParticleLibrary;
-using ReLogic.Utilities;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using System;
-using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.GameContent.Creative;
-using Terraria.ID;
+using System.Collections.Generic;
+using Terraria.UI.Chat;
 
-namespace Divergency.Content.Items.Weapons.Melee
+namespace Divergency.Content.Items.Weapons.Melee;
+
+public class CoreCrystalize : ModItem
 {
-    public class CoreCrystalize : ModItem
+    private float SwingDir
     {
+        get;
+        set;
+    } = 1;
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
-
-        public override void SetStaticDefaults()
-        {
-
-        }
-
-        public override void SetDefaults()
-        {
-            Item.DamageType = DamageClass.Melee;
-            Item.noMelee = true;
-            Item.damage = 35;
-            Item.knockBack = 5f;
-
-            Item.shoot = ModContent.ProjectileType<CoreCrystalizePro>();
-            Item.shootSpeed = 1f;
-
-            Item.Size = new(16);
-            Item.scale = 1f;
-
-            Item.useTime = Item.useAnimation = 50;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noUseGraphic = true;
-            Item.autoReuse = true;
-            Item.useTurn = false;
-            Item.channel = true;
-
-            Item.value = Item.sellPrice(0, 4, 0, 0);
-            Item.rare = ItemRarityID.Green;
-        }
+    public class Particle(Vector2 position, Vector2 velocity, int lifetime)
+    {
+        public int TimeLeft;
+        public int Lifetime = lifetime;
+        public int ID = Particles.Count;
+        public Vector2 Velocity = velocity;
+        public Vector2 Position = position;
     }
 
-    public class CoreCrystalizePro : ModProjectile
+    public static List<Particle> Particles
     {
-        SlotId soundSlot;
+        get;
+        private set;
+    } = [];
 
-        Player player => Main.player[Projectile.owner];
+    public override bool MeleePrefix() => true;
 
-        Vector2 shakeOffset;
+    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
 
-        public override bool ShouldUpdatePosition() => false;
+    public override void SetStaticDefaults()
+    {
 
-        public override bool? CanCutTiles() => false;
+    }
 
-        float charge;
+    public override void SetDefaults()
+    {
+        Item.Size = new(176);
+        Item.scale = 1;
 
-        public override void SetStaticDefaults()
+        Item.DamageType = DamageClass.Melee;
+        Item.noMelee = true;
+        Item.damage = 120;
+        Item.knockBack = 5;
+
+        Item.shoot = ModContent.ProjectileType<CoreCrystalizePro>();
+        Item.shootSpeed = 1;
+
+        Item.autoReuse = true;
+        Item.noUseGraphic = true;
+        Item.useTime = Item.useAnimation = 50;
+        Item.useStyle = ItemUseStyleID.Shoot;
+
+        Item.value = Item.sellPrice(0, 5, 0, 0);
+        Item.rare = ItemRarityID.White;
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        SwingDir = -SwingDir;
+
+        Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, SwingDir);
+
+        return false;
+    }
+
+    public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset)
+    {
+        for (int k = 0; k < Particles.Count; k++)
         {
+            var particle = Particles[k];
 
+            particle.TimeLeft++;
+            particle.Position += particle.Velocity;
         }
 
-        public override void SetDefaults()
+        Particles.RemoveAll(p => p.TimeLeft >= p.Lifetime);
+
+        if (line.Name == "ItemName" && line.Mod == "Terraria")
         {
-            Projectile.Size = new(16);
 
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.penetrate = -1;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Light").Value;
 
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
+            Vector2 position = new(line.X, line.Y);
 
-            Projectile.aiStyle = -1;
-        }
+            if (Main.rand.NextBool(30))
+                Particles.Add(new Particle(new Vector2(62 + Main.rand.NextFloat(-60, 60), 11f), -Vector2.UnitY * 0.01f, 1400));
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            Projectile.rotation = MathHelper.PiOver2;
+            Color darkColor = new(96, 214, 72);
+            Color lightColor = new(96, 214, 72);
 
-            //Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<Sawblade>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.whoAmI);
-            AI();
-        }
+            float t = Main.GlobalTimeWrappedHourly * 0.8f % 1f;
 
-        public override void AI()
-        {
-            if (!player.channel)
-                Projectile.Kill();
+            Vector2 pulsePosition = position - new Vector2(12.5f, 1.5f) * t;
+            Vector2 scale = line.BaseScale * MathHelper.Lerp(1f, 1.2f, t);
 
-            player.heldProj = Projectile.whoAmI;
-            player.ChangeDir(Projectile.direction);
-            Projectile.spriteDirection = Projectile.direction;
+            Color pulseColor = new Color(191, 255, 119, 0) * (1f - t);
 
-            shakeOffset = Main.rand.NextVector2Circular(1, 1) * (Math.Clamp(charge, 0, 30) * 0.05f);
+            DrawParticles(darkColor, lightColor, position);
 
-            Projectile.Center = player.RotatedRelativePoint(player.MountedCenter, false, true) + Projectile.rotation.ToRotationVector2();
-            Projectile.rotation = MathHelper.Lerp(MathHelper.PiOver2, -MathHelper.PiOver2, EaseFunction.EaseCubicInOut.Ease(Math.Clamp(charge, 0, 60) / 60f));
+            Main.spriteBatch.Draw(texture, position + new Vector2(62, 11), texture.Bounds, darkColor with { A = 0 }, MathHelper.PiOver2, texture.Size() * 0.5f, new Vector2(1f, 3.5f), SpriteEffects.None, 0);
 
-            player.itemRotation = Projectile.rotation;
-            player.SetDummyItemTime(2);
-            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation * player.gravDir - MathHelper.PiOver2);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, darkColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, darkColor with { A = 0 }, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
 
-            Lighting.AddLight(Projectile.Center, new Vector3(0, 1, 0) * 0.1f);
-
-            charge++;
-
-            if (!SoundEngine.TryGetActiveSound(soundSlot, out _))
-            {
-                var tracker = new ProjectileAudioTracker(Projectile);
-
-                soundSlot = SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/WrathfireCharge")
-                {
-                    IsLooped = true,
-                    SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest,
-                }, Projectile.Center, soundInstance =>
-                {
-                    soundInstance.Pitch = MathHelper.Lerp(-1f, 0f, Math.Clamp(charge, 0, 60) / 60f);
-                    soundInstance.Position = Projectile.Center;
-                    return tracker.IsActiveAndInGame() && player.active && Projectile.active;
-                });
-            }
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(80, -86 * player.direction).RotatedBy(Projectile.rotation) + shakeOffset;
-
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
-            int startY = frameHeight * Projectile.frame;
-            Rectangle sourceRectangle = new(0, startY, texture.Width, frameHeight);
-
-            SpriteEffects spriteEffects = Projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
-
-            Main.EntitySpriteDraw(texture, drawPosition, sourceRectangle, Projectile.GetAlpha(lightColor), Projectile.rotation, sourceRectangle.Size() * 0.5f, Projectile.scale, spriteEffects, 0);
-
-            //Draw glow effect
-
-            texture = ModContent.Request<Texture2D>(Texture + "_Glow").Value;
-
-            Color color = Projectile.GetAlpha(Color.White);
-
-            Main.EntitySpriteDraw(texture, drawPosition, sourceRectangle, color, Projectile.rotation, sourceRectangle.Size() * 0.5f, Projectile.scale, spriteEffects, 0);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, pulsePosition, pulseColor, line.Rotation, line.Origin, scale, line.MaxWidth, line.Spread);
 
             return false;
+        }
+
+        return true;
+    }
+
+    private static void DrawParticles(Color darkColor, Color lightColor, Vector2 position)
+    {
+        Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Dust").Value;
+
+        for (int k = 0; k < Particles.Count; k++)
+        {
+            var particle = Particles[k];
+
+            float t = 1f - (float)Particles[k].TimeLeft / Particles[k].Lifetime;
+            float scale = MathF.Sin(EaseFunction.EaseQuadInOut.Ease(t) * MathF.PI);
+            float alpha = MathF.Sin(EaseFunction.EaseQuadInOut.Ease(t));
+
+            Main.spriteBatch.Draw(texture, particle.Position + position, texture.Bounds, darkColor with { A = 0 } * alpha, Particles[k].ID, texture.Size() * 0.5f, scale, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(texture, particle.Position + position, texture.Bounds, lightColor with { A = 0 } * alpha, Particles[k].ID, texture.Size() * 0.5f, scale, SpriteEffects.None, 0f);
         }
     }
 }
