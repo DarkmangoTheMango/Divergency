@@ -5,7 +5,7 @@ namespace Divergency.Content.Particles;
 
 public class CoreSparkle : Particle
 {
-    public override string Texture => "Divergency/Assets/Textures/Light";
+    public override string Texture => "Divergency/Assets/Textures/Beam";
 
     public override void SetDefaults()
     {
@@ -17,7 +17,7 @@ public class CoreSparkle : Particle
     public override void AI()
     {
         if (Scale <= 0.1f)
-            Kill();
+            return;
 
         velocity *= 0.9f;
         Scale *= 0.9f;
@@ -27,6 +27,9 @@ public class CoreSparkle : Particle
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
     {
+        if (Scale <= 0.1f)
+            return false;
+
         Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
         Color color = new Color(96, 214, 72, 0) * Scale;
@@ -61,7 +64,7 @@ public class Spark : Particle
         rotation = velocity.ToRotation();
 
         if (Scale <= 0.1f)
-            Kill();
+            return;
 
         velocity *= 0.9f;
         Scale *= 0.9f;
@@ -71,7 +74,10 @@ public class Spark : Particle
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
     {
-		Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+        if (Scale <= 0.1f)
+            return false;
+
+        Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
         Color color = new Color(96, 214, 72, 0) * Scale;
         Vector2 scaleV = new Vector2(0.5f, 1f) * scale;

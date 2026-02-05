@@ -45,18 +45,17 @@ public class CoreCrystalizePro : ModProjectile
     {
         Projectile.Size = new Vector2(176);
         Projectile.penetrate = 3;
-        Projectile.friendly = true;
-        Projectile.stopsDealingDamageAfterPenetrateHits = true;
-        Projectile.DamageType = DamageClass.Melee;
 
+        Projectile.aiStyle = -1;
+        Projectile.MaxUpdates = 3;
+        Projectile.hide = true;
+        Projectile.friendly = true;
         Projectile.tileCollide = false;
         Projectile.ignoreWater = true;
+        Projectile.stopsDealingDamageAfterPenetrateHits = true;
         Projectile.ownerHitCheck = true;
         Projectile.usesOwnerMeleeHitCD = true;
-
-        Projectile.MaxUpdates = 3;
-        Projectile.aiStyle = -1;
-        Projectile.hide = true;
+        Projectile.DamageType = DamageClass.Melee;
     }
 
     #region Behavior
@@ -92,6 +91,11 @@ public class CoreCrystalizePro : ModProjectile
 
         UpdateTrail(swingAngle);
         UpdateProjectilePosition(swingAngle);
+
+        if (Progress >= 0.3f && Progress <= 0.6f && Main.rand.NextBool(2))
+        {
+            ParticleManager.NewParticle<CoreSparkle>(Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * (Projectile.width * 0.5f) * Main.rand.NextFloat(Projectile.scale), (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 5 * (Projectile.ai[0] * Player.direction), Color.White, 1);
+        }
     }
 
     private void HandleHitFreeze()
@@ -109,9 +113,6 @@ public class CoreCrystalizePro : ModProjectile
             return;
 
         Progress = 1 - Projectile.timeLeft / MaxTimeLeft;
-
-        if (Progress >= 0.3f && Progress <= 0.6f && Main.rand.NextBool(2))
-            ParticleManager.NewParticle<CoreSparkle>(Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * (Projectile.width * 0.5f) * Main.rand.NextFloat(Projectile.scale), (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 5 * (Projectile.ai[0] * Player.direction), default, 1);
     }
 
     private void HandleSounds()

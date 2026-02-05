@@ -1,6 +1,4 @@
 using Divergency.Common.Helpers;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using System;
 using System.Collections.Generic;
 using Terraria.UI.Chat;
@@ -85,7 +83,7 @@ public class CoreCrystalize : ModItem
         if (line.Name == "ItemName" && line.Mod == "Terraria")
         {
 
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Light").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Beam").Value;
 
             Vector2 position = new(line.X, line.Y);
 
