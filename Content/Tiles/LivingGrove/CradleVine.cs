@@ -55,40 +55,7 @@ namespace Divergency.Content.Tiles.LivingGrove
             return true;
         }
 
-        public override void RandomUpdate(int i, int j)
-        {
-            Tile tileBelow = Framing.GetTileSafely(i, j + 1);
-            if (WorldGen.genRand.NextBool(1) && !tileBelow.HasTile)
-            {
-                bool placeVine = false;
-                int yTest = j;
-                while (yTest > j - 10)
-                {
-                    Tile testTile = Framing.GetTileSafely(i, yTest);
-                    if (testTile.Slope != SlopeType.Solid)
-                    {
-                        break;
-                    }
-                    else if (testTile.TileType == ModContent.TileType<CradleWood>() || testTile.TileType == ModContent.TileType<CradleWood>())
-                    {
-                        yTest--;
-                        continue;
-                    }
-                    placeVine = true;
-                    break;
-                }
-                if (placeVine)
-                {
-                    tileBelow.TileType = Type;
-                    tileBelow.HasTile = true;
-                    WorldGen.SquareTileFrame(i, j + 1, true);
-                    if (Main.netMode == NetmodeID.Server)
-                    {
-                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
-                    }
-                }
-            }
-        }
+       
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile tile = Framing.GetTileSafely(i, j);
