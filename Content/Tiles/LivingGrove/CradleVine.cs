@@ -74,7 +74,7 @@ namespace Divergency.Content.Tiles.LivingGrove
         }
         public float GetOffset(int i, int j, int frameX, float sOffset = 0f)
         {
-            float sin = (float)Math.Sin((Main.time + (i * 24) + (j * 19)) * (0.04f * (!Lighting.NotRetro ? 0f : 1)) + sOffset) * 1.4f;
+            float sin = (float)Math.Sin((Main.GameUpdateCount + (i * 24) + (j * 19)) * (0.04f * (!Lighting.NotRetro ? 0f : 1)) + sOffset) * 1.4f;
             if (Framing.GetTileSafely(i, j - 1).TileType != Type) 
                 sin *= 0.50f;
             else if (Framing.GetTileSafely(i, j - 2).TileType != Type)
