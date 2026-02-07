@@ -28,7 +28,7 @@ namespace Divergency.Content.Events.LivingCore
         public static int lastJ = 0;
         public static void Update()
         {
-            if (KeybindSystem.End.JustPressed)
+            if (KeybindSystem.End.JustPressed) // TODO: development only...
                 End();
 
             if (Room != null)

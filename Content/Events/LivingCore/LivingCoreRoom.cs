@@ -373,9 +373,6 @@ namespace Divergency.Content.Events.LivingCore
 
             //Console.WriteLine(Timer + " | " + SpawnTimer + " | " + CurWave + " | " + KillsRemaining + " | " + TotalEnemies);
 
-            LivingCoreEvent.End();
-            return;
-
             if (rewardPhase)
             {
                 rewardTransition += 0.01f;
@@ -616,8 +613,14 @@ namespace Divergency.Content.Events.LivingCore
                 {
                     // TODO: drop currency?
                 }
-
+                
                 RoomBase.ClaimedRewards[hoverReward] = true;
+
+                foreach (Point16 vec in BlockingBlocks)
+                {
+                    Point16 pos = RoomBase.Position + vec;
+                    WorldGen.KillTile(pos.X, pos.Y, noItem: true);
+                }
             }
 
             Kills = 0;
@@ -630,29 +633,6 @@ namespace Divergency.Content.Events.LivingCore
             rewardLastTransition = -1f;
 
             killSpawnedEnemies();
-
-            /*
-            int counter = 0;
-            foreach (Vector2 vec in BlockingBlocks)
-            {
-                if (savedTiles[counter] != -1)
-                {
-                    WorldGen.KillTile(left - (int)vec.X, top - (int)vec.Y, noItem: true);
-                    WorldGen.PlaceTile(left - (int)vec.X, top - (int)vec.Y, savedTiles[counter]);
-                }
-                else
-                    WorldGen.KillTile(left - (int)vec.X, top - (int)vec.Y, noItem: true);
-
-
-                counter++;
-            }
-            */
-
-            foreach (Point16 vec in BlockingBlocks)
-            {
-                Point16 pos = RoomBase.Position + vec;
-                WorldGen.KillTile(pos.X, pos.Y, noItem: true);
-            }
         }
 
         private void killSpawnedEnemies()
