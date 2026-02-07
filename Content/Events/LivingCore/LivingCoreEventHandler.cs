@@ -20,7 +20,7 @@ namespace Divergency.Events.LivingCore
 			NPC.height = 1;
 			NPC.lifeMax = 1;
 			NPC.immortal = true;
-			NPC.friendly = false;
+			NPC.friendly = true;
 			NPC.dontTakeDamage = true;
 
 			if (LivingCoreEvent.Room != null)
