@@ -12,11 +12,6 @@ namespace Divergency.Content.Events.LivingCore
 		{
 			if (LivingCoreEvent.Active)
 				LivingCoreEvent.Update();
-
-            if (KeybindSystem.Begin.JustPressed)
-            {
-                LivingCoreEvent.Begin(LivingCoreEvent.lastI, LivingCoreEvent.lastJ, new InfiniteRoom());
-            }
         }
 
 		public override void PostDrawTiles()

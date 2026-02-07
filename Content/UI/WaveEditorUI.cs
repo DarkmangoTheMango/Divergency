@@ -1,4 +1,5 @@
-﻿using Divergency.Content.Events.LivingCore;
+﻿using Divergency.Common.Helpers;
+using Divergency.Content.Events.LivingCore;
 using Divergency.Tiles.LivingTree;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -210,7 +211,6 @@ namespace Divergency.Content.UI
             closeText.Top.Set(5, 0);
             closeText.OnLeftClick += (evt, element) =>
             {
-                StopEditing();
                 ModContent.GetInstance<WaveEditorUI>().InspectorInterface.SetState(null);
             };
 
@@ -558,7 +558,7 @@ namespace Divergency.Content.UI
 
             if (TargetObject == null || currentWaveIndex >= TargetObject.Waves.Count) return;
 
-            Vector2 tileWorldPosition = TargetObject.Position.ToWorldCoordinates() + new Vector2(0, 0); // Adjust this to your actual property
+            Vector2 tileWorldPosition = TargetObject.Position.ToWorldCoordinates();
 
             Texture2D pixel = TextureAssets.MagicPixel.Value;
 
@@ -603,6 +603,25 @@ namespace Divergency.Content.UI
                 {
                     draggingNpc = i;
                 }
+            }
+
+            foreach (Point16 vec in TargetObject.BlockingBlocks)
+            {
+                Vector2 removePosition = tileWorldPosition + vec.ToVector2() * 16f;
+                Vector2 screenRemovePos = removePosition - Main.screenPosition;
+
+                screenRemovePos = Vector2.Transform(screenRemovePos, Main.GameViewMatrix.TransformationMatrix);
+                screenRemovePos /= Main.UIScale;
+
+                float scale = Main.GameViewMatrix.Zoom.X / Main.UIScale;
+
+                int width = (int)(18 * scale);
+                int height = (int)(18 * scale);
+
+                Rectangle box = new Rectangle((int)screenRemovePos.X - width / 2, (int)screenRemovePos.Y - height / 2, width, height);
+                Rectangle srcRect = new Rectangle(0, 0, width, height);
+
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, box, srcRect, Color.Red);
             }
         }
 
@@ -663,29 +682,22 @@ namespace Divergency.Content.UI
             }
 
 
-            if (_isEditing)
+            if (!KeybindSystem.BlockingBlocks.Current)
+                return;
+
+            Point16 vec = new Point16(Player.tileTargetX, Player.tileTargetY) - TargetObject.Position;
+
+            if (Main.mouseLeft)
             {
-                Main.LocalPlayer.mouseInterface = true;
-
-                _tempText = Main.GetInputText(_tempText);
-                _editingEntity.FullName = _tempText;
-                RefreshUI();
-
-                if (Main.inputTextEnter)
+                if (!TargetObject.BlockingBlocks.Any(v => v.X == vec.X && v.Y == vec.Y))
                 {
-                    StopEditing();
-                }
-                else if (Main.inputTextEscape)
-                {
-                    StopEditing();
+                    TargetObject.BlockingBlocks.Add(vec);
                 }
             }
-        }
-        private void StopEditing()
-        {
-            _isEditing = false;
-            Main.blockInput = false; // Let the player move again
-            Main.clrInput();         // Flush the buffer so 'E' doesn't open inventory
+            else if (Main.mouseRight)
+            {
+                TargetObject.BlockingBlocks.RemoveAll(v => v.X == vec.X && v.Y == vec.Y);
+            }
         }
     }
 }

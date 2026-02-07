@@ -170,8 +170,8 @@ namespace Divergency.Content.Events.LivingCore
                                                 // maby just really big and or have a stop button - give skill points for every 10 waves, maby?
     {
         public override int Music => MusicLoader.GetMusicSlot("Divergency/Assets/Sounds/Music/LivingGroveBattle1");
-        public override List<Reward> Rewards => new List<Reward> {};
-        public override Vector2[] BlockingBlocks => new Vector2[] {};
+        public override List<Reward> Rewards => [];
+        public override List<Point16> BlockingBlocks => [];
 
         private int waveCheckCheater = 0;
 

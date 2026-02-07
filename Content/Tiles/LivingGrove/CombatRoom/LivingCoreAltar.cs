@@ -98,7 +98,7 @@ namespace Divergency.Tiles.LivingTree
 
         public string MusicPath = "Divergency/Assets/Sounds/Music/LivingGroveBattle1";
 
-        public Vector2[] BlockingBlocks => [];
+        public List<Point16> BlockingBlocks = [];
 
         public override bool IsTileValidForEntity(int x, int y)
         {

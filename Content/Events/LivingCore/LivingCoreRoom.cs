@@ -5,6 +5,7 @@ using Divergency.Content.Particles;
 using Divergency.Content.Tiles.LivingGrove;
 using Divergency.Events.LivingCore;
 using Divergency.Tiles.LivingTree;
+using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
@@ -123,7 +124,7 @@ namespace Divergency.Content.Events.LivingCore
         
         public virtual List<Reward> Rewards { get { return RoomBase.Rewards; } }
 
-        public virtual Vector2[] BlockingBlocks { get { return RoomBase.BlockingBlocks; } }
+        public virtual List<Point16> BlockingBlocks { get { return RoomBase.BlockingBlocks; } }
 
         public virtual Wave? getWave(int wave)
         {
@@ -372,6 +373,9 @@ namespace Divergency.Content.Events.LivingCore
 
             //Console.WriteLine(Timer + " | " + SpawnTimer + " | " + CurWave + " | " + KillsRemaining + " | " + TotalEnemies);
 
+            LivingCoreEvent.End();
+            return;
+
             if (rewardPhase)
             {
                 rewardTransition += 0.01f;
@@ -559,6 +563,7 @@ namespace Divergency.Content.Events.LivingCore
             int left = i - Main.tile[i, j].TileFrameX / 18;
             int top = j - Main.tile[i, j].TileFrameY / 18;
 
+            /*
             savedTiles = new int[BlockingBlocks.Length];
             int counter = 0;
             foreach (Vector2 vec in BlockingBlocks)
@@ -568,6 +573,7 @@ namespace Divergency.Content.Events.LivingCore
                 WorldGen.PlaceTile(left - (int)vec.X, top - (int)vec.Y, ModContent.TileType<CradleWood>());
                 counter++;
             }
+            */
 
             Kills = 0;
             Timer = 0;
@@ -625,9 +631,7 @@ namespace Divergency.Content.Events.LivingCore
 
             killSpawnedEnemies();
 
-            int left = LivingCoreEvent.X - LivingCoreEvent.Altar.TileFrameX / 18;
-            int top = LivingCoreEvent.Y - LivingCoreEvent.Altar.TileFrameY / 18;
-
+            /*
             int counter = 0;
             foreach (Vector2 vec in BlockingBlocks)
             {
@@ -641,6 +645,13 @@ namespace Divergency.Content.Events.LivingCore
 
 
                 counter++;
+            }
+            */
+
+            foreach (Point16 vec in BlockingBlocks)
+            {
+                Point16 pos = RoomBase.Position + vec;
+                WorldGen.KillTile(pos.X, pos.Y, noItem: true);
             }
         }
 
