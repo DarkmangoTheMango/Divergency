@@ -1,35 +1,70 @@
 ﻿
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Divergency;
-using ParticleLibrary;
-using System;
-using Terraria;
-using Terraria.ModLoader;
-using System.Collections.Generic;
+using Divergency.Common.Helpers;
+using Divergency.Content.Particles;
 using Divergency.Content.Tiles.LivingGrove;
 using Divergency.Events.LivingCore;
-using Divergency.Content.Particles;
-using Divergency.Common.Helpers;
-using Terraria.ID;
-using ReLogic.Content;
+using Divergency.Tiles.LivingTree;
+using Humanizer;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ParticleLibrary;
 using rail;
+using ReLogic.Content;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace Divergency.Content.Events.LivingCore
 {
     public class Reward
     {
-        public Reward(int id, string texturePath) { this.id = id; this.texturePath = texturePath;  }
-        public int id;
+        public Reward(TagCompound item, string texturePath) { this.item = item; this.texturePath = texturePath;  }
+        public TagCompound item;
         public string texturePath;
+        public TagCompound Save()
+        {
+            return new TagCompound
+            {
+                ["item"] = item,
+                ["texturePath"] = texturePath
+            };
+        }
+
+        public static Reward Load(TagCompound tag)
+        {
+            return new Reward(tag.GetCompound("item"), tag.GetString("texturePath"));
+        }
     }
 
-    public abstract class LivingCoreRoom
+    public class LivingCoreRoom(LivingCoreAltarTileEntity roomBase = null)
     {
         static Effect rewardEffect;
         static Matrix view = Matrix.CreateTranslation(0, 0, -600);
 
+        public LivingCoreAltarTileEntity RoomBase = roomBase;
+
+        public virtual bool Valid
+        {
+            get {
+                foreach (Wave wave in RoomBase.Waves)
+                {
+                    foreach (Instance enemy in wave.enemies)
+                    {
+                        if (enemy.NPCID == -1)
+                        {
+                            Console.WriteLine($"'{enemy.FullName}' is not a valid name/vanila Mob ID.");
+                            return false; // an invalid npc.
+                        }
+                    }
+                }
+                return true;  }
+        }
 
         private Vector3 lerp(Vector3 start, Vector3 stop, float t, bool curve = true)
         {
@@ -54,7 +89,7 @@ namespace Divergency.Content.Events.LivingCore
 
         public int Kills = 0;
         public float Progress => (float)TotalKills / (TotalEnemies);
-        private int KillsRemaining { get => CurWaveObject != null ? CurWaveObject.enemies.Length - Kills : 0; }
+        private int KillsRemaining { get => CurWaveObject != null ? CurWaveObject.enemies.Count - Kills : 0; }
 
         public static bool hasBeenCleared = false;
 
@@ -85,22 +120,23 @@ namespace Divergency.Content.Events.LivingCore
 
         private int[] savedTiles = new int[0];
 
-        public LivingCoreRoom() { }
-
-        public virtual int Music { get { return 0; } }
+        public virtual int Music { get { return MusicLoader.GetMusicSlot("Divergency/Assets/Sounds/Music/LivingGroveBattle1"); } }
         
-        public virtual List<Reward> Rewards { get { return new List<Reward> { }; } }
+        public virtual List<Reward> Rewards { get { return RoomBase.Rewards; } }
 
-        public virtual Vector2[] BlockingBlocks { get { return new Vector2[] {}; } }
+        public virtual List<Point16> BlockingBlocks { get { return RoomBase.BlockingBlocks; } }
 
         public virtual Wave? getWave(int wave)
         {
-            return new Wave("Wave #&¤%!", new Instance[] {});
+            if (wave > RoomBase.Waves.Count)
+                return null;
+
+            return RoomBase.Waves[wave-1];
         }
 
         public virtual int getWaves()
         {
-            return 0;
+            return RoomBase.Waves.Count - (Math.Max(0, RoomBase.ClaimedRewards.Select(t => t ? 0 : 1).Sum() - 1));
         }
 
         private void updateAltarReward()
@@ -150,16 +186,14 @@ namespace Divergency.Content.Events.LivingCore
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, rewardEffect, Main.GameViewMatrix.TransformationMatrix);
 
-            bool[] obtained = LivingCoreEvent.GetObtainedRewards(this);
-
             if (!rewardPhase)
             {
                 for (int i = 0; i < Rewards.Count; i++)
                 {
                     Color c = Color.White;
 
-                    RewardH = Main.GlobalTimeWrappedHourly;
-                    float r = (RewardH + (MathF.PI * 2f) * i / Rewards.Count) % MathF.PI;
+                    RewardH = Main.GlobalTimeWrappedHourly * 4 / Rewards.Count;
+                    float r = (RewardH + MathF.PI * i / Rewards.Count) % MathF.PI;
                     float x = MathF.Cos(r);
                     float y = MathF.Sin(r);
 
@@ -190,10 +224,10 @@ namespace Divergency.Content.Events.LivingCore
                         xrot = r - hpi;
                     */
 
-                    float dist = 80f;
+                    float dist = Rewards.Count * 20;
                     rewardEffect.Parameters["Model"].SetValue(FromEuler(new Vector3(target.X + x * dist, -target.Y, y * dist), new Vector3(xrot, r + MathF.PI / 2f, 0f), new Vector3(1f, 1f, 1f)));
 
-                    if (obtained[i] == true) // if it has been claimed
+                    if (RoomBase.ClaimedRewards.Count < i || RoomBase.ClaimedRewards[i] == true) // if it has been claimed
                         c = Color.Gray;
 
                     Main.EntitySpriteDraw(texture,
@@ -205,11 +239,9 @@ namespace Divergency.Content.Events.LivingCore
             {
                 if (rewardLastTransition < 0f)
                 {
-                    // ^^ list is a list of all rewards having been clamed are true
-
                     for (int i = 0; i < Rewards.Count; i++)
                     {
-                        float r = (RewardH + (MathF.PI * 2f) * i / Rewards.Count) % MathF.PI;
+                        float r = (RewardH + MathF.PI * i / Rewards.Count) % MathF.PI;
                         float x = MathF.Cos(r);
                         float y = MathF.Sin(r);
 
@@ -240,12 +272,15 @@ namespace Divergency.Content.Events.LivingCore
                             xrot = r - hpi;
                         */
 
-                        float dist = 80f;
+                        float dist = 80f + Rewards.Count * 20;
 
                         Vector3 prePos = new Vector3(target.X + x * dist, -target.Y, y * dist);
                         Vector3 preRot = new Vector3(xrot, r + MathF.PI / 2f, 0f);
+                        float rr = MathF.PI / 2f;
 
-                        float rr = MathF.PI * ((float)i / (Rewards.Count - 1));
+                        if (Rewards.Count > 1)
+                            rr = MathF.PI * ((float)i / (Rewards.Count - 1));
+                        
                         float rx = MathF.Cos(rr);
                         float ry = MathF.Sin(rr);
                         Vector3 tPos = new Vector3(target.X + rx * dist, -target.Y + ry * dist, 0f);
@@ -264,7 +299,7 @@ namespace Divergency.Content.Events.LivingCore
                         Vector2 playerM = Main.MouseScreen;
                         Vector2 TopLeftReward = target + Main.ScreenSize.ToVector2() / 2 + new Vector2(rx * dist, -ry * dist) - new Vector2(width / 2f * multW, height / 2f);
 
-                        if (obtained[i] == true) // if it has been claimed
+                        if (RoomBase.ClaimedRewards.Count < i || RoomBase.ClaimedRewards[i] == true) // if it has been claimed
                             c = Color.Gray;
 
                         if (playerM.X > TopLeftReward.X && playerM.Y > TopLeftReward.Y &&
@@ -273,7 +308,7 @@ namespace Divergency.Content.Events.LivingCore
                             hoverReward = i;
                             c = Color.Yellow;
 
-                            if (obtained[i] == true) // if it has been claimed
+                            if (RoomBase.ClaimedRewards.Count < i || RoomBase.ClaimedRewards[i] == true) // if it has been claimed
                                 c = new Color(128, 128, 0, 255);
                         }
 
@@ -300,9 +335,13 @@ namespace Divergency.Content.Events.LivingCore
 
                     Vector2 target = pos + new Vector2(0f, -80f);
 
-                    float dist = 80f;
+                    float dist = 80f + Rewards.Count * 20;
 
-                    float rr = MathF.PI * ((float)hoverReward / (Rewards.Count - 1));
+                    float rr = MathF.PI / 2f;
+
+                    if (Rewards.Count > 1)
+                        rr = MathF.PI * ((float)hoverReward / (Rewards.Count - 1));
+
                     float rx = MathF.Cos(rr);
                     float ry = MathF.Sin(rr);
                     Vector3 tPos = new Vector3(target.X + rx * dist, -target.Y + ry * dist, 0f);
@@ -314,7 +353,7 @@ namespace Divergency.Content.Events.LivingCore
                         new Vector3(0f, 0f, 0f),
                         new Vector3(1f, 1f, 1f)));
 
-                    if (obtained[hoverReward] == true) // if it has been claimed
+                    if (RoomBase.ClaimedRewards.Count < hoverReward || RoomBase.ClaimedRewards[hoverReward] == true) // if it has been claimed
                         c = Color.Gray;
 
                     Main.EntitySpriteDraw(texture,
@@ -333,6 +372,9 @@ namespace Divergency.Content.Events.LivingCore
             Rectangle textPosition = new(LivingCoreEvent.X * 16 + 24, LivingCoreEvent.Y * 16 + 24, 0, 0);
 
             //Console.WriteLine(Timer + " | " + SpawnTimer + " | " + CurWave + " | " + KillsRemaining + " | " + TotalEnemies);
+
+            LivingCoreEvent.End();
+            return;
 
             if (rewardPhase)
             {
@@ -365,7 +407,7 @@ namespace Divergency.Content.Events.LivingCore
                 Kills = 0;
                 CurWaveObject = getWave(CurWave);
 
-                if (CurWaveObject == null)
+                if (CurWaveObject == null || CurWaveObject.enemies.Count == 0)
                 {
                     LivingCoreEvent.PreEnd();
                     return;
@@ -507,9 +549,11 @@ namespace Divergency.Content.Events.LivingCore
             int curWaveTest = 1;
             Wave wave = getWave(curWaveTest);
 
+            TotalEnemies = 0;
+
             while (wave != null)
             {
-                TotalEnemies += wave.enemies.Length;
+                TotalEnemies += wave.enemies.Count;
                 curWaveTest++;
                 wave = getWave(curWaveTest);
             }
@@ -519,6 +563,7 @@ namespace Divergency.Content.Events.LivingCore
             int left = i - Main.tile[i, j].TileFrameX / 18;
             int top = j - Main.tile[i, j].TileFrameY / 18;
 
+            /*
             savedTiles = new int[BlockingBlocks.Length];
             int counter = 0;
             foreach (Vector2 vec in BlockingBlocks)
@@ -528,6 +573,7 @@ namespace Divergency.Content.Events.LivingCore
                 WorldGen.PlaceTile(left - (int)vec.X, top - (int)vec.Y, ModContent.TileType<CradleWood>());
                 counter++;
             }
+            */
 
             Kills = 0;
             Timer = 0;
@@ -560,19 +606,18 @@ namespace Divergency.Content.Events.LivingCore
 
             if (hoverReward != -1)
             {
-                bool[] obtained = LivingCoreEvent.GetObtainedRewards(this);
-
-                if (obtained[hoverReward] == false)
+                if (RoomBase.ClaimedRewards.Count < hoverReward || RoomBase.ClaimedRewards[hoverReward] == false)
                 {
-                    Item.NewItem(null, LivingCoreEvent.Center, Rewards[hoverReward].id);
+                    Item item = ItemIO.Load(Rewards[hoverReward].item);
+                    Item.NewItem(null, LivingCoreEvent.Center, item);
                     Main.NewText("Cleared!");
                 }
                 else
                 {
-                    // drop currency
+                    // TODO: drop currency?
                 }
 
-                LivingCoreEvent.RewardObtained(this, hoverReward);
+                RoomBase.ClaimedRewards[hoverReward] = true;
             }
 
             Kills = 0;
@@ -586,9 +631,7 @@ namespace Divergency.Content.Events.LivingCore
 
             killSpawnedEnemies();
 
-            int left = LivingCoreEvent.X - LivingCoreEvent.Altar.TileFrameX / 18;
-            int top = LivingCoreEvent.Y - LivingCoreEvent.Altar.TileFrameY / 18;
-
+            /*
             int counter = 0;
             foreach (Vector2 vec in BlockingBlocks)
             {
@@ -602,6 +645,13 @@ namespace Divergency.Content.Events.LivingCore
 
 
                 counter++;
+            }
+            */
+
+            foreach (Point16 vec in BlockingBlocks)
+            {
+                Point16 pos = RoomBase.Position + vec;
+                WorldGen.KillTile(pos.X, pos.Y, noItem: true);
             }
         }
 

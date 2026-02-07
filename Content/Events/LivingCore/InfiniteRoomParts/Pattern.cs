@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Terraria.DataStructures;
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts
 {
     public class ActivePattern
     {
@@ -11,20 +11,20 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
 
         // public List<List<ActivePattern>> participatingPatternGroups = new List<List<ActivePattern>>();
 
-        public ActivePattern(int id, Vector2 pos)
+        public ActivePattern(string name, Vector2 pos)
         {
             position = pos;
 
             foreach (Unit u in Unit.units)
             {
-                if (u.id == id)
+                if (u.fullName == name)
                 {
                     unit = u;
                     return;
                 }
             }
 
-            unit = new Unit(-1, 99999, 9);
+            unit = new Unit("", 99999, 9);
         }
         public ActivePattern(Unit u, Vector2 pos) { position = pos; unit = u; }
 

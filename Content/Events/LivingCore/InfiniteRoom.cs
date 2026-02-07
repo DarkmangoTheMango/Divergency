@@ -1,4 +1,4 @@
-﻿using Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts;
+﻿using Divergency.Content.Events.LivingCore.InfiniteRoomParts;
 using Divergency.Content.NPCs.LivingGrove;
 using Microsoft.Xna.Framework;
 using System;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Events.LivingCore.Rooms
+namespace Divergency.Content.Events.LivingCore
 {
     public class MinMaxFightState // min max, sure... but more like min min...
     {
@@ -68,7 +68,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                     foreach (ActivePattern ap in possiblity)
                     {
                         int count = 0;
-                        foreach (ActivePattern oap in f.activePatterns) { if (ap.unit.id == oap.unit.id) count++; }
+                        foreach (ActivePattern oap in f.activePatterns) { if (ap.unit.fullName == oap.unit.fullName) count++; }
                         f.cost += MathF.Pow(count, 0.3f) - 1f;
 
                         f.activePatterns.Add(ap);
@@ -97,7 +97,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
             }
         }
 
-        private void BranchAllPotnetials()
+        private void BranchAllPotentials()
         {
             List<MinMaxFightState> tmpMMFSList = new List<MinMaxFightState>();
             foreach (MinMaxFightState MMFS in potnetialStates)
@@ -155,12 +155,12 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                 Console.WriteLine("Depth: " + depth++ + " | Potential: " + potnetialStates.Count);
                 CutDownTo(wave * 100); // can make this 1k, only if we add more ways to add units...
                                        // and even more so if we add more costly ways to add units...
-                BranchAllPotnetials();
+                BranchAllPotentials();
             }
 
             // makes it take more time; but also makes it better, lol
             CutDownTo(1000);
-            BranchAllPotnetials();
+            BranchAllPotentials();
 
             return bestMMFS;
         }
@@ -170,8 +170,8 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                                                 // maby just really big and or have a stop button - give skill points for every 10 waves, maby?
     {
         public override int Music => MusicLoader.GetMusicSlot("Divergency/Assets/Sounds/Music/LivingGroveBattle1");
-        public override List<Reward> Rewards => new List<Reward> {};
-        public override Vector2[] BlockingBlocks => new Vector2[] {};
+        public override List<Reward> Rewards => [];
+        public override List<Point16> BlockingBlocks => [];
 
         private int waveCheckCheater = 0;
 
@@ -201,12 +201,12 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                 MinMaxFightState MMFS = new MinMaxFightState(cost);
                 MinMaxFightState toSpawn = MMFS.Branch(wave);
 
-                Instance[] instance = new Instance[toSpawn.activePatterns.Count];
+                List<Instance> instance = [];
 
                 for (int i = 0; i < toSpawn.activePatterns.Count; i++)
                 {
                     ActivePattern ap = toSpawn.activePatterns[i];
-                    instance[i] = new Instance(ap.unit.id, ap.position);
+                    instance.Add(new Instance(ap.unit.fullName, ap.position));
                 }
 
                 futureWaves.Enqueue(new Wave("We keep on going... Now at " + wave, instance));
@@ -222,7 +222,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms
                 futureWaves.Clear();
                 Task.Run(() => WaveGenerator());
                 waveCheckCheater++;
-                return new Wave("", new Instance[] { new Instance(ModContent.NPCType<Coreling>(), new Vector2(0, -300)) });
+                return new Wave("", [ new Instance("Divergency/Coreling", new Vector2(0, -300)) ]);
             }
             if (waveCheckCheater == 1)
             {

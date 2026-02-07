@@ -1,23 +1,29 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Divergency.Common.Helpers;
+using Divergency.Content.Events.LivingCore;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
-using Divergency.Common.Helpers;
-using Divergency.Content.Events.LivingCore;
-using System;
 
 namespace Divergency.Tiles.LivingTree
 {
-    public class LivingCoreAltarTile1 : ModTile
+    public class LivingCoreAltarTile : ModTile
     {
         public override string Texture => "Divergency/Content/Tiles/LivingGrove/CombatRoom/LivingCoreAltar1";
 
         public override void SetStaticDefaults()
         {
+
             Main.tileFrameImportant[Type] = true;
             TileID.Sets.FramesOnKillWall[Type] = true;
             Main.tileBouncy[Type] = true;
@@ -40,8 +46,15 @@ namespace Divergency.Tiles.LivingTree
             int left = i - Main.tile[i, j].TileFrameX / 18;
             int top = j - Main.tile[i, j].TileFrameY / 18;
 
-            LivingCoreEvent.Begin(left, top, new Content.Events.LivingCore.Rooms.FirstRoom());
-            // TODO: Netsync begin signal
+            if (TileEntity.ByPosition.TryGetValue(new Point16(left, top), out TileEntity te) && te is LivingCoreAltarTileEntity altarEntity)
+            {
+                if (altarEntity.Waves.Count > 0)
+                    LivingCoreEvent.Begin(left, top, new LivingCoreRoom(altarEntity));
+                else
+                    LivingCoreEvent.Begin(left, top, new InfiniteRoom());
+
+                // TODO: Netsync begin signal
+            }
 
             return true;
         }
@@ -63,6 +76,73 @@ namespace Divergency.Tiles.LivingTree
             }
 
             return false;
+        }
+
+        public override void PlaceInWorld(int i, int j, Item item)
+        {
+            Tile tile = Main.tile[i, j];
+
+            int left = i - (tile.TileFrameX / 18);
+            int top = j - (tile.TileFrameY / 18);
+
+            ModContent.GetInstance<LivingCoreAltarTileEntity>().Place(left, top);
+        }
+    }
+
+    public class LivingCoreAltarTileEntity : ModTileEntity
+    {
+        public List<Reward> Rewards = [];
+        public List<bool> ClaimedRewards = [];
+
+        public List<Wave> Waves = [];
+
+        public string MusicPath = "Divergency/Assets/Sounds/Music/LivingGroveBattle1";
+
+        public List<Point16> BlockingBlocks = [];
+
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+
+            Console.WriteLine("ffff");
+            Console.WriteLine(tile.TileType);
+            return tile.HasTile && tile.TileType == ModContent.TileType<LivingCoreAltarTile>();
+        }
+
+        public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                NetMessage.SendTileSquare(Main.myPlayer, i, j, 3);
+                NetMessage.SendData(MessageID.TileEntityPlacement, -1, -1, null, i, j, Type);
+                return -1;
+            }
+            return Place(i, j);
+        }
+
+        public override void SaveData(TagCompound tag)
+        {
+            tag.Add("MusicPath", MusicPath);
+            tag.Add("ClaimedRewards", ClaimedRewards);
+
+            tag.Add("Rewards", Rewards.Select(r => r.Save()).ToList());
+            tag.Add("Waves", Waves.Select(w => w.Save()).ToList());
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            MusicPath = tag.GetString("MusicPath");
+            ClaimedRewards = tag.GetList<bool>("ClaimedRewards").ToList();
+
+            if (tag.ContainsKey("Rewards"))
+            {
+                Rewards = tag.GetList<TagCompound>("Rewards").Select(Reward.Load).ToList();
+            }
+
+            if (tag.ContainsKey("Waves"))
+            {
+                Waves = tag.GetList<TagCompound>("Waves").Select(Wave.Load).ToList();
+            }
         }
     }
 
@@ -89,7 +169,7 @@ namespace Divergency.Tiles.LivingTree
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.rare = ItemRarityID.White;
-            Item.createTile = ModContent.TileType<LivingCoreAltarTile1>();
+            Item.createTile = ModContent.TileType<LivingCoreAltarTile>();
         }
     }
 }

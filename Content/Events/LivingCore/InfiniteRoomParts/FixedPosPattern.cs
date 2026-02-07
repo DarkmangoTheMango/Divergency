@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts
 {
     public class FixedPosPattern : Pattern
     {

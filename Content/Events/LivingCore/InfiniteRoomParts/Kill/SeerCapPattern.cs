@@ -1,10 +1,11 @@
-﻿using Divergency.Content.NPCs.LivingGrove;
+﻿using Divergency.Content.Events.LivingCore.InfiniteRoomParts;
+using Divergency.Content.NPCs.LivingGrove;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts.Kill
 {
     public class SeerCapPattern : Pattern
     {
@@ -15,9 +16,9 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
 
             foreach (ActivePattern ap in activePatterns)
             {
-                if (ap.unit.id == ModContent.NPCType<Underseer>())
+                if (ap.unit.fullName == "Divergency/Underseer")
                     under++;
-                else if (ap.unit.id == ModContent.NPCType<Overseer>())
+                else if (ap.unit.fullName == "Divergency/Overseer")
                     over++;
             }
 

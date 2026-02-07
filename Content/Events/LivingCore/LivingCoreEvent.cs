@@ -1,6 +1,5 @@
 ﻿using Divergency.Common.Helpers;
 using Divergency.Common.Players;
-using Divergency.Content.Events.LivingCore.Rooms;
 using Divergency.Tiles.LivingTree;
 using Humanizer;
 using Microsoft.Xna.Framework;
@@ -15,34 +14,6 @@ namespace Divergency.Content.Events.LivingCore
     public static class LivingCoreEvent
     {
         // TODO: Make progress bar since     may not work without an NPC
-
-        public static Type[] lcrList = new Type[] // add future room to this
-        {
-            typeof(FirstRoom)
-        };
-
-        private static int GetRoomIdx(LivingCoreRoom room)
-        {
-            for (int i = 0; i < lcrList.Length; i++)
-            {
-                if (room.GetType() == lcrList[i])
-                {
-                    return i;
-                }
-            }
-
-            return 0;
-        }
-
-        public static void RewardObtained(LivingCoreRoom room, int idx)
-        {
-            DownedHelper.livingCoreRoomCompletionTracker[GetRoomIdx(room)][idx] = true;
-        }
-
-        public static bool[] GetObtainedRewards(LivingCoreRoom room)
-        {
-            return DownedHelper.livingCoreRoomCompletionTracker[GetRoomIdx(room)];
-        }
 
         public static bool Active { get; private set; }
         public static Tile Altar { get; private set; }
@@ -70,9 +41,15 @@ namespace Divergency.Content.Events.LivingCore
         }
         public static void Begin(int i, int j, LivingCoreRoom room)
         {
+            if (!room.Valid)
+            {
+                Console.WriteLine("Room was not valid.");
+                return;
+            }
+
             if (Active)
                 return;
-            if (Main.tile[i, j].TileType != ModContent.TileType<LivingCoreAltarTile1>())
+            if (Main.tile[i, j].TileType != ModContent.TileType<LivingCoreAltarTile>())
                 return;
 
             lastI = i;
