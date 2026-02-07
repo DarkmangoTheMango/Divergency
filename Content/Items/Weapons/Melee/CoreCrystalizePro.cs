@@ -1,15 +1,8 @@
 ﻿using Divergency.Common.Helpers;
 using Divergency.Content.Particles;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using ParticleLibrary;
 using System;
-using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.CameraModifiers;
-using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace Divergency.Content.Items.Weapons.Melee;
 
@@ -33,6 +26,7 @@ public class CoreCrystalizePro : ModProjectile
     public override bool ShouldUpdatePosition() => false;
 
     public override bool? CanHitNPC(NPC target) => hitFreezeTime <= 0;
+    public override bool? CanCutTiles() => Progress >= 0.3f && Progress <= 0.6f;
 
     public override void SetStaticDefaults()
     {
@@ -92,6 +86,8 @@ public class CoreCrystalizePro : ModProjectile
         UpdateTrail(swingAngle);
         UpdateProjectilePosition(swingAngle);
 
+        if (hitFreezeTime > 0)
+            return;
         if (Progress >= 0.3f && Progress <= 0.6f && Main.rand.NextBool(2))
         {
             ParticleManager.NewParticle<CoreSparkle>(Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * (Projectile.width * 0.5f) * Main.rand.NextFloat(Projectile.scale), (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 5 * (Projectile.ai[0] * Player.direction), Color.White, 1);

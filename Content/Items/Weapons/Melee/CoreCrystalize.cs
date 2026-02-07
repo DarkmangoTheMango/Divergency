@@ -56,7 +56,7 @@ public class CoreCrystalize : ModItem
         Item.useStyle = ItemUseStyleID.Shoot;
 
         Item.value = Item.sellPrice(0, 5, 0, 0);
-        Item.rare = ItemRarityID.White;
+        Item.rare = ItemRarityID.Green;
     }
 
     public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
