@@ -1088,6 +1088,11 @@ Mods: {
 				Tooltip: ""
 				DisplayName: Core Burn Icon
 			}
+
+			WaveEditor: {
+				DisplayName: Wave Editor
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
@@ -1183,6 +1188,9 @@ Mods: {
 			"Toggle Skill Tree.DisplayName": Toggle  Skill  Tree
 			"end current encounter.DisplayName": end current encounter
 			"Begin infinite on last used pedestal.DisplayName": Begin infinite on last used pedestal
+			"Hold to place/remove blocking blocks when editing waves..DisplayName": Hold to place/remove blocking blocks when editing waves.
+			"Edit blocking blocks of waves.DisplayName": Edit blocking blocks of waves
+			"End current combat room.DisplayName": End current combat room
 		}
 
 		Configs: {

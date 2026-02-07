@@ -4,16 +4,16 @@ using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts
 {
     public class ByUnitPattern : Pattern
     {
         public static List<ActivePattern> offsetPositions = new List<ActivePattern>()
         {
-            new ActivePattern(ModContent.NPCType<CoreBlockadeLeft>(), new Vector2(90, 0)), // the wrong sided one gets deleted...
-            new ActivePattern(ModContent.NPCType<CoreBlockadeRight>(), new Vector2(90, 0)),
-            new ActivePattern(ModContent.NPCType<Corennector>(), new Vector2(120, 0)), // behind and above \/
-            new ActivePattern(ModContent.NPCType<Corennector>(), new Vector2(0, -120)),
+            new ActivePattern("Divergency/CoreBlockadeLeft", new Vector2(90, 0)), // the wrong sided one gets deleted...
+            new ActivePattern("Divergency/CoreBlockadeRight", new Vector2(90, 0)),
+            new ActivePattern("Divergency/Corennector", new Vector2(120, 0)), // behind and above \/
+            new ActivePattern("Divergency/Corennector", new Vector2(0, -120)),
         };
 
     public override float costMultiplier => 1.8f;

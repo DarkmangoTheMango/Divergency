@@ -1,11 +1,12 @@
-﻿using Divergency.Content.NPCs.LivingGrove;
+﻿using Divergency.Content.Events.LivingCore.InfiniteRoomParts;
+using Divergency.Content.NPCs.LivingGrove;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria.ModLoader;
 
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts.Kill
 {
     public class OverAndUnderPattern : Pattern
     {
@@ -13,9 +14,9 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts.Kill
         {
             foreach (ActivePattern ap in activePatterns)
             {
-                if (ap.unit.id == ModContent.NPCType<Overseer>() && ap.position.Y > -80)
+                if (ap.unit.fullName == "Divergency/Overseer" && ap.position.Y > -80)
                     return true;
-                if (ap.unit.id == ModContent.NPCType<Underseer>() && ap.position.Y < -20)
+                if (ap.unit.fullName == "Divergency/Underseer" && ap.position.Y < -20)
                     return true;
             }
 

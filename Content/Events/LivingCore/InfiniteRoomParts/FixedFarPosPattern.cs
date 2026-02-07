@@ -1,19 +1,20 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Divergency.Content.NPCs.LivingGrove;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using Terraria.ModLoader;
 
-namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
+namespace Divergency.Content.Events.LivingCore.InfiniteRoomParts
 {
-    public class CenterPosPattern : Pattern
+    public class FixedFarPosPattern : Pattern
     {
-        public static List<Vector2> positions = new List<Vector2>() {
-            new Vector2(0, 0),
-            new Vector2(0, -100),
-            new Vector2(0, -150),
-            new Vector2(0, -200),
-            new Vector2(0, -300),
+		public static List<Vector2> positions = new List<Vector2>() {
+			new Vector2(-300, 0),
+            new Vector2(-250, -200),
+            new Vector2(-100, -200),
+            new Vector2(-360, -80),
         };
-        public override float costMultiplier => 1.00001f;
+
         public override List<List<ActivePattern>> Possibilities(List<ActivePattern> activePatterns)
         {
             List<List<ActivePattern>> ret = new List<List<ActivePattern>>();
@@ -26,6 +27,7 @@ namespace Divergency.Content.Events.LivingCore.Rooms.InfiniteRoomParts
                     List<ActivePattern> toAdd = new List<ActivePattern>();
                     toAdd.Add(new ActivePattern(u, v));
                     ret.Add(toAdd);
+               
                 }
             }
 
