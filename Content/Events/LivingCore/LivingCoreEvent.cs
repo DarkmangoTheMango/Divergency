@@ -99,9 +99,9 @@ namespace Divergency.Content.Events.LivingCore
             LivingCoreRoom.Setup();
             End();
         }
-        public static void Unload()
+        public static void PreSaveAndQuit()
         {
-            // End();
+            End();
         }
 
         public static void AddProgress(int amount)
@@ -118,7 +118,7 @@ namespace Divergency.Content.Events.LivingCore
                 Room.Kills -= amount;
         }
 
-        public static float GetProgress()
+        public static float GetProgress() // TODO: Actually use this visually?
         {
             if (Room != null)
                 return Room.Progress;
