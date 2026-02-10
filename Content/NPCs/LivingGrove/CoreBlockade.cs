@@ -81,7 +81,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         public bool TpBack { get; private set; }
         public float throwCounter = 180f;
 
-        ActionState state = ActionState.Floating;
+        ActionState state = ActionState.Falling;
 
         public float Phase;
         private bool initialize;
@@ -114,7 +114,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     NPC.Move(player.Center - new Vector2(-200, 150), 40, 20); //for making them spawn right and left
 
 
-                    if (NPC.ai[0] == 300)
+                    if (NPC.ai[0] == 1)
                     {
                         state = ActionState.Falling;
                         NPC.ai[0] = 0;
@@ -283,7 +283,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         public bool TpBack { get; private set; }
         public float throwCounter = 180f;
 
-        ActionState state = ActionState.Floating;
+        ActionState state = ActionState.Falling;
 
         public float Phase;
         private bool initialize;
@@ -316,7 +316,7 @@ namespace Divergency.Content.NPCs.LivingGrove
                     NPC.Move(player.Center - new Vector2(200, 150), 40, 20); //for making them spawn right and left
 
 
-                    if (NPC.ai[0] == 300)
+                    if (NPC.ai[0] == 1)
                     {
                         state = ActionState.Falling;
                         NPC.ai[0] = 0;
