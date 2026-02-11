@@ -397,6 +397,7 @@ Mods: {
 			PhotosynthesisBolt.DisplayName: Photosynthesis Bolt
 			CoreCrystalizePro.DisplayName: Core Crystalize Pro
 			TestProjectile.DisplayName: Test Projectile
+			CoreScorcherPro.DisplayName: Core Scorcher Pro
 		}
 
 		Biomes: {
