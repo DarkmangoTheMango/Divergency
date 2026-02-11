@@ -118,8 +118,6 @@ namespace Divergency.Content.Events.LivingCore
             "Divergency/Content/Tiles/LivingGrove/CombatRoom/LivingCoreAltar4"
         };
 
-        private int[] savedTiles = new int[0];
-
         public virtual int Music { get { return MusicLoader.GetMusicSlot("Divergency/Assets/Sounds/Music/LivingGroveBattle1"); } }
         
         public virtual List<Reward> Rewards { get { return RoomBase.Rewards; } }
@@ -557,20 +555,12 @@ namespace Divergency.Content.Events.LivingCore
 
             NPC.NewNPCDirect(null, LivingCoreEvent.Position + new Vector2(24f), ModContent.NPCType<LivingCoreEventHandler>());
 
-            int left = i - Main.tile[i, j].TileFrameX / 18;
-            int top = j - Main.tile[i, j].TileFrameY / 18;
-
-            /*
-            savedTiles = new int[BlockingBlocks.Length];
-            int counter = 0;
-            foreach (Vector2 vec in BlockingBlocks)
+            foreach (Point16 vec in BlockingBlocks)
             {
-                savedTiles[counter] = WorldGen.TileType(left - (int)vec.X, top - (int)vec.Y);
-                WorldGen.KillTile(left - (int)vec.X, top - (int)vec.Y, noItem: true);
-                WorldGen.PlaceTile(left - (int)vec.X, top - (int)vec.Y, ModContent.TileType<CradleWood>());
-                counter++;
+                Point16 pos = RoomBase.Position + vec;
+                WorldGen.KillTile(pos.X, pos.Y, noItem: true);
+                WorldGen.PlaceTile(pos.X, pos.Y, ModContent.TileType<LivingCrystalStone>(), mute: true, forced: true);
             }
-            */
 
             Kills = 0;
             Timer = 0;
@@ -596,9 +586,10 @@ namespace Divergency.Content.Events.LivingCore
                 rewardLastTransition = 0f;
             }
         }
-        
+
         public void End()
         {
+            Console.WriteLine("Ended");
             HasEnded();
 
             if (hoverReward != -1)
@@ -613,13 +604,18 @@ namespace Divergency.Content.Events.LivingCore
                 {
                     // TODO: drop currency?
                 }
-                
-                RoomBase.ClaimedRewards[hoverReward] = true;
 
+                RoomBase.ClaimedRewards[hoverReward] = true;
+            }
+
+            if (hoverReward != -1 || RoomBase.ClaimedRewards.Contains(true)) // if beaten once, clear.
+            {
                 foreach (Point16 vec in BlockingBlocks)
                 {
                     Point16 pos = RoomBase.Position + vec;
-                    WorldGen.KillTile(pos.X, pos.Y, noItem: true);
+
+                    if (WorldGen.TileType(pos.X, pos.Y) == ModContent.TileType<LivingCrystalStone>())
+                        WorldGen.KillTile(pos.X, pos.Y, noItem: true);
                 }
             }
 

@@ -1182,6 +1182,8 @@ Mods: {
 			BodyOrb.DisplayName: Body Orb
 			WraithCore.DisplayName: Wraith Core
 			WraithHand.DisplayName: Wraith Hand
+			CoreBlockadeLeftInstant.DisplayName: Core Blockade Left Instant
+			CoreBlockadeRightInstant.DisplayName: Core Blockade Right Instant
 		}
 
 		Keybinds: {

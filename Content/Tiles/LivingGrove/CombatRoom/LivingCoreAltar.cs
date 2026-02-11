@@ -1,5 +1,6 @@
 ﻿using Divergency.Common.Helpers;
 using Divergency.Content.Events.LivingCore;
+using Divergency.Content.Tiles.LivingGrove;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -99,13 +100,11 @@ namespace Divergency.Tiles.LivingTree
         public string MusicPath = "Divergency/Assets/Sounds/Music/LivingGroveBattle1";
 
         public List<Point16> BlockingBlocks = [];
+        // Should consider looking at saving the type of block replaced and knowing how to place the right block back any time it saves....
 
         public override bool IsTileValidForEntity(int x, int y)
         {
             Tile tile = Main.tile[x, y];
-
-            Console.WriteLine("ffff");
-            Console.WriteLine(tile.TileType);
             return tile.HasTile && tile.TileType == ModContent.TileType<LivingCoreAltarTile>();
         }
 
@@ -123,26 +122,31 @@ namespace Divergency.Tiles.LivingTree
         public override void SaveData(TagCompound tag)
         {
             tag.Add("MusicPath", MusicPath);
-            tag.Add("ClaimedRewards", ClaimedRewards);
 
+            tag.Add("ClaimedRewards", ClaimedRewards);
             tag.Add("Rewards", Rewards.Select(r => r.Save()).ToList());
+            
             tag.Add("Waves", Waves.Select(w => w.Save()).ToList());
+
+            tag.Add("BlockingBlocks", BlockingBlocks.Select(p16 => new TagCompound
+                { // covert from short to normal int...
+                    ["x"] = (int)p16.X,
+                    ["y"] = (int)p16.Y
+                }
+            ).ToList());
         }
 
         public override void LoadData(TagCompound tag)
         {
             MusicPath = tag.GetString("MusicPath");
+
             ClaimedRewards = tag.GetList<bool>("ClaimedRewards").ToList();
-
-            if (tag.ContainsKey("Rewards"))
-            {
-                Rewards = tag.GetList<TagCompound>("Rewards").Select(Reward.Load).ToList();
-            }
-
-            if (tag.ContainsKey("Waves"))
-            {
-                Waves = tag.GetList<TagCompound>("Waves").Select(Wave.Load).ToList();
-            }
+            Rewards = tag.GetList<TagCompound>("Rewards").Select(Reward.Load).ToList();
+            
+            Waves = tag.GetList<TagCompound>("Waves").Select(Wave.Load).ToList();
+            
+            if (tag.ContainsKey("BlockingBlocks")) // TODO: to avoid failure loading new tag - remove at some point
+                BlockingBlocks = tag.GetList<TagCompound>("BlockingBlocks").Select(p16 => new Point16(p16.GetInt("x"), p16.GetInt("y"))).ToList();
         }
     }
 

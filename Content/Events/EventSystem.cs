@@ -29,9 +29,9 @@ namespace Divergency.Content.Events.LivingCore
 			LivingCoreEvent.Load();
 		}
 
-		public override void OnWorldUnload()
-		{
-			LivingCoreEvent.Unload();
-		}
+        public override void PreSaveAndQuit()
+        {
+            LivingCoreEvent.PreSaveAndQuit();
+        }
 	}
 }
