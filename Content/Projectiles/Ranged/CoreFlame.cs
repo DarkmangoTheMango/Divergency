@@ -55,6 +55,8 @@ public class CoreFlame : ModProjectile
 
     public override void AI()
     {
+        Lighting.AddLight(Projectile.Center, new Color(96, 214, 72).ToVector3() * (Projectile.alpha / 255));
+
         if (Main.rand.NextBool((int)Projectile.ai[0] + 1) && Projectile.alpha < 128)
             ParticleManager.NewParticle<CoreSparkle>(Projectile.Center + Main.rand.NextVector2Circular(1, 1) * (Projectile.width * 0.5f * (Projectile.scale * 0.5f)), Projectile.velocity * 0.1f, Color.White, 1);
 

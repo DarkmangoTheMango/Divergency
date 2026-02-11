@@ -398,6 +398,7 @@ Mods: {
 			CoreCrystalizePro.DisplayName: Core Crystalize Pro
 			TestProjectile.DisplayName: Test Projectile
 			CoreScorcherPro.DisplayName: Core Scorcher Pro
+			SharpshardPro.DisplayName: Sharpshard Pro
 		}
 
 		Biomes: {
@@ -502,6 +503,11 @@ Mods: {
 			CoreBurn: {
 				Description: Mods.Divergency.Buffs.CoreBurn.Description
 				DisplayName: Core Burn
+			}
+
+			SharpshardTag: {
+				DisplayName: Sharpshard Tag
+				Description: Mods.Divergency.Buffs.SharpshardTag.Description
 			}
 		}
 
@@ -1093,6 +1099,15 @@ Mods: {
 			WaveEditor: {
 				DisplayName: Wave Editor
 				Tooltip: ""
+			}
+
+			Sharpshard: {
+				DisplayName: Sharpshard
+				Tooltip:
+					'''
+					{$CommonItemTooltip.SummonTagDamage}
+					{$CommonItemTooltip.Whips}
+					'''
 			}
 		}
 

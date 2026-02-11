@@ -118,7 +118,6 @@ public class CoreScorcherPro : ModProjectile
         player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation * player.gravDir - MathHelper.PiOver2 + MathHelper.PiOver4 * player.direction);
         player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, player.itemRotation * player.gravDir - MathHelper.PiOver2);
 
-        Lighting.AddLight(Projectile.Center, new Vector3(0, 1, 0) * 0.1f);
         shakeOffset = Main.rand.NextVector2Circular(1, 1) * 2;
 
         if (!SoundEngine.TryGetActiveSound(soundSlot, out _))
