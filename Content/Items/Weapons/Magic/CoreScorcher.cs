@@ -160,7 +160,7 @@ public class CoreScorcherPro : ModProjectile
 
             Vector2 position = player.Center;
 
-            if (Collision.CanHit(position, 16, 16, Projectile.Center + Projectile.velocity * 45f, 16, 16))
+            if (Collision.CanHit(position, 18, 18, Projectile.Center + Projectile.velocity * 45f, 18, 18))
                 position = Projectile.Center + Projectile.velocity * 45f;
 
             Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), position, Projectile.velocity.RotatedByRandom(0.2f) * 20, ModContent.ProjectileType<CoreFlame>(), Projectile.damage, Projectile.knockBack, Projectile.owner);

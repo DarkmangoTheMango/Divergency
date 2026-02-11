@@ -218,10 +218,9 @@ namespace Divergency.Content.Bosses
         public override void HitEffect(NPC.HitInfo hit)
         {
             //SoundEngine.PlaySound(SoundID.Item34 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 2f), MaxInstances = 400 });
-            SoundEngine.PlaySound(new SoundStyle($"Divergency/Assets/Sounds/NPCHit/Wraith_{Main.rand.Next(3)}")
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/NPCHit/WraithHit", 3)
             {
-                PitchVariance = 0.2f,
-                MaxInstances = 5
+                PitchVariance = 0.2f
             }, NPC.Center);
 
             byte shake = (byte)MathHelper.Clamp(hit.Damage / 8, 4, 10);

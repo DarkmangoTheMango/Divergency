@@ -78,8 +78,6 @@ public class CoreFlame : ModProjectile
 
         if (!doesntFollow)
             Projectile.Center += player.velocity;
-        else
-            Projectile.velocity *= 0.9f;
     }
 
     void UpdateFrame(int frameSpeed)
