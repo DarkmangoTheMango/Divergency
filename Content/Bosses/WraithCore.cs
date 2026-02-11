@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Divergency.Content.NPCs.LivingGrove;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria;
-using Microsoft.Xna.Framework;
-using Divergency.Content.NPCs.LivingGrove;
 
 
 
@@ -162,5 +163,45 @@ namespace Divergency.Content.Bosses
 
         }
 
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            float scaleModifier = 0.8f;
+
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Noise/ElectricNoise2").Value;
+            Effect shader = Divergency.WraithOrb.Value;
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.Default, Main.Rasterizer, shader, Main.GameViewMatrix.TransformationMatrix);
+
+            shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly);
+
+            Main.EntitySpriteDraw(texture, NPC.Center - Main.screenPosition, texture.Bounds, Color.White, 0f, texture.Size() * 0.5f, NPC.scale * 0.1f * scaleModifier, SpriteEffects.None, 0);
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.Default, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
+            texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Glow_0").Value;
+
+            float beatSpeed = 1f;
+            float t = (Main.GlobalTimeWrappedHourly * beatSpeed) % 1f;
+
+            float beat2 = MathF.Exp(-60f * MathF.Pow(t - 0.15f, 2f));
+            float beat1 = MathF.Exp(-60f * MathF.Pow(t - 0.35f, 2f));
+
+            float squashAmount = beat2 * 0.25f;
+            float stretchAmount = beat1 * 0.25f;
+
+            Vector2 pulseModifier = new(1f + squashAmount - stretchAmount, 1f - squashAmount + stretchAmount);
+
+            Main.EntitySpriteDraw(texture, NPC.Center - Main.screenPosition, texture.Bounds, new Color(191, 255, 119, 0), 0f, texture.Size() * 0.5f, NPC.scale * 0.5f * scaleModifier * pulseModifier, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, NPC.Center - Main.screenPosition, texture.Bounds, new Color(96, 214, 72, 0), 0f, texture.Size() * 0.5f, NPC.scale * 0.5f * scaleModifier * pulseModifier, SpriteEffects.None, 0);
+
+            texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Ring").Value;
+
+            Main.EntitySpriteDraw(texture, NPC.Center - Main.screenPosition, texture.Bounds, new Color(96, 214, 72, 0), 0f, texture.Size() * 0.5f, NPC.scale * 0.85f * scaleModifier, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, NPC.Center - Main.screenPosition, texture.Bounds, new Color(191, 255, 119, 0), 0f, texture.Size() * 0.5f, NPC.scale * 0.8f * scaleModifier, SpriteEffects.None, 0);
+
+            return false;
+        }
     }
 }
