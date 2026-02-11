@@ -318,8 +318,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             for (int i = 0; i < 20; i++)
             {
                 Vector2 velocity = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(10f, 20f);
-                float scale = Main.rand.NextFloat(1f, 2f);
-                ParticleManager.NewParticle<StarParticle>(Projectile.Center, velocity, new Color(128, 255, 0, 0), scale);
+                ParticleManager.NewParticle<CoreSparkle>(Projectile.Center, velocity, default, 4);
             }
         }
 
