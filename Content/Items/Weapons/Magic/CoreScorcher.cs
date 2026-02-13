@@ -2,6 +2,7 @@ using Divergency.Content.Projectiles;
 using Divergency.Content.Projectiles.Ranged;
 using ReLogic.Utilities;
 using Terraria.Audio;
+using Terraria.UI.Chat;
 
 namespace Divergency.Content.Items.Weapons.Magic;
 
@@ -46,6 +47,39 @@ public class CoreScorcher : ModItem
     public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
     {
         player.manaCost = 0f;
+
+        return true;
+    }
+
+    public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset)
+    {
+        if (line.Name == "ItemName" && line.Mod == "Terraria")
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Beam").Value;
+
+            Vector2 position = new(line.X, line.Y);
+            Color baseColor = new(96, 214, 72);
+
+            float t = Main.GlobalTimeWrappedHourly * 0.5f % 1f;
+            float pulseScale = MathHelper.Lerp(1f, 1.2f, t);
+
+            Color pulseColor = baseColor with { A = 0 } * (1 - t);
+
+            Vector2 textSize = ChatManager.GetStringSize(line.Font, line.Text, line.BaseScale);
+
+            Vector2 centeredOrigin = textSize * 0.5f;
+
+            Vector2 centeredPos = position + centeredOrigin;
+
+            Main.spriteBatch.Draw(texture, centeredPos - new Vector2(0, 5), texture.Bounds, baseColor with { A = 0 }, MathHelper.PiOver2, texture.Size() * 0.5f, new Vector2(1, textSize.X * 0.025f), SpriteEffects.None, 0);
+
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, baseColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, baseColor with { A = 0 }, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, centeredPos, pulseColor, line.Rotation, centeredOrigin, line.BaseScale * pulseScale, line.MaxWidth, line.Spread);
+
+            return false;
+        }
 
         return true;
     }
