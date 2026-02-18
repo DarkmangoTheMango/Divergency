@@ -55,11 +55,16 @@ public class Spark : Particle
 
     public override void SetDefaults()
     {
+        SpawnAction = () =>
+        {
+            rotation = velocity.ToRotation();
+        };
+
         width = 1;
         height = 1;
         timeLeft = 100;
     }
-    
+
     public override void AI()
     {
         rotation = velocity.ToRotation();

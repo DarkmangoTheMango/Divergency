@@ -1,4 +1,3 @@
-using Divergency.Common.Helpers;
 using Divergency.Content.Biomes;
 using Divergency.Content.Dusts;
 using Divergency.Content.Particles;
@@ -20,17 +19,15 @@ public class Coreling : ModNPC
 
     private enum State
     {
-        Spawning,
         Moving,
-        Attacking,
-        Dying
+        Attacking
     }
 
     private State state
     {
         get;
         set;
-    } = State.Spawning;
+    } = State.Moving;
 
     #endregion Fields
 
@@ -106,8 +103,6 @@ public class Coreling : ModNPC
 
     public override void OnKill()
     {
-        state = State.Dying;
-
         if (Main.netMode != NetmodeID.Server)
         {
             for (int k = 0; k < 5; k++)
@@ -128,17 +123,11 @@ public class Coreling : ModNPC
 
         switch (state)
         {
-            case State.Spawning:
-                State_Spawning();
-                break;
             case State.Moving:
                 State_Moving();
                 break;
             case State.Attacking:
                 State_Attacking();
-                break;
-            case State.Dying:
-                State_Dying();
                 break;
             default:
                 break;
@@ -155,34 +144,6 @@ public class Coreling : ModNPC
         NPC.ai[0]++;
 
         Lighting.AddLight(NPC.Center, new Color(109, 223, 94).ToVector3() * 0.2f);
-    }
-
-    private void State_Spawning()
-    {
-        NPC.dontTakeDamage = true;
-        NPC.ShowNameOnHover = false;
-
-        NPC.scale = MathHelper.Lerp(0, 1, EaseFunction.EaseCircularOut.Ease(NPC.ai[0] / 60));
-
-        Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
-
-        ParticleManager.NewParticle<CoreSparkle>(NPC.Center + (velocity * 100f), velocity * -5f, default, 1f);
-
-        if (NPC.ai[0] >= 60)
-        {
-            NPC.ai[0] = 0;
-
-            for (int k = 0; k < 20; k++)
-                ParticleManager.NewParticle<CoreSparkle>(NPC.Center, Main.rand.NextVector2Circular(1f, 1f) * 10f, default, 1f);
-
-            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Spawn"), NPC.Center);
-
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                state = State.Moving;
-                NPC.netUpdate = true;
-            }
-        }
     }
 
     private void State_Moving()
@@ -248,12 +209,6 @@ public class Coreling : ModNPC
         }
     }
 
-    private void State_Dying()
-    {
-        NPC.dontTakeDamage = true;
-        NPC.ShowNameOnHover = true;
-    }
-
     #endregion Behavior
 
     #region Drawing
@@ -262,18 +217,6 @@ public class Coreling : ModNPC
     {
         switch (state)
         {
-            case State.Spawning:
-                NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
-
-                if (NPC.frameCounter >= 5)
-                {
-                    NPC.frameCounter = 0;
-                    NPC.frame.Y += frameHeight;
-
-                    if (NPC.frame.Y > 3 * frameHeight)
-                        NPC.frame.Y = 0 * frameHeight;
-                }
-                break;
             case State.Moving:
                 NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
 
@@ -296,54 +239,12 @@ public class Coreling : ModNPC
                         NPC.frame.Y = 9 * frameHeight;
                 }
                 break;
-            case State.Dying:
-                NPC.frame.Y = 0;
-                break;
             default:
                 break;
         }
     }
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-    {
-        if (NPC.IsABestiaryIconDummy)
-        {
-            DrawBody(screenPos, drawColor);
-            return false;
-        }
-
-        switch (state)
-        {
-            case State.Spawning:
-                DrawGlow(screenPos, drawColor);
-                break;
-            case State.Moving:
-                DrawBody(screenPos, drawColor);
-                break;
-            case State.Attacking:
-                DrawBody(screenPos, drawColor);
-                break;
-            case State.Dying:
-                break;
-            default:
-                break;
-        }
-
-        return false;
-    }
-
-    private void DrawGlow(Vector2 screenPos, Color drawColor)
-    {
-        Texture2D texture = ModContent.Request<Texture2D>(Texture + "_Glow2").Value;
-
-        Vector2 position = NPC.Center - screenPos;
-
-        SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-
-        Main.EntitySpriteDraw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, spriteEffects, 1f);
-    }
-
-    private void DrawBody(Vector2 screenPos, Color drawColor)
     {
         Texture2D texture = TextureAssets.Npc[Type].Value;
         Texture2D glowTexture = ModContent.Request<Texture2D>(Texture + "_Glow").Value;
@@ -354,6 +255,8 @@ public class Coreling : ModNPC
 
         Main.EntitySpriteDraw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, spriteEffects, 1f);
         Main.EntitySpriteDraw(glowTexture, position, NPC.frame, Color.White, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, spriteEffects, 1f);
+
+        return false;
     }
 
     #endregion Drawing

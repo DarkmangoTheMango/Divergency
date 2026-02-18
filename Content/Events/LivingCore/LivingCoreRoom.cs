@@ -16,6 +16,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -418,6 +419,7 @@ namespace Divergency.Content.Events.LivingCore
             }
             if (SpawnTimer == 160)
             {
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/SpawnBuildup"));
                 CombatText.NewText(textPosition, Color.LightGreen, "2!", false, false);
             }
             if (SpawnTimer == 220)
@@ -426,14 +428,22 @@ namespace Divergency.Content.Events.LivingCore
             }
             if (SpawnTimer == 280)
             {
+                SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Spawn"));
+
                 foreach (Instance instance in CurWaveObject.enemies)
                 {
                     Vector2 spawnPosition = LivingCoreEvent.Center + instance.SpawnOffset;
 
-                    currentNPCs.Add(NPC.NewNPCDirect(null, spawnPosition, instance.NPCID));
+                    NPC npc = NPC.NewNPCDirect(Entity.GetSource_None(), spawnPosition, instance.NPCID);
 
+                    npc.Center = spawnPosition;
+
+                    currentNPCs.Add(npc);
+
+                    for (int k = 0; k < 20; k++)
+                        ParticleManager.NewParticle<CoreSparkle>(spawnPosition, Main.rand.NextVector2Circular(1, 1) * 20, default, 2);
                     // ParticleManager.NewParticle<ResetParticle>(spawnPosition, Vector2.Zero, Color.White, 1f, 1.05f);
-                    DivergencyDraw.SpawnExplosion(spawnPosition, Color.LimeGreen, DustID.GemEmerald, scale: 1.2f);
+                    //DivergencyDraw.SpawnExplosion(spawnPosition, Color.LimeGreen, DustID.GemEmerald, scale: 1.2f);
 
                 }
 
@@ -443,18 +453,16 @@ namespace Divergency.Content.Events.LivingCore
 
             if (SpawnTimer > 100)
             {
+
                 foreach (Instance instance in CurWaveObject.enemies)
                 {
                     Vector2 spawnPosition = LivingCoreEvent.Center + instance.SpawnOffset;
 
                     float rotation = Main.rand.NextFloat(MathHelper.TwoPi);
 
-                    for (int i = 0; i < 2; i++)
-                    {
-                        ParticleManager.NewParticle<FlareLineParticle>(spawnPosition + new Vector2(128f, 0f).RotatedBy(rotation), new Vector2(4f, 0f).RotatedBy(rotation + MathHelper.Pi), new Color(0.50f, 2.05f, 0.5f, 0), 1f, Main.rand.NextFloat(0.8f, 1.1f));
-                    }
+                    ParticleManager.NewParticle<FlareLineParticle2>(spawnPosition + new Vector2(128f, 0f).RotatedBy(rotation), new Vector2(13f, 0f).RotatedBy(rotation + MathHelper.Pi), default, 3);
 
-                   // ParticleManager.NewParticle<CrystalParticle>(spawnPosition, Main.rand.NextVector2Circular(3f, 3f), Color.Purple, Main.rand.NextFloat(0.5f, 0.75f), 1f);
+                    // ParticleManager.NewParticle<CrystalParticle>(spawnPosition, Main.rand.NextVector2Circular(3f, 3f), Color.Purple, Main.rand.NextFloat(0.5f, 0.75f), 1f);
                 }
             }
 
@@ -516,17 +524,23 @@ namespace Divergency.Content.Events.LivingCore
 
             if (SpawnTimer >= 100)
             {
-                Texture2D glow = ModContent.Request<Texture2D>("Divergency/Assets/Textures/ParticleTextures/SoftCircle").Value;
-                Texture2D star = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Star").Value;
+                Texture2D glow = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Bloom").Value;
+                Texture2D star = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Beam").Value;
 
                 float alpha = (SpawnTimer - 100) / 180f;
 
                 foreach (Instance instance in CurWaveObject.enemies)
                 {
+                    Color color = new Color(96, 214, 72, 0);
+
                     Vector2 spawnPosition = LivingCoreEvent.Center + instance.SpawnOffset;
 
-                    spriteBatch.Draw(glow, spawnPosition - Main.screenPosition, glow.Bounds, new Color(0.50f, 2.05f, 0.5f, 0) * alpha, 0f, glow.Size() * 0.5f, 0.4f, SpriteEffects.None, 0f);
-                    spriteBatch.Draw(star, spawnPosition - Main.screenPosition, star.Bounds, new Color(0.50f, 2.05f, 0.5f, 0) * alpha, 0f, star.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(glow, spawnPosition - Main.screenPosition, glow.Bounds, color * alpha * 0.2f, 0f, glow.Size() * 0.5f, 0.3f * alpha, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(star, spawnPosition - Main.screenPosition, star.Bounds, color * alpha, 0f, star.Size() * 0.5f, new Vector2(0.5f, 2) * alpha, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(star, spawnPosition - Main.screenPosition, star.Bounds, color * alpha, MathHelper.PiOver2, star.Size() * 0.5f, new Vector2(0.5f, 1) * alpha, SpriteEffects.None, 0f);
+                    color = new Color(191, 255, 119, 0);
+                    spriteBatch.Draw(star, spawnPosition - Main.screenPosition, star.Bounds, color * alpha, 0f, star.Size() * 0.5f, new Vector2(0.2f, 2f) * alpha, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(star, spawnPosition - Main.screenPosition, star.Bounds, color * alpha, MathHelper.PiOver2, star.Size() * 0.5f, new Vector2(0.2f, 1f) * alpha, SpriteEffects.None, 0f);
                 }
             }
 

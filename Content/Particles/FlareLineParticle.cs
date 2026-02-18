@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Divergency.Common.Helpers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
 using System;
@@ -167,6 +168,55 @@ namespace Divergency.Content.Particles
             float alpha = timeLeft > 40f ? (20f - (timeLeft - 40f)) / 20f : timeLeft <= 20f ? timeLeft / 20f : 1f;
 
             spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color * alpha, rotation, texture.Size() * 0.5f, Scale * new Vector2(0.1f, 0.005f), SpriteEffects.None, 0f);
+
+            return false;
+        }
+    }
+
+    public class FlareLineParticle2 : Particle
+    {
+        public override string Texture => "Divergency/Assets/Textures/Beam";
+
+        public override void SetDefaults()
+        {
+            SpawnAction = () =>
+            {
+                rotation = velocity.ToRotation();
+            };
+
+            width = 1;
+            height = 1;
+            timeLeft = 50;
+        }
+
+        private float orbitAngle;
+
+        public override void AI()
+        {
+            rotation = velocity.ToRotation();
+
+            if (Scale <= 0.1f)
+                return;
+
+            velocity *= 0.9f;
+            Scale *= 0.9f;
+
+            Lighting.AddLight(Center, new Color(96, 214, 72).ToVector3() * Scale);
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 drawPos, Color lightColor)
+        {
+            if (Scale <= 0.1f)
+                return false;
+
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+
+            float t = MathHelper.Lerp(1, 0, EaseFunction.EaseQuarticIn.Ease(timeLeft / 50f));
+
+            Color color = new Color(96, 214, 72, 0) * t;
+            Vector2 scaleV = new Vector2(0.2f, 1f) * scale;
+
+            spriteBatch.Draw(texture, Center - Main.screenPosition, texture.Bounds, color, rotation + MathHelper.PiOver2, texture.Size() * 0.5f, scaleV, SpriteEffects.None, 0f);
 
             return false;
         }
