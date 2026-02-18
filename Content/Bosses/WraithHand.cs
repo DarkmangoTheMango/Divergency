@@ -99,6 +99,8 @@ namespace Divergency.Content.Bosses
         {
             if (!spawned)
             {
+                bool found = false;
+
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC taggedNPC = Main.npc[k];
@@ -106,7 +108,15 @@ namespace Divergency.Content.Bosses
                     if (taggedNPC.active && taggedNPC.ModNPC is WraithBody)
                     {
                         cachedNPC = taggedNPC;
+                        found = true;
+                        break;
                     }
+                }
+
+                if (!found)
+                {
+                    NPC.active = false;
+                    return;
                 }
                 initialdamage = NPC.damage;
 
@@ -452,16 +462,21 @@ namespace Divergency.Content.Bosses
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-            if (cachedNPC.ai[3] == 3)
+            if (cachedNPC?.active == true)
             {
-                return false;
+                if (cachedNPC.ai[3] == 3)
+                {
+                    return false;
 
-            }
-            else
-            {
-                return true;
+                }
+                else
+                {
+                    return true;
 
+                }
             }
+
+            return false;
         }
         public override void FindFrame(int frameHeight)
         {

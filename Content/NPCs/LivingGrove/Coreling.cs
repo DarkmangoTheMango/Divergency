@@ -1,426 +1,360 @@
+using Divergency.Common.Helpers;
+using Divergency.Content.Biomes;
 using Divergency.Content.Dusts;
+using Divergency.Content.Particles;
 using Divergency.Content.Projectiles.Hostile;
-using Divergency.Content.Projectiles.Magic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using ParticleLibrary;
 using System;
-using Terraria;
+using System.IO;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.ID;
-using Terraria.ModLoader;
 
-namespace Divergency.Content.NPCs.LivingGrove
+namespace Divergency.Content.NPCs.LivingGrove;
+
+public class Coreling : ModNPC
 {
+    #region Fields
 
-    public class Coreling : ModNPC
+    Player Target => Main.player[NPC.target];
+
+    private enum State
     {
-        int startingFrame;
+        Spawning,
+        Moving,
+        Attacking,
+        Dying
+    }
 
-        int endingFrame;
+    private State state
+    {
+        get;
+        set;
+    } = State.Spawning;
 
-        int framerate;
+    #endregion Fields
 
-        int combatFrame = 6;
+    #region Initialization
 
-        float maxSpeed = 2f;
-
-        float attackTimer;
-
-        float attackCooldown = 30f;
-
-        bool attacking;
-
-        enum State
+    public override void SetStaticDefaults()
+    {
+        Main.npcFrameCount[NPC.type] = 10;
+        
+        NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new()
         {
-            attacking,
-            moving
-        }
+            Velocity = 1f,
+            Direction = 1
+        };
 
-        State state = State.moving;
-        private bool initialize;
-        private int initialDamage;
+        NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, drawModifiers);
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        NPC.aiStyle = -1;
+        AIType = -1;
+
+        NPC.Size = new(44);
+
+        NPC.lifeMax = Main.expertMode ? Main.masterMode ? 120 : 90 : 60;
+        NPC.defense = 12;
+
+        NPC.noTileCollide = true;
+        NPC.noGravity = true;
+
+        NPC.HitSound = SoundID.DD2_WitherBeastHurt;
+        NPC.DeathSound = SoundID.DD2_WitherBeastDeath;
+
+        NPC.value = Item.buyPrice(0, 0, 5, 0);
+
+        SpawnModBiomes =
+        [
+            ModContent.GetInstance<LivingCoreBiome>().Type
+        ];
+    }
+
+    public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+    {
+        bestiaryEntry.Info.AddRange(
+        [
+            new FlavorTextBestiaryInfoElement($"Mods.{Mod.Name}.Bestiary.{Name}")
+        ]);
+    }
+
+    #endregion Initialization
+
+    #region Networking
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write((int)state);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        state = (State)reader.ReadInt32();
+    }
+
+    #endregion Networking
+
+    #region Behavior
+
+    public override void OnSpawn(IEntitySource source)
+    {
+
+    }
+
+    public override void OnKill()
+    {
+        state = State.Dying;
+
+        if (Main.netMode != NetmodeID.Server)
         {
-            Main.npcFrameCount[NPC.type] = 10;
-        }
+            for (int k = 0; k < 5; k++)
+                Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>($"{Name}{k}").Type, 1f);
 
-        public override void SetDefaults()
-        {
-            NPC.lifeMax = 40;
-            NPC.damage = 10;
-            NPC.defense = 5;
-            NPC.knockBackResist = 0.2f;
-
-            NPC.noTileCollide = true;
-
-            NPC.scale = 1f;
-            NPC.Size = new Vector2(44f, 54f);
-
-            NPC.HitSound = SoundID.DD2_WitherBeastHurt;
-            NPC.DeathSound = SoundID.DD2_WitherBeastDeath;
-            NPC.value = Item.sellPrice(0, 0, 0, 0);
-                
-            NPC.aiStyle = -1;
-            NPC.noGravity = true;
-
-        }
-
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            for (int i = 0; i < 10; i++)
             {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
-                new FlavorTextBestiaryInfoElement("The most common creature in The Living Grove. Protecting it from weak adventurers and taking care of the tree itself. They have been observed displaying behavior similar to bees...")
-            });
-        }
-
-        public override void AI()
-        {
-            if (!initialize)
-            {
-                initialize = true;
-                initialDamage = NPC.damage;
+                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 5f, 0, default, 1f);
+                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 5f, 0, default, 1f);
             }
-            if (initialize)
-            {
-                NPC.damage = 0;
-                Player target = Main.player[NPC.target];
-
-                NPC.TargetClosest(true);
-
-                NPC.spriteDirection = NPC.direction;
-                NPC.rotation = NPC.velocity.X * 0.1f;
-
-                Lighting.AddLight(NPC.Center, new Color(79, 214, 126).ToVector3());
-
-                if (NPC.ai[0] >= 240f)
-                {
-                    state = State.attacking;
-
-                    Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
-
-                    Dust dust = Dust.NewDustPerfect(NPC.Center + (velocity * 100f), DustID.TerraBlade, velocity * -5f, 0, default, 1f);
-                    dust.noGravity = true;
-
-                    NPC.velocity *= 0.98f;
-
-                    if (attacking)
-                    {
-                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(target.Center) * 5f, ModContent.ProjectileType<GuardianBeam>(), initialDamage, 3f, 0);
-
-                        NPC.velocity -= NPC.DirectionTo(target.Center) * 3f;
-
-                        attacking = false;
-                    }
-                }
-                else
-                {
-                    if (NPC.Distance(target.Center) >= 300f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
-                    else if (NPC.Distance(target.Center) <= 100f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
-                    else { NPC.velocity *= 0.98f; }
-
-                    if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 0.05f; }
-
-                    state = State.moving;
-                }
-
-                if (NPC.velocity.X >= maxSpeed) { NPC.velocity.X = maxSpeed; }
-                if (NPC.velocity.X <= -maxSpeed) { NPC.velocity.X = -maxSpeed; }
-                if (NPC.velocity.Y >= maxSpeed) { NPC.velocity.Y = maxSpeed; }
-                if (NPC.velocity.Y <= -maxSpeed) { NPC.velocity.Y = -maxSpeed; }
-
-                float movePower = 1f;
-                foreach (NPC npc in Main.npc)
-                {
-                    if ((npc.ModNPC as Coreling) != null && npc.ModNPC != this)
-                    {
-                        Vector2 dist = npc.Center - NPC.Center;
-
-                        NPC.velocity += -Vector2.Normalize(dist) * (movePower / dist.Length());
-                    }
-                }
-                NPC.ai[0]++;
-            }
-        }
-
-        public override void OnKill()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
-            }
-
-            if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); }
-        }
-
-        public override void FindFrame(int frameHeight)
-        {
-            if (state == State.moving)
-            {
-                startingFrame = 0;
-                endingFrame = 3;
-                framerate = 5;
-
-                NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
-
-                if (NPC.frameCounter >= framerate)
-                {
-                    NPC.frameCounter = 0;
-                    NPC.frame.Y += frameHeight;
-
-                    if (NPC.frame.Y > endingFrame * frameHeight) { NPC.frame.Y = startingFrame * frameHeight; }
-                }
-            }
-
-            if (state == State.attacking)
-            {
-                startingFrame = 5;
-                endingFrame = 9;
-                framerate = 5;
-
-                NPC.frameCounter++;
-
-                if (NPC.frameCounter >= framerate)
-                {
-                    NPC.frameCounter = 0;
-                    NPC.frame.Y += frameHeight;
-
-                    if (NPC.frame.Y == combatFrame * frameHeight) { attacking = true; }
-
-                    if (NPC.frame.Y > endingFrame * frameHeight)
-                    {
-                        NPC.frame.Y = endingFrame * frameHeight;
-                        NPC.ai[0] = 0f;
-                    }
-                }
-            }
-        }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Coreling").Value;
-
-            Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
-            Color color = Color.White;
-
-            SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-
-            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
-            return true;
         }
     }
-    public class CorelingCutscene : ModNPC
+
+    public override void AI()
     {
-        int startingFrame;
+        if (!NPC.HasValidTarget)
+            NPC.TargetClosest();
 
-        int endingFrame;
-
-        int framerate;
-
-        int combatFrame = 6;
-
-        float maxSpeed = 2f;
-
-        float attackTimer;
-
-        float attackCooldown = 30f;
-
-        bool attacking;
-
-        bool ActiveCutscene = true;
-
-        enum State
+        switch (state)
         {
-            cutscene,
-            attacking,
-            moving
-        }
-        State state = State.moving;
-
-        public override string Texture => "Divergency/Content/NPCs/LivingGrove/Coreling";
-
-        public override void SetStaticDefaults()
-        {
-            //.setdefault("Core Sage");
-            Main.npcFrameCount[NPC.type] = 10;
-
-        }
-        public override void SetDefaults()
-        {
-            NPC.lifeMax = 100;
-            NPC.damage = 30;
-            NPC.defense = 20;
-            NPC.knockBackResist = 0.2f;
-
-            NPC.noTileCollide = true;
-
-            NPC.scale = 1f;
-            NPC.Size = new Vector2(44f, 54f);
-
-            NPC.HitSound = SoundID.DD2_WitherBeastHurt;
-            NPC.DeathSound = SoundID.DD2_WitherBeastDeath;
-            NPC.value = Item.sellPrice(0, 0, 0, 0);
-
-            NPC.aiStyle = -1;
-            NPC.noGravity = true;
+            case State.Spawning:
+                State_Spawning();
+                break;
+            case State.Moving:
+                State_Moving();
+                break;
+            case State.Attacking:
+                State_Attacking();
+                break;
+            case State.Dying:
+                State_Dying();
+                break;
+            default:
+                break;
         }
 
-        public override void AI()
+        foreach (NPC npc in Main.ActiveNPCs)
+            if (npc.ModNPC is Coreling && npc.ModNPC != this && NPC.Distance(npc.Center) <= 30f)
+                NPC.velocity += NPC.DirectionFrom(npc.Center) * 0.1f;
+
+        NPC.direction = NPC.Center.X > Target.Center.X ? 1 : -1;
+        NPC.spriteDirection = NPC.direction;
+        NPC.velocity *= 0.98f;
+        NPC.rotation = Math.Clamp(NPC.velocity.X * 0.1f, -1, 1);
+        NPC.ai[0]++;
+
+        Lighting.AddLight(NPC.Center, new Color(109, 223, 94).ToVector3() * 0.2f);
+    }
+
+    private void State_Spawning()
+    {
+        NPC.dontTakeDamage = true;
+        NPC.ShowNameOnHover = false;
+
+        NPC.scale = MathHelper.Lerp(0, 1, EaseFunction.EaseCircularOut.Ease(NPC.ai[0] / 60));
+
+        Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
+
+        ParticleManager.NewParticle<CoreSparkle>(NPC.Center + (velocity * 100f), velocity * -5f, default, 1f);
+
+        if (NPC.ai[0] >= 60)
         {
-            Player target = Main.player[NPC.target];
+            NPC.ai[0] = 0;
 
+            for (int k = 0; k < 20; k++)
+                ParticleManager.NewParticle<CoreSparkle>(NPC.Center, Main.rand.NextVector2Circular(1f, 1f) * 10f, default, 1f);
 
-            NPC.TargetClosest(true);
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Spawn"), NPC.Center);
 
-            NPC.spriteDirection = NPC.direction;
-            NPC.rotation = NPC.velocity.X * 0.1f;
-
-            Lighting.AddLight(NPC.Center, new Color(79, 214, 126).ToVector3());
-            if (ActiveCutscene)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                target.stoned = true;
-                state = State.cutscene;
-                if (NPC.ai[0] == 1f)
-                {
-                    CameraSystem.Zoom(NPC.Center, 240);
-                }
-                if (NPC.ai[0] > 75f && NPC.ai[0] < 200f && alpha < 1)
-                {
-                    alpha += 0.1f;
-                }
-                if (NPC.ai[0] > 200f)
-                {
-                    alpha -= 0.2f;
-                }
-
-                if (NPC.ai[0] == 239f)
-                {
-                    ActiveCutscene = false;
-                    NPC.ai[0] = 0;
-
-                }
-
-                NPC.ai[0]++;
-
+                state = State.Moving;
+                NPC.netUpdate = true;
             }
-            else
-            {
-                if (NPC.ai[0] >= 240f)
-                {
-                    state = State.attacking;
-
-                    Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
-
-                    Dust dust = Dust.NewDustPerfect(NPC.Center + (velocity * 100f), DustID.TerraBlade, velocity * -5f, 0, default, 1f);
-                    dust.noGravity = true;
-
-                    NPC.velocity *= 0.98f;
-
-                    if (attacking)
-                    {
-                        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot") with { Pitch = 1f }, NPC.Center);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(target.Center) * 10f, ModContent.ProjectileType<GuardianBeam>(), NPC.damage, 3f, 0);
-
-                        NPC.velocity -= NPC.DirectionTo(target.Center) * 3f;
-
-                        attacking = false;
-                    }
-                }
-                else
-                {
-                    if (NPC.Distance(target.Center) >= 300f) { NPC.velocity += NPC.DirectionTo(target.Center) * 0.05f; }
-                    else if (NPC.Distance(target.Center) <= 100f) { NPC.velocity -= NPC.DirectionTo(target.Center) * 0.05f; }
-                    else { NPC.velocity *= 0.98f; }
-
-                    if (NPC.Center.Y >= target.Center.Y) { NPC.velocity.Y -= 0.05f; }
-
-                    state = State.moving;
-                }
-
-                if (NPC.velocity.X >= maxSpeed) { NPC.velocity.X = maxSpeed; }
-                if (NPC.velocity.X <= -maxSpeed) { NPC.velocity.X = -maxSpeed; }
-                if (NPC.velocity.Y >= maxSpeed) { NPC.velocity.Y = maxSpeed; }
-                if (NPC.velocity.Y <= -maxSpeed) { NPC.velocity.Y = -maxSpeed; }
-
-                NPC.ai[0]++;
-
-
-            }
-        }
-        public override void OnKill()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<LivingShard>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
-                Dust.NewDustPerfect(NPC.Center, ModContent.DustType<CradleWoodFurniture>(), Main.rand.NextVector2Circular(1f, 1f) * 2f, 0, default, 1f);
-            }
-
-            if (Main.netMode != NetmodeID.Server) { Gore.NewGore(NPC.GetSource_Death(), NPC.position, new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-1f, -3f)), Mod.Find<ModGore>("GuardianCorpse").Type, 1f); }
-        }
-        public override void FindFrame(int frameHeight)
-        {
-            if (state == State.moving || state == State.cutscene)
-            {
-                startingFrame = 0;
-                endingFrame = 3;
-                framerate = 5;
-
-                NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
-
-                if (NPC.frameCounter >= framerate)
-                {
-                    NPC.frameCounter = 0;
-                    NPC.frame.Y += frameHeight;
-
-                    if (NPC.frame.Y > endingFrame * frameHeight) { NPC.frame.Y = startingFrame * frameHeight; }
-                }
-            }
-
-            if (state == State.attacking)
-            {
-                startingFrame = 5;
-                endingFrame = 9;
-                framerate = 5;
-
-                NPC.frameCounter++;
-
-                if (NPC.frameCounter >= framerate)
-                {
-                    NPC.frameCounter = 0;
-                    NPC.frame.Y += frameHeight;
-
-                    if (NPC.frame.Y == combatFrame * frameHeight) { attacking = true; }
-
-                    if (NPC.frame.Y > endingFrame * frameHeight)
-                    {
-                        NPC.frame.Y = endingFrame * frameHeight;
-                        NPC.ai[0] = 0f;
-                    }
-                }
-            }
-        }
-        float alpha;
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-           
-            Texture2D texture = ModContent.Request<Texture2D>("Divergency/Content/NPCs/LivingGrove/Coreling").Value;
-            Texture2D CutsceneIcon = ModContent.Request<Texture2D>("Divergency/Assets/Textures/CorelingIcon").Value;
-
-            Vector2 position = NPC.Center - screenPos - new Vector2(0f, NPC.gfxOffY - 2f);
-            Color color = Color.White;
-
-            SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-
-            spriteBatch.Draw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 1f);
-
-            spriteBatch.Draw(CutsceneIcon, position - new Vector2(0, 50), null, color * alpha, NPC.rotation, Vector2.Zero, 0.7f, SpriteEffects.None, 1f);
-
-            return true;
         }
     }
+
+    private void State_Moving()
+    {
+        NPC.dontTakeDamage = false;
+        NPC.ShowNameOnHover = true;
+
+        float acceleration = 0.05f;
+
+        if (NPC.Distance(Target.Center) > 300)
+            NPC.velocity += NPC.DirectionTo(Target.Center) * acceleration;
+        else if (NPC.Distance(Target.Center) < 100)
+            NPC.velocity += NPC.DirectionFrom(Target.Center) * acceleration;
+
+        if (NPC.Center.Y > Target.Center.Y)
+            NPC.velocity.Y -= acceleration;
+
+        if (NPC.ai[0] >= 240)
+        {
+            NPC.ai[0] = 0;
+            
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                state = State.Attacking;
+                NPC.netUpdate = true;
+            }
+        }
+    }
+
+    private void State_Attacking()
+    {
+        NPC.dontTakeDamage = false;
+        NPC.ShowNameOnHover = true;
+
+        if (NPC.ai[0] < 30)
+        {
+            Vector2 velocity = Main.rand.NextVector2Circular(1f, 1f);
+
+            ParticleManager.NewParticle<CoreSparkle>(NPC.Center + (velocity * 100f), velocity * -5f, default, 1f);
+        }
+
+        if (NPC.ai[0] == 30)
+        {
+            ParticleManager.NewParticle<CoreSparkle>(NPC.Center, Vector2.Zero, default, 3f);
+
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.DirectionTo(Target.Center) * 5f, ModContent.ProjectileType<GuardianBeam>(), 20, 0, Main.myPlayer);
+
+            SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/InvocationShot").WithPitchOffset(1f), NPC.Center);
+
+            NPC.velocity += NPC.DirectionFrom(Target.Center) * 3f;
+        }
+
+        if (NPC.ai[0] >= 40)
+        {
+            NPC.ai[0] = 0;
+
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                state = State.Moving;
+                NPC.netUpdate = true;
+            }
+        }
+    }
+
+    private void State_Dying()
+    {
+        NPC.dontTakeDamage = true;
+        NPC.ShowNameOnHover = true;
+    }
+
+    #endregion Behavior
+
+    #region Drawing
+
+    public override void FindFrame(int frameHeight)
+    {
+        switch (state)
+        {
+            case State.Spawning:
+                NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
+
+                if (NPC.frameCounter >= 5)
+                {
+                    NPC.frameCounter = 0;
+                    NPC.frame.Y += frameHeight;
+
+                    if (NPC.frame.Y > 3 * frameHeight)
+                        NPC.frame.Y = 0 * frameHeight;
+                }
+                break;
+            case State.Moving:
+                NPC.frameCounter += (NPC.velocity.Length() * 0.1f) + 0.6f;
+
+                if (NPC.frameCounter >= 5)
+                {
+                    NPC.frameCounter = 0;
+                    NPC.frame.Y += frameHeight;
+
+                    if (NPC.frame.Y > 3 * frameHeight)
+                        NPC.frame.Y = 0 * frameHeight;
+                }
+                break;
+            case State.Attacking:
+                if (++NPC.frameCounter >= 5)
+                {
+                    NPC.frameCounter = 0;
+                    NPC.frame.Y += frameHeight;
+
+                    if (NPC.frame.Y > 9 * frameHeight)
+                        NPC.frame.Y = 9 * frameHeight;
+                }
+                break;
+            case State.Dying:
+                NPC.frame.Y = 0;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        if (NPC.IsABestiaryIconDummy)
+        {
+            DrawBody(screenPos, drawColor);
+            return false;
+        }
+
+        switch (state)
+        {
+            case State.Spawning:
+                DrawGlow(screenPos, drawColor);
+                break;
+            case State.Moving:
+                DrawBody(screenPos, drawColor);
+                break;
+            case State.Attacking:
+                DrawBody(screenPos, drawColor);
+                break;
+            case State.Dying:
+                break;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    private void DrawGlow(Vector2 screenPos, Color drawColor)
+    {
+        Texture2D texture = ModContent.Request<Texture2D>(Texture + "_Glow2").Value;
+
+        Vector2 position = NPC.Center - screenPos;
+
+        SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+        Main.EntitySpriteDraw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, spriteEffects, 1f);
+    }
+
+    private void DrawBody(Vector2 screenPos, Color drawColor)
+    {
+        Texture2D texture = TextureAssets.Npc[Type].Value;
+        Texture2D glowTexture = ModContent.Request<Texture2D>(Texture + "_Glow").Value;
+
+        Vector2 position = NPC.Center - screenPos;
+
+        SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+        Main.EntitySpriteDraw(texture, position, NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, spriteEffects, 1f);
+        Main.EntitySpriteDraw(glowTexture, position, NPC.frame, Color.White, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, spriteEffects, 1f);
+    }
+
+    #endregion Drawing
 }
