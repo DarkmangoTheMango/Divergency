@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ModLoader;
 
 namespace Divergency.Content.Events.LivingCore
@@ -62,6 +63,7 @@ namespace Divergency.Content.Events.LivingCore
             Room = room;
 
             Player player = Main.LocalPlayer;
+            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalOpen);
             // TODO: Add extension methods for fetching globals to allow player.Divergency().X = X;
             CameraSystem.ScreenShake(50);
 

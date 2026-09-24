@@ -34,9 +34,10 @@ namespace Divergency.Content.Biomes
        // public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.Find<ModUndergroundBackgroundStyle>("Divergency/LivingCoreBiomeBackgroundStyle");
         public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.Find<ModSurfaceBackgroundStyle>("Divergency/LivingCoreBiomeSurfaceStyle");
         // Populate the Bestiary Filter
-        public override string BestiaryIcon => base.BestiaryIcon;
+        public override string BestiaryIcon => "Divergency/Assets/Backgrounds/LivingCoreBiomeIcon";
         public override string BackgroundPath => "Divergency/Assets/Backgrounds/LivingCoreBiomeMap";
         public override Color? BackgroundColor => Color.Teal;
+        public override int BiomeTorchItemType => ModContent.ItemType<CoreTorch>();
         public override string MapBackground => BackgroundPath;
         // Use SetStaticDefaults to assign the display name
         public override void SetStaticDefaults()

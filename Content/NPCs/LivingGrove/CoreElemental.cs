@@ -1,5 +1,6 @@
 using Divergency.Common.Helpers;
 using Divergency.Common.Players;
+using Divergency.Content.Bosses;
 using Divergency.Content.Dusts;
 using Divergency.Content.Projectiles;
 using Microsoft.Xna.Framework;
@@ -198,9 +199,11 @@ namespace Divergency.Content.NPCs.LivingGrove
         }
         public override void AI()
         {
-           
+
             if (!spawned)
             {
+                bool found = false;
+
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC taggedNPC = Main.npc[k];
@@ -208,7 +211,15 @@ namespace Divergency.Content.NPCs.LivingGrove
                     if (taggedNPC.active && taggedNPC.ModNPC is CoreElemental)
                     {
                         cachedNPC = taggedNPC;
+                        found = true;
+                        break;
                     }
+                }
+
+                if (!found)
+                {
+                    NPC.active = false;
+                    return;
                 }
 
                 spawned = true;
@@ -279,6 +290,8 @@ namespace Divergency.Content.NPCs.LivingGrove
 
             if (!spawned)
             {
+                bool found = false;
+
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC taggedNPC = Main.npc[k];
@@ -286,7 +299,15 @@ namespace Divergency.Content.NPCs.LivingGrove
                     if (taggedNPC.active && taggedNPC.ModNPC is CoreElemental)
                     {
                         cachedNPC = taggedNPC;
+                        found = true;
+                        break;
                     }
+                }
+
+                if (!found)
+                {
+                    NPC.active = false;
+                    return;
                 }
 
                 spawned = true;

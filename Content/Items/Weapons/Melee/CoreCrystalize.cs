@@ -1,6 +1,3 @@
-using Divergency.Common.Helpers;
-using System;
-using System.Collections.Generic;
 using Terraria.UI.Chat;
 
 namespace Divergency.Content.Items.Weapons.Melee;
@@ -12,21 +9,6 @@ public class CoreCrystalize : ModItem
         get;
         set;
     } = 1;
-
-    public class Particle(Vector2 position, Vector2 velocity, int lifetime)
-    {
-        public int TimeLeft;
-        public int Lifetime = lifetime;
-        public int ID = Particles.Count;
-        public Vector2 Velocity = velocity;
-        public Vector2 Position = position;
-    }
-
-    public static List<Particle> Particles
-    {
-        get;
-        private set;
-    } = [];
 
     public override bool MeleePrefix() => true;
 
@@ -70,65 +52,34 @@ public class CoreCrystalize : ModItem
 
     public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset)
     {
-        for (int k = 0; k < Particles.Count; k++)
-        {
-            var particle = Particles[k];
-
-            particle.TimeLeft++;
-            particle.Position += particle.Velocity;
-        }
-
-        Particles.RemoveAll(p => p.TimeLeft >= p.Lifetime);
-
         if (line.Name == "ItemName" && line.Mod == "Terraria")
         {
-
             Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Beam").Value;
 
             Vector2 position = new(line.X, line.Y);
+            Color baseColor = new(96, 214, 72);
 
-            if (Main.rand.NextBool(30))
-                Particles.Add(new Particle(new Vector2(62 + Main.rand.NextFloat(-60, 60), 11f), -Vector2.UnitY * 0.01f, 1400));
+            float t = Main.GlobalTimeWrappedHourly * 0.5f % 1f;
+            float pulseScale = MathHelper.Lerp(1f, 1.2f, t);
 
-            Color darkColor = new(96, 214, 72);
-            Color lightColor = new(96, 214, 72);
+            Color pulseColor = baseColor with { A = 0 } * (1 - t);
 
-            float t = Main.GlobalTimeWrappedHourly * 0.8f % 1f;
+            Vector2 textSize = ChatManager.GetStringSize(line.Font, line.Text, line.BaseScale);
 
-            Vector2 pulsePosition = position - new Vector2(12.5f, 1.5f) * t;
-            Vector2 scale = line.BaseScale * MathHelper.Lerp(1f, 1.2f, t);
+            Vector2 centeredOrigin = textSize * 0.5f;
 
-            Color pulseColor = new Color(191, 255, 119, 0) * (1f - t);
+            Vector2 centeredPos = position + centeredOrigin;
 
-            DrawParticles(darkColor, lightColor, position);
+            Main.spriteBatch.Draw(texture, centeredPos - new Vector2(0, 5), texture.Bounds, baseColor with { A = 0 }, MathHelper.PiOver2, texture.Size() * 0.5f, new Vector2(1, textSize.X * 0.025f), SpriteEffects.None, 0);
 
-            Main.spriteBatch.Draw(texture, position + new Vector2(62, 11), texture.Bounds, darkColor with { A = 0 }, MathHelper.PiOver2, texture.Size() * 0.5f, new Vector2(1f, 3.5f), SpriteEffects.None, 0);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, baseColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, baseColor with { A = 0 }, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
 
-            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, darkColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
-            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, darkColor with { A = 0 }, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
-
-            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, pulsePosition, pulseColor, line.Rotation, line.Origin, scale, line.MaxWidth, line.Spread);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, centeredPos, pulseColor, line.Rotation, centeredOrigin, line.BaseScale * pulseScale, line.MaxWidth, line.Spread);
 
             return false;
         }
 
         return true;
-    }
-
-    private static void DrawParticles(Color darkColor, Color lightColor, Vector2 position)
-    {
-        Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Dust").Value;
-
-        for (int k = 0; k < Particles.Count; k++)
-        {
-            var particle = Particles[k];
-
-            float t = 1f - (float)Particles[k].TimeLeft / Particles[k].Lifetime;
-            float scale = MathF.Sin(EaseFunction.EaseQuadInOut.Ease(t) * MathF.PI);
-            float alpha = MathF.Sin(EaseFunction.EaseQuadInOut.Ease(t));
-
-            Main.spriteBatch.Draw(texture, particle.Position + position, texture.Bounds, darkColor with { A = 0 } * alpha, Particles[k].ID, texture.Size() * 0.5f, scale, SpriteEffects.None, 0f);
-            Main.spriteBatch.Draw(texture, particle.Position + position, texture.Bounds, lightColor with { A = 0 } * alpha, Particles[k].ID, texture.Size() * 0.5f, scale, SpriteEffects.None, 0f);
-        }
     }
 }

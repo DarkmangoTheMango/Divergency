@@ -90,8 +90,11 @@ namespace Divergency.Content.Bosses
         public override void AI()
 
         {
+
             if (!spawned)
             {
+                bool found = false;
+
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     NPC taggedNPC = Main.npc[k];
@@ -99,8 +102,15 @@ namespace Divergency.Content.Bosses
                     if (taggedNPC.active && taggedNPC.ModNPC is Wraith)
                     {
                         cachedNPC = taggedNPC;
-                       NPC.ai[0] = cachedNPC.whoAmI;
+                        found = true;
+                        break;
                     }
+                }
+
+                if (!found)
+                {
+                    NPC.active = false;
+                    return;
                 }
 
                 spawned = true;

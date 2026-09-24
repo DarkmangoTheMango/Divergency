@@ -15,6 +15,7 @@ using Terraria.DataStructures;
 using Terraria.Graphics;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI.Chat;
 
 namespace Divergency.Content.Items.Weapons.Ranged
 {
@@ -49,6 +50,39 @@ namespace Divergency.Content.Items.Weapons.Ranged
 
             Item.value = Item.sellPrice(0, 5, 0, 0);
             Item.rare = ItemRarityID.Green;
+        }
+
+        public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset)
+        {
+            if (line.Name == "ItemName" && line.Mod == "Terraria")
+            {
+                Texture2D texture = ModContent.Request<Texture2D>("Divergency/Assets/Textures/Beam").Value;
+
+                Vector2 position = new(line.X, line.Y);
+                Color baseColor = new(96, 214, 72);
+
+                float t = Main.GlobalTimeWrappedHourly * 0.5f % 1f;
+                float pulseScale = MathHelper.Lerp(1f, 1.2f, t);
+
+                Color pulseColor = baseColor with { A = 0 } * (1 - t);
+
+                Vector2 textSize = ChatManager.GetStringSize(line.Font, line.Text, line.BaseScale);
+
+                Vector2 centeredOrigin = textSize * 0.5f;
+
+                Vector2 centeredPos = position + centeredOrigin;
+
+                Main.spriteBatch.Draw(texture, centeredPos - new Vector2(0, 5), texture.Bounds, baseColor with { A = 0 }, MathHelper.PiOver2, texture.Size() * 0.5f, new Vector2(1, textSize.X * 0.025f), SpriteEffects.None, 0);
+
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, baseColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, position, baseColor with { A = 0 }, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, centeredPos, pulseColor, line.Rotation, centeredOrigin, line.BaseScale * pulseScale, line.MaxWidth, line.Spread);
+
+                return false;
+            }
+
+            return true;
         }
     }
 
@@ -318,8 +352,7 @@ namespace Divergency.Content.Items.Weapons.Ranged
             for (int i = 0; i < 20; i++)
             {
                 Vector2 velocity = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(10f, 20f);
-                float scale = Main.rand.NextFloat(1f, 2f);
-                ParticleManager.NewParticle<StarParticle>(Projectile.Center, velocity, new Color(128, 255, 0, 0), scale);
+                ParticleManager.NewParticle<CoreSparkle>(Projectile.Center, velocity, default, 4);
             }
         }
 
