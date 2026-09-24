@@ -275,7 +275,7 @@ namespace Divergency.Content.NPCs.LivingGrove
         {
             Floating,
             Falling,
-            Blocking
+            Blocking    
 
         }
         private int teleport;
