@@ -13,7 +13,7 @@ public class LivingCoreSpawnOverride : GlobalNPC
 
         pool.Clear();
 
-        pool[ModContent.NPCType<Coreling>()] = 1f;
-        pool[ModContent.NPCType<Corelossus>()] = 0.5f;
+        pool[ModContent.NPCType<Corebetta>()] = spawnInfo.Water ? 0.85f : 0;
+        pool[ModContent.NPCType<Coreminnow>()] = spawnInfo.Water ? 0.85f : 0;
     }
 }

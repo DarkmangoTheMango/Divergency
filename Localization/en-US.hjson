@@ -1109,6 +1109,16 @@ Mods: {
 					{$CommonItemTooltip.Whips}
 					'''
 			}
+
+			CorebettaItem: {
+				DisplayName: Corebetta
+				Tooltip: ""
+			}
+
+			CoreminnowItem: {
+				DisplayName: Coreminnow Item
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
@@ -1199,6 +1209,8 @@ Mods: {
 			WraithHand.DisplayName: Wraith Hand
 			CoreBlockadeLeftInstant.DisplayName: Core Blockade Left Instant
 			CoreBlockadeRightInstant.DisplayName: Core Blockade Right Instant
+			Corebetta.DisplayName: Corebetta
+			Coreminnow.DisplayName: Coreminnow
 		}
 
 		Keybinds: {
