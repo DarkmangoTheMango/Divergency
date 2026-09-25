@@ -4,63 +4,76 @@ global using Terraria;
 global using Terraria.DataStructures;
 global using Terraria.ID;
 global using Terraria.ModLoader;
+using Divergency.Content.Biomes;
 using ReLogic.Content;
+using SubworldLibrary;
 using System.Reflection;
 using Terraria.WorldBuilding;
 
-namespace Divergency
+namespace Divergency;
+
+public partial class Divergency : Mod
 {
-    public partial class Divergency : Mod
+    public static Effect BeamShader, Lens, Test1, Test2, LavaRT, Galaxy, CrystalShine, TrailShader, RTAlpha;
+
+    public class TemporaryFix : PreJITFilter
     {
-        public static Effect BeamShader, Lens, Test1, Test2, LavaRT, Galaxy, CrystalShine, TrailShader, RTAlpha;
+        public override bool ShouldJIT(MemberInfo member) => false;
+    }
 
-        public class TemporaryFix : PreJITFilter
+    public static Divergency Instance { get; set; }
+
+    public Divergency()
+    {
+        Instance = this;
+        PreJITFilter = new TemporaryFix();
+    }
+
+    public override void Unload()
+    {
+        if (!Main.dedServ)
         {
-            public override bool ShouldJIT(MemberInfo member) => false;
-        }
-
-        public static Divergency Instance { get; set; }
-
-        public Divergency()
-        {
-            Instance = this;
-            PreJITFilter = new TemporaryFix();
-        }
-
-        public override void Unload()
-        {
-            if (!Main.dedServ)
-            {
-                Instance = null;
-            }
-        }
-
-        internal static Asset<Effect> Supernova, Storm, WraithOrb;
-
-        public override void Load()
-        {
-            BeamShader = ModContent.Request<Effect>("Divergency/Common/Helpers/Beam", (AssetRequestMode)1).Value;
-            Supernova = ModContent.Request<Effect>("Divergency/Content/Effects/Supernova");
-            Storm = ModContent.Request<Effect>("Divergency/Content/Effects/Storm");
-            WraithOrb = ModContent.Request<Effect>("Divergency/Content/Effects/WraithOrb");
-            TrailShader = ModContent.Request<Effect>("Divergency/Content/Effects/Trailshader", (AssetRequestMode)1).Value;
+            Instance = null;
         }
     }
 
-    static class DivergencyUtils
-    {
-        public static Vector2 findGroundUnder(this Vector2 position)
-        {
-            Vector2 returned = position;
-            while (!WorldUtils.Find(returned.ToTileCoordinates(), Searches.Chain(new Searches.Down(1), new GenCondition[]
-                {
-                new Conditions.IsSolid()
-                }), out _))
-            {
-                returned.Y++;
-            }
+    internal static Asset<Effect> Supernova, Storm, WraithOrb;
 
-            return returned;
+    public override void Load()
+    {
+        BeamShader = ModContent.Request<Effect>("Divergency/Common/Helpers/Beam", (AssetRequestMode)1).Value;
+        Supernova = ModContent.Request<Effect>("Divergency/Content/Effects/Supernova");
+        Storm = ModContent.Request<Effect>("Divergency/Content/Effects/Storm");
+        WraithOrb = ModContent.Request<Effect>("Divergency/Content/Effects/WraithOrb");
+        TrailShader = ModContent.Request<Effect>("Divergency/Content/Effects/Trailshader", (AssetRequestMode)1).Value;
+    }
+}
+
+static class DivergencyUtils
+{
+    public static Vector2 findGroundUnder(this Vector2 position)
+    {
+        Vector2 returned = position;
+        while (!WorldUtils.Find(returned.ToTileCoordinates(), Searches.Chain(new Searches.Down(1), new GenCondition[]
+            {
+            new Conditions.IsSolid()
+            }), out _))
+        {
+            returned.Y++;
         }
+
+        return returned;
+    }
+}
+
+public class SubworldCommand : ModCommand
+{
+    public override CommandType Type => CommandType.Chat;
+
+    public override string Command => "quickwarp";
+
+    public override void Action(CommandCaller caller, string input, string[] args)
+    {
+        SubworldSystem.Enter<LivingCoreSubworld>();
     }
 }

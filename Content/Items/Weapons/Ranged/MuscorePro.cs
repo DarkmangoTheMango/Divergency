@@ -45,7 +45,7 @@ public class MuscorePro : ModProjectile
             ParticleManager.NewParticle<GreenSpark>(Projectile.Center + Projectile.velocity * 50, Projectile.velocity.RotatedByRandom(0.3f) * (Main.rand.NextFloat(20) + 1), default, 2, 1);
         }
 
-        SoundEngine.PlaySound(new("Divergency/Assets/Sounds/Items/MuscoreShoot") { PitchVariance = 0.1f }, Projectile.Center);
+        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/MuscoreShoot") { PitchVariance = 0.1f }, Projectile.Center);
         Projectile.localAI[0] = 1;
 
         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 30, ModContent.ProjectileType<PhotosynthesisBolt>(), Projectile.damage, 1, Projectile.owner);

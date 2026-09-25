@@ -1,4 +1,4 @@
 displayName = Divergency
 author = Brise
 version = 0.0
-modReferences = ParticleLibrary
+modReferences = ParticleLibrary, SubworldLibrary

@@ -1116,7 +1116,7 @@ Mods: {
 			}
 
 			CoreminnowItem: {
-				DisplayName: Coreminnow Item
+				DisplayName: Coreminnow
 				Tooltip: ""
 			}
 		}
