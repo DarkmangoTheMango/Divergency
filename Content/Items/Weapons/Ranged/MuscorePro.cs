@@ -5,6 +5,8 @@ using ParticleLibrary;
 using System.IO;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Divergency.Content.Items.Weapons.Ranged;
 
@@ -14,7 +16,7 @@ public class MuscorePro : ModProjectile
 
     Vector2 VisualOffset;
 
-    public override string Texture => "Divergency/Content/Items/Weapons/Ranged/Muscore";
+    public override string Texture => "Divergency/Content/Items/Weapons/Ranged/MuscorePro";
 
     public override bool ShouldUpdatePosition() => false;
 
@@ -22,7 +24,7 @@ public class MuscorePro : ModProjectile
 
     public override void SetStaticDefaults()
     {
-
+        Main.projFrames[Type] = 12;
     }
 
     public override void SetDefaults()
@@ -40,27 +42,24 @@ public class MuscorePro : ModProjectile
 
     public override void OnSpawn(IEntitySource source)
     {
-        for (int k = 0; k < 10; k++)
-        {
-            ParticleManager.NewParticle<GreenSpark>(Projectile.Center + Projectile.velocity * 50, Projectile.velocity.RotatedByRandom(0.3f) * (Main.rand.NextFloat(20) + 1), default, 2, 1);
-        }
-
-        SoundEngine.PlaySound(new SoundStyle("Divergency/Assets/Sounds/Items/MuscoreShoot") { PitchVariance = 0.1f }, Projectile.Center);
-        Projectile.localAI[0] = 1;
-
-        Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 30, ModContent.ProjectileType<PhotosynthesisBolt>(), Projectile.damage, 1, Projectile.owner);
     }
 
     #region AI
 
     public override void AI()
     {
-        if (!Player.active || Player.itemTime <= 1)
+        if (!Player.active || Player.itemTime <= 2)
             Projectile.Kill();
 
         Projectile.timeLeft = 2;
 
-        Animate();
+        if (++Projectile.frameCounter >= 4)
+        {
+            Projectile.frameCounter = 0;
+
+            if (++Projectile.frame >= Main.projFrames[Type])
+                Projectile.frame = Main.projFrames[Type] - 1;
+        }
 
         Player.heldProj = Projectile.whoAmI;
         Projectile.spriteDirection = Projectile.direction = Player.direction;
@@ -74,11 +73,6 @@ public class MuscorePro : ModProjectile
         Lighting.AddLight(Projectile.Center, new Vector3(0.1f, 0.2f, 0.1f) * Projectile.localAI[0]);
     }
 
-    void Animate()
-    {
-
-    }
-
     #endregion AI
 
     public override void OnKill(int timeLeft)
@@ -90,26 +84,16 @@ public class MuscorePro : ModProjectile
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+        Texture2D texture = TextureAssets.Projectile[Type].Value;
+        
+        int frameHeight = texture.Height / Main.projFrames[Type];
+        int startY = frameHeight * Projectile.frame;
 
-        int frameHeight = texture.Height / Main.projFrames[Projectile.type];
-        Rectangle sourceRectangle = new(0, frameHeight * Projectile.frame, texture.Width, frameHeight);
+        Rectangle sourceRectangle = new(0, startY, texture.Width, frameHeight);
 
         Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + Projectile.velocity * 22 * Player.direction, sourceRectangle, Projectile.GetAlpha(lightColor), Projectile.rotation, sourceRectangle.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
 
-        DrawGlow();
-
         return false;
-    }
-
-    void DrawGlow()
-    {
-        Texture2D texture = ModContent.Request<Texture2D>(Texture + "_Glow").Value;
-
-        int frameHeight = texture.Height / Main.projFrames[Projectile.type];
-        Rectangle sourceRectangle = new(0, frameHeight * Projectile.frame, texture.Width, frameHeight);
-
-        Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + Projectile.velocity * 22 * Player.direction + VisualOffset, sourceRectangle, new Color(255, 255, 255, 0) * Projectile.localAI[0], Projectile.rotation, sourceRectangle.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
     }
 
     #endregion Drawing

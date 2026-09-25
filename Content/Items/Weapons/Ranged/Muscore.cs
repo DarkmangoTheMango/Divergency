@@ -36,11 +36,11 @@ public class Muscore : ModItem, IReloadWeapon
         Item.knockBack = 3f;
         Item.DamageType = DamageClass.Ranged;
 
-        Item.useTime = Item.useAnimation = 30;
+        Item.useTime = Item.useAnimation = 50;
         Item.autoReuse = true;
-
+        Item.noUseGraphic = true;
         Item.shootSpeed = 10f;
-        Item.shoot = ModContent.ProjectileType<MuscoreBullet>();
+        Item.shoot = ModContent.ProjectileType<MuscorePro>();
 
         Item.useStyle = ItemUseStyleID.Shoot;
         Item.noMelee = true;
@@ -61,6 +61,7 @@ public class Muscore : ModItem, IReloadWeapon
     public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
     {
         shotsLeft--;
+        Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<MuscoreBullet>(), damage, 1, player.whoAmI);
         return true;
     }
 }
