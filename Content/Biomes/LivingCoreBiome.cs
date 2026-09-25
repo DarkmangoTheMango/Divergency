@@ -108,9 +108,9 @@ public class LivingCoreSubworld : Subworld
 {
     public static bool Active => SubworldSystem.IsActive<LivingCoreSubworld>();
 
-    public override int Width => 2000;
+    public override int Width => 4500;
 
-    public override int Height => 800;
+    public override int Height => 1800;
 
     public override bool ShouldSave => true;
 
@@ -149,7 +149,7 @@ public class LivingCoreSubworldSystem : ModSystem
             cloud.active = false;
 
         Main.raining = false;
-        Main.time = 27000;
+        Main.time = -100;
         Main.dayTime = true;
         Main.eclipse = false;
         Main.windSpeedTarget = 0.2f;
